@@ -31,6 +31,10 @@
         <span>Ticker</span>
         <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
       </div>
+      <div class="cp-nav-item" data-tab="secondary-playlist">
+        <span>Secondary Playlist</span>
+        <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
+      </div>
       <div class="cp-nav-item" data-tab="lower-third">
         <span>Lower Third</span>
         <span class="cp-badge-small">SOON</span>
@@ -47,105 +51,185 @@
 
     <!-- Main Workspace -->
     <main class="cp-main">
-      <div class="cp-card">
-        <div class="cp-card-title">
-          <span>📺 Ticker Control Panel</span>
-          <span id="unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
-        </div>
-
-        <!-- Headline Input -->
-        <div class="cp-form-group">
-          <label class="cp-label" for="headline-input">
-            <span>Headline Text (ప్రధాన వార్తలు)</span>
-            <span id="char-counter" class="cp-char-counter">0 / 180 chars</span>
-          </label>
-          <textarea id="headline-input" class="cp-textarea" placeholder="వార్తలను ఇక్కడ నమోదు చేయండి (లైనుకు ఒక వార్త)..."></textarea>
-        </div>
-
-        <!-- Category & Speed Row -->
-        <div class="cp-row">
-          <div class="cp-form-group">
-            <label class="cp-label" for="category-select">Category (వర్గం)</label>
-            <select id="category-select" class="cp-select">
-              <option value="తాజా వార్తలు">తాజా వార్తలు (General)</option>
-              <option value="రాజకీయం">రాజకీయం (Politics)</option>
-              <option value="క్రైమ్">క్రైమ్ (Crime)</option>
-              <option value="క్రీడలు">క్రీడలు (Sports)</option>
-              <option value="వాతావరణం">వాతావరణం (Weather)</option>
-              <option value="అత్యవసర వర్తమానం">అత్యవసర వర్తమానం (Breaking)</option>
-              <option value="బిజినెస్">బిజినెస్ (Business)</option>
-            </select>
+      <!-- TAB 1: PRIMARY TICKER -->
+      <div id="tab-ticker" class="cp-tab-pane active" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📺 Primary Ticker Control Panel</span>
+            <span id="unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
           </div>
 
+          <!-- Headline Input -->
           <div class="cp-form-group">
-            <label class="cp-label">
-              <span>Speed (వేగం)</span>
-              <span id="speed-val" class="cp-slider-val">50s</span>
+            <label class="cp-label" for="headline-input">
+              <span>Headline Text (ప్రధాన వార్తలు)</span>
+              <span id="char-counter" class="cp-char-counter">0 / 180 chars</span>
             </label>
-            <div class="cp-slider-container" style="margin-top: 4px;">
-              <span style="font-size:10px; color:var(--cp-text-muted)">Fast (20s)</span>
-              <input id="speed-slider" type="range" class="cp-slider" min="20" max="80" step="5" value="50">
-              <span style="font-size:10px; color:var(--cp-text-muted)">Slow (80s)</span>
+            <textarea id="headline-input" class="cp-textarea" placeholder="వార్తలను ఇక్కడ నమోదు చేయండి (లైనుకు ఒక వార్త)..."></textarea>
+          </div>
+
+          <!-- Category & Speed Row -->
+          <div class="cp-row">
+            <div class="cp-form-group">
+              <label class="cp-label" for="category-select">Category (వర్గం)</label>
+              <select id="category-select" class="cp-select">
+                <option value="తాజా వార్తలు">తాజా వార్తలు (General)</option>
+                <option value="రాజకీయం">రాజకీయం (Politics)</option>
+                <option value="క్రైమ్">క్రైమ్ (Crime)</option>
+                <option value="క్రీడలు">క్రీడలు (Sports)</option>
+                <option value="వాతావరణం">వాతావరణం (Weather)</option>
+                <option value="అత్యవసర వర్తమానం">అత్యవసర వర్తమానం (Breaking)</option>
+                <option value="బిజినెస్">బిజినెస్ (Business)</option>
+              </select>
             </div>
-          </div>
-        </div>
 
-        <!-- Theme Selection (Radio Buttons) -->
-        <div class="cp-form-group">
-          <label class="cp-label">Theme Selection</label>
-          <div class="cp-radio-group">
-            <label class="cp-radio-label">
-              <input type="radio" name="theme-radio" value="default" checked> ● Default
-            </label>
-            <label class="cp-radio-label">
-              <input type="radio" name="theme-radio" value="breaking"> ○ Breaking
-            </label>
-            <label class="cp-radio-label">
-              <input type="radio" name="theme-radio" value="election"> ○ Election
-            </label>
-            <label class="cp-radio-label">
-              <input type="radio" name="theme-radio" value="sports"> ○ Sports
-            </label>
-            <label class="cp-radio-label">
-              <input type="radio" name="theme-radio" value="weather"> ○ Weather
-            </label>
-          </div>
-        </div>
-
-        <!-- Pause / Resume Toggle Button -->
-        <div class="cp-row">
-          <button id="btn-toggle-pause" class="cp-btn cp-btn-secondary" style="width:100%;">⏸️ Pause Ticker</button>
-        </div>
-
-        <!-- Distinct Preview Mode Canvas -->
-        <div class="cp-form-group">
-          <label class="cp-label">Live Animated Preview</label>
-          <div class="cp-preview-container">
-            <span class="cp-preview-tag">[ PREVIEW CANVAS ]</span>
-            <div id="preview-badge" class="cp-preview-badge">తాజా వార్తలు</div>
-            <div class="cp-preview-viewport">
-              <div id="preview-track" class="cp-preview-track scrolling">
-                <span id="preview-text" class="cp-preview-item">మారిన వివరాలు చూడటానికి Preview బటన్ నొక్కండి...</span>
+            <div class="cp-form-group">
+              <label class="cp-label">
+                <span>Speed (వేగం)</span>
+                <span id="speed-val" class="cp-slider-val">50s</span>
+              </label>
+              <div class="cp-slider-container" style="margin-top: 4px;">
+                <span style="font-size:10px; color:var(--cp-text-muted)">Fast (20s)</span>
+                <input id="speed-slider" type="range" class="cp-slider" min="20" max="80" step="5" value="50">
+                <span style="font-size:10px; color:var(--cp-text-muted)">Slow (80s)</span>
               </div>
             </div>
           </div>
+
+          <!-- Theme Selection (Radio Buttons) -->
+          <div class="cp-form-group">
+            <label class="cp-label">Theme Selection</label>
+            <div class="cp-radio-group">
+              <label class="cp-radio-label">
+                <input type="radio" name="theme-radio" value="default" checked> ● Default
+              </label>
+              <label class="cp-radio-label">
+                <input type="radio" name="theme-radio" value="breaking"> ○ Breaking
+              </label>
+              <label class="cp-radio-label">
+                <input type="radio" name="theme-radio" value="election"> ○ Election
+              </label>
+              <label class="cp-radio-label">
+                <input type="radio" name="theme-radio" value="sports"> ○ Sports
+              </label>
+              <label class="cp-radio-label">
+                <input type="radio" name="theme-radio" value="weather"> ○ Weather
+              </label>
+            </div>
+          </div>
+
+          <!-- Pause / Resume Toggle Button -->
+          <div class="cp-row">
+            <button id="btn-toggle-pause" class="cp-btn cp-btn-secondary" style="width:100%;">⏸️ Pause Ticker</button>
+          </div>
+
+          <!-- Distinct Preview Mode Canvas -->
+          <div class="cp-form-group">
+            <label class="cp-label">Live Animated Preview</label>
+            <div class="cp-preview-container">
+              <span class="cp-preview-tag">[ PREVIEW CANVAS ]</span>
+              <div id="preview-badge" class="cp-preview-badge">తాజా వార్తలు</div>
+              <div class="cp-preview-viewport">
+                <div id="preview-track" class="cp-preview-track scrolling">
+                  <span id="preview-text" class="cp-preview-item">మారిన వివరాలు చూడటానికి Preview బటన్ నొక్కండి...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="cp-btn-group">
+            <button id="btn-preview" class="cp-btn cp-btn-gold">👁️ Preview</button>
+            <button id="btn-reset" class="cp-btn cp-btn-secondary">🔄 Reset</button>
+            <button id="btn-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply (Update Live)</button>
+          </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="cp-btn-group">
-          <button id="btn-preview" class="cp-btn cp-btn-gold">👁️ Preview</button>
-          <button id="btn-reset" class="cp-btn cp-btn-secondary">🔄 Reset</button>
-          <button id="btn-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply (Update Live)</button>
+        <!-- Recent Headlines History Card -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📜 Recent Headlines History (1-Click Restore)</span>
+          </div>
+          <div id="recent-list" class="cp-recent-list">
+            <div style="font-size:11px; color:var(--cp-text-muted);">No recent headlines saved yet...</div>
+          </div>
         </div>
       </div>
 
-      <!-- Recent Headlines History Card -->
-      <div class="cp-card">
-        <div class="cp-card-title">
-          <span>📜 Recent Headlines History (1-Click Restore)</span>
+      <!-- TAB 2: SECONDARY NEWS PLAYLIST -->
+      <div id="tab-secondary-playlist" class="cp-tab-pane" style="display:none; flex-direction:column; gap:12px;">
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📰 Secondary News Playlist Control Panel</span>
+            <span id="spl-unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
+          </div>
+
+          <!-- Google Sheet Published CSV URL Input -->
+          <div class="cp-form-group">
+            <label class="cp-label" for="spl-sheet-url">
+              <span>Google Sheet Published CSV URL</span>
+              <span style="font-size:10px; color:var(--cp-gold)">Read-Only Feed Tab</span>
+            </label>
+            <input id="spl-sheet-url" type="url" class="cp-input" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+          </div>
+
+          <!-- Refresh Interval & Speed Row -->
+          <div class="cp-row">
+            <div class="cp-form-group">
+              <label class="cp-label" for="spl-poll-interval">Auto Refresh Interval (స్వయంచాలక అప్‌డేట్)</label>
+              <select id="spl-poll-interval" class="cp-select">
+                <option value="30000" selected>30 Seconds (Default Production)</option>
+                <option value="15000">15 Seconds (Fast Refresh)</option>
+                <option value="60000">60 Seconds (Standard)</option>
+                <option value="0">Manual Only (No Auto Poll)</option>
+              </select>
+            </div>
+            <div class="cp-form-group">
+              <label class="cp-label" for="spl-crawl-speed">Crawl Speed (px/sec)</label>
+              <select id="spl-crawl-speed" class="cp-select">
+                <option value="120" selected>120 px/sec (Default Constant)</option>
+                <option value="90">90 px/sec (Slow)</option>
+                <option value="160">160 px/sec (Fast)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Manual Direct Playlist Override Payload -->
+          <div class="cp-form-group">
+            <label class="cp-label" for="spl-payload-input">
+              <span>Manual Playlists Payload (లేబుల్: వర్గం: వార్త)</span>
+              <span style="font-size:10px; color:var(--cp-text-muted)">లైనుకి ఒకటి: లేబుల్: theme: వార్త</span>
+            </label>
+            <textarea id="spl-payload-input" class="cp-textarea" style="min-height:90px;" placeholder="జగిత్యాల: district: జగిత్యాల జిల్లాలో వర్షాలు...
+క్రీడలు: sports: బోర్డర్-గవాస్కర్ ట్రోఫీ రేపే ప్రారంభం"></textarea>
+          </div>
+
+          <!-- Secondary Playlist Action Buttons -->
+          <div class="cp-btn-group">
+            <button id="btn-spl-fetch" class="cp-btn cp-btn-secondary">🔄 Sync CSV</button>
+            <button id="btn-spl-pause" class="cp-btn cp-btn-secondary">⏸️ Pause</button>
+            <button id="btn-spl-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply & Sync Live</button>
+          </div>
         </div>
-        <div id="recent-list" class="cp-recent-list">
-          <div style="font-size:11px; color:var(--cp-text-muted);">No recent headlines saved yet...</div>
+
+        <!-- Telemetry & Health Status Monitor Card -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📡 Telemetry & Provider Status Monitor</span>
+            <span id="spl-status-pill" class="cp-status-pill" style="color:#10B981; background:rgba(16,185,129,0.15);">
+              ● <span id="spl-telemetry-state">ONLINE</span>
+            </span>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px; color:var(--cp-text-muted);">
+            <div><strong>Last Sync:</strong> <span id="spl-telemetry-lastsync" style="color:var(--cp-text)">Just Now</span></div>
+            <div><strong>Dataset Version:</strong> <span id="spl-telemetry-version" style="color:var(--cp-gold)">v1</span></div>
+            <div><strong>Active Playlists:</strong> <span id="spl-telemetry-playlists" style="color:var(--cp-text)">3</span></div>
+            <div><strong>Total News Count:</strong> <span id="spl-telemetry-count" style="color:var(--cp-text)">5</span></div>
+          </div>
+          <div style="font-size:10px; color:var(--cp-text-muted); margin-top:4px;">
+            <strong>Diagnostics / Last Error:</strong> <span id="spl-telemetry-error" style="color:var(--cp-accent-green)">None (Operating Normally)</span>
+          </div>
         </div>
       </div>
     </main>

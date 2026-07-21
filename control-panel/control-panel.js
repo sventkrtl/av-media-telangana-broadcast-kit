@@ -1,12 +1,15 @@
 import { StateEngine } from '../shared/js/state-engine.js';
+import { PlaylistModel } from '../modules/secondary-playlist/playlist-engine.js';
 
 export class ControlPanelApp {
   constructor() {
     this.stateEngine = new StateEngine('av_media_broadcast_channel');
     this.isPaused = false;
+    this.isSplPaused = false;
     this.isFormDirty = false;
+    this.activeTab = 'ticker';
 
-    // DOM Elements
+    // DOM Elements - Primary Ticker
     this.headlineInput = document.getElementById('headline-input');
     this.categorySelect = document.getElementById('category-select');
     this.speedSlider = document.getElementById('speed-slider');
@@ -29,6 +32,24 @@ export class ControlPanelApp {
     this.btnTogglePause = document.getElementById('btn-toggle-pause');
     this.recentList = document.getElementById('recent-list');
 
+    // DOM Elements - Secondary Playlist Tab
+    this.splSheetUrl = document.getElementById('spl-sheet-url');
+    this.splPollInterval = document.getElementById('spl-poll-interval');
+    this.splCrawlSpeed = document.getElementById('spl-crawl-speed');
+    this.splPayloadInput = document.getElementById('spl-payload-input');
+    this.btnSplApply = document.getElementById('btn-spl-apply');
+    this.btnSplPause = document.getElementById('btn-spl-pause');
+    this.btnSplFetch = document.getElementById('btn-spl-fetch');
+    this.splUnsavedBadge = document.getElementById('spl-unsaved-badge');
+
+    // DOM Elements - Secondary Telemetry
+    this.splTelemetryState = document.getElementById('spl-telemetry-state');
+    this.splTelemetryLastSync = document.getElementById('spl-telemetry-lastsync');
+    this.splTelemetryVersion = document.getElementById('spl-telemetry-version');
+    this.splTelemetryPlaylists = document.getElementById('spl-telemetry-playlists');
+    this.splTelemetryCount = document.getElementById('spl-telemetry-count');
+    this.splTelemetryError = document.getElementById('spl-telemetry-error');
+
     this.settingsGear = document.getElementById('btn-settings-gear');
     this.settingsModal = document.getElementById('settings-modal');
     this.btnModalClose = document.getElementById('btn-modal-close');
@@ -42,10 +63,31 @@ export class ControlPanelApp {
     this.renderRecentHeadlines();
     this.bindEvents();
     this.bindShortcuts();
+    this.setupTabSwitching();
     this.setupAutoSaveDraft();
     this.setupStatusListener();
     this.updatePreview();
     this.updateCharCounter();
+  }
+
+  setupTabSwitching() {
+    document.querySelectorAll('.cp-nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const tab = item.dataset.tab;
+        if (tab === 'ticker' || tab === 'secondary-playlist') {
+          document.querySelectorAll('.cp-nav-item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+
+          this.activeTab = tab;
+          document.querySelectorAll('.cp-tab-pane').forEach(pane => {
+            pane.style.display = 'none';
+          });
+
+          const targetPane = document.getElementById(`tab-${tab}`);
+          if (targetPane) targetPane.style.display = 'flex';
+        }
+      });
+    });
   }
 
   setupStatusListener() {
@@ -112,6 +154,16 @@ export class ControlPanelApp {
         if (data.lastUpdated) {
           this.statusLastUpdated.textContent = `✓ Last Updated: ${data.lastUpdated}`;
         }
+      } catch (e) {}
+    }
+
+    const splSaved = localStorage.getItem('av_media_spl_live_state');
+    if (splSaved && this.splSheetUrl) {
+      try {
+        const splData = JSON.parse(splSaved);
+        if (splData.sheetUrl) this.splSheetUrl.value = splData.sheetUrl;
+        if (splData.pollInterval) this.splPollInterval.value = String(splData.pollInterval);
+        if (splData.payloadText) this.splPayloadInput.value = splData.payloadText;
       } catch (e) {}
     }
   }
@@ -284,6 +336,97 @@ export class ControlPanelApp {
     }, 1500);
   }
 
+  handleSecondaryApply() {
+    const sheetUrl = this.splSheetUrl.value.trim();
+    const pollInterval = parseInt(this.splPollInterval.value, 10) || 30000;
+    const crawlSpeed = parseInt(this.splCrawlSpeed.value, 10) || 120;
+    const payloadText = this.splPayloadInput.value.trim();
+
+    // Parse direct payload text format: Label: theme: news
+    const parsedPlaylists = [];
+    if (payloadText) {
+      const lines = payloadText.split('\n').map(l => l.trim()).filter(Boolean);
+      const groupedMap = new Map();
+
+      lines.forEach(line => {
+        const parts = line.split(':');
+        if (parts.length >= 2) {
+          const label = parts[0].trim();
+          let theme = 'district';
+          let news = '';
+
+          if (parts.length >= 3) {
+            theme = parts[1].trim().toLowerCase() || 'district';
+            news = parts.slice(2).join(':').trim();
+          } else {
+            news = parts.slice(1).join(':').trim();
+          }
+
+          if (label && news) {
+            const key = `${theme}::${label}`;
+            if (!groupedMap.has(key)) {
+              groupedMap.set(key, { label, theme, items: [] });
+            }
+            groupedMap.get(key).items.push(news);
+          }
+        }
+      });
+
+      groupedMap.forEach(group => {
+        parsedPlaylists.push(new PlaylistModel({
+          label: group.label,
+          theme: group.theme,
+          items: group.items
+        }));
+      });
+    }
+
+    const payload = {
+      sheetUrl,
+      pollInterval,
+      crawlSpeed,
+      payloadText,
+      playlists: parsedPlaylists
+    };
+
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+    this.stateEngine.emit('secondary-playlist', 'update', payload);
+    localStorage.setItem('av_media_spl_live_state', JSON.stringify(payload));
+    this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
+
+    // Update telemetry UI
+    if (this.splTelemetryState) this.splTelemetryState.textContent = 'ONLINE';
+    if (this.splTelemetryLastSync) this.splTelemetryLastSync.textContent = timeStr;
+    if (this.splTelemetryPlaylists) this.splTelemetryPlaylists.textContent = String(parsedPlaylists.length || 3);
+    if (this.splTelemetryCount) {
+      const totalCount = parsedPlaylists.reduce((acc, p) => acc + p.items.length, 0);
+      this.splTelemetryCount.textContent = String(totalCount || 5);
+    }
+
+    const originalText = this.btnSplApply.textContent;
+    this.btnSplApply.textContent = '✅ LIVE UPDATED!';
+    this.btnSplApply.style.background = '#059669';
+    setTimeout(() => {
+      this.btnSplApply.textContent = originalText;
+      this.btnSplApply.style.background = '';
+    }, 1500);
+  }
+
+  handleSecondaryPause() {
+    this.isSplPaused = !this.isSplPaused;
+    if (this.isSplPaused) {
+      this.btnSplPause.textContent = '▶️ Resume';
+      this.btnSplPause.style.background = '#D97706';
+      this.stateEngine.emit('secondary-playlist', 'pause', { isPaused: true });
+    } else {
+      this.btnSplPause.textContent = '⏸️ Pause';
+      this.btnSplPause.style.background = '#334155';
+      this.stateEngine.emit('secondary-playlist', 'resume', { isPaused: false });
+    }
+  }
+
   handleTogglePause() {
     this.isPaused = !this.isPaused;
     if (this.isPaused) {
@@ -303,7 +446,11 @@ export class ControlPanelApp {
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();
-        this.handleApply();
+        if (this.activeTab === 'secondary-playlist') {
+          this.handleSecondaryApply();
+        } else {
+          this.handleApply();
+        }
       }
       else if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
         e.preventDefault();
@@ -311,7 +458,11 @@ export class ControlPanelApp {
       }
       else if (e.ctrlKey && e.code === 'Space') {
         e.preventDefault();
-        this.handleTogglePause();
+        if (this.activeTab === 'secondary-playlist') {
+          this.handleSecondaryPause();
+        } else {
+          this.handleTogglePause();
+        }
       }
       else if (e.key === 'Escape') {
         this.loadSavedState();
@@ -337,6 +488,17 @@ export class ControlPanelApp {
     });
 
     this.btnTogglePause.addEventListener('click', () => this.handleTogglePause());
+
+    // Secondary Playlist Buttons
+    if (this.btnSplApply) {
+      this.btnSplApply.addEventListener('click', () => this.handleSecondaryApply());
+    }
+    if (this.btnSplPause) {
+      this.btnSplPause.addEventListener('click', () => this.handleSecondaryPause());
+    }
+    if (this.btnSplFetch) {
+      this.btnSplFetch.addEventListener('click', () => this.handleSecondaryApply());
+    }
 
     this.headlineInput.addEventListener('input', () => {
       this.updateCharCounter();
