@@ -1,8 +1,58 @@
-# AV Media Telangana Broadcast Kit (v1.0)
+# AV Media Telangana Broadcast Kit (v1.2.2)
 
 A high-performance, broadcast-grade Web Graphics SDK and Production Control System engineered specifically for **OBS Studio** Browser Sources and Custom Browser Docks.
 
-Built using zero-dependency, hardware-accelerated **HTML5, CSS3, and Vanilla JavaScript (ES6 Modules)** for 60fps ultra-low latency rendering on Windows and Linux.
+Built using zero-dependency, hardware-accelerated **HTML5, CSS3, and Vanilla JavaScript (ES6 Modules)** for 60fps ultra-low latency rendering hosted over a unified local **HTTP + WebSocket Runtime** (`http://127.0.0.1:8085/`).
+
+---
+
+## 🚀 Quick Start & Server Execution
+
+Start the Unified Broadcast Runtime:
+
+```bash
+node server.js
+```
+
+**Console Startup Output:**
+```
+====================================================
+📡 Broadcast Runtime Started
+
+HTTP:
+http://127.0.0.1:8085/
+
+WebSocket:
+ws://127.0.0.1:8085/
+
+Static Root:
+d:\AV Media Telangana\av-media-telangana-broadcast-kit
+
+Ready for OBS.
+====================================================
+```
+
+---
+
+## 🎬 OBS Studio Setup & Integration
+
+### 1. Control Panel Setup (Custom Browser Dock)
+1. Launch **OBS Studio**.
+2. Go to **View** -> **Docks** -> **Custom Browser Docks...**
+3. Set **Dock Name**: `AV Media Control Panel`
+4. Set **URL**:
+   `http://127.0.0.1:8085/control-panel/`
+5. Click **Apply** and dock the panel directly into your OBS interface!
+
+### 2. Ticker Overlay Setup (Browser Source)
+1. Under **Sources** dock in OBS, click `+` -> **Browser**.
+2. Name source: `AV-Ticker`.
+3. Uncheck Local File and set **URL**:
+   `http://127.0.0.1:8085/modules/ticker/`
+4. Set Dimensions:
+   - **Width**: `1920`
+   - **Height**: `1080`
+5. Click **OK**.
 
 ---
 
@@ -11,6 +61,7 @@ Built using zero-dependency, hardware-accelerated **HTML5, CSS3, and Vanilla Jav
 ```
 av-media-telangana-broadcast-kit/
 
+├── server.js               # Unified Server Entrypoint (node server.js)
 ├── README.md               # Master Project Documentation & OBS Integration Guide
 ├── LICENSE                 # MIT License
 ├── .gitignore              # Git ignore rules
@@ -18,6 +69,11 @@ av-media-telangana-broadcast-kit/
 ├── ROADMAP.md              # Planned features & version targets
 
 ├── shared/                 # Core SDK Engines & Shared Tokens
+│   ├── js/                 # Server & State Engine
+│   │   ├── server.js       # Unified HTTP + WebSocket Native Runtime
+│   │   ├── state-engine.js # Protocol v1 State Engine
+│   │   ├── dom.js          # DOM Helper
+│   │   └── utils.js        # Date & Query Utilities
 │   ├── engines/            # Broadcast Graphics SDK Core Engines
 │   │   ├── index.js        # Master SDK Export Entrypoint
 │   │   ├── ThemeEngine.js  # Dynamic Theme & Token Controller
@@ -26,41 +82,28 @@ av-media-telangana-broadcast-kit/
 │   │   ├── ConfigEngine.js # Config & Preset Loader
 │   │   └── ApiEngine.js    # Data Connector (REST / WebSockets)
 │   ├── css/                # Global Resets, Category Color Tokens & Utilities
-│   ├── js/                 # EventBus & Real-time State Synchronization Engine
-│   ├── animations/         # GPU-Accelerated CSS Marquee & Keyframe Library
 │   └── config/             # Channel & Global JSON Presets
 
 ├── control-panel/          # Central Production Control Panel (OBS Dock)
-│   ├── index.html          # Control Panel UI Canvas
+│   ├── index.html          # http://127.0.0.1:8085/control-panel/
 │   ├── control-panel.css   # Dark-themed Broadcast Dock Layout
 │   └── control-panel.js    # Preview, Apply, Speed, Theme & Recent History Engine
 
 ├── modules/                # Standalone Graphics Micro-Project Modules
 │   └── ticker/             # Ticker Engine Module (v1.0)
-│       ├── index.html      # OBS Browser Source Entrypoint (1920x1080)
+│       ├── index.html      # http://127.0.0.1:8085/modules/ticker/
 │       ├── ticker.css      # Ticker Layout & Category Color Rules
 │       ├── ticker.js       # Module Controller & SDK Integration
 │       ├── config.json     # Headline text & preset configuration
 │       ├── themes/         # Theme stylesheets (default.css, breaking.css)
 │       └── animations/     # Ticker Marquee Scroll Animations
 
-├── docs/                   # Architectural & System Guides
-│   ├── Architecture.md     # System design & overlay dataflow
-│   ├── Design-System.md    # Typography, color tokens & visual rules
-│   ├── OBS-Setup.md        # OBS Studio browser source setup guide
-│   ├── Plugin-Setup.md     # Controller & WebSocket integration guide
-│   └── Coding-Standards.md # JavaScript, CSS, & modular structure standards
-
-├── assets/                 # Static Logos, Fonts, Audio & Backgrounds
-├── obs/                    # OBS Profiles, Scenes & Helper Plugins
-└── tests/                  # Automated Visual & Module Tests
+└── docs/                   # Architectural & System Guides
 ```
 
 ---
 
 ## 🎨 Category Color Mapping Matrix
-
-All modules dynamically adhere to the standardized Category Color Matrix:
 
 | Category (వర్గం) | Color Code | Color Name | Visual Role |
 | :--- | :--- | :--- | :--- |
@@ -74,39 +117,24 @@ All modules dynamically adhere to the standardized Category Color Matrix:
 
 ---
 
-## 🎬 OBS Studio Setup & Workflow Guide
+## 📋 Protocol v1 Message Schema
 
-### 1. Control Panel Setup (Custom Browser Dock)
-1. Open **OBS Studio**.
-2. Go to **View** -> **Docks** -> **Custom Browser Docks...**
-3. Set **Dock Name**: `AV Media Control Panel`
-4. Set **URL**: Select local file path:
-   `d:\AV Media Telangana\av-media-telangana-broadcast-kit\control-panel\index.html`
-5. Click **Apply** and dock the panel directly into your OBS interface!
-
-### 2. Ticker Overlay Setup (Browser Source)
-1. Under **Sources** dock in OBS, click `+` -> **Browser**.
-2. Name source: `AV-Ticker`.
-3. Check **Local File** and select:
-   `d:\AV Media Telangana\av-media-telangana-broadcast-kit\modules\ticker\index.html`
-4. Set Dimensions:
-   - **Width**: `1920`
-   - **Height**: `1080`
-5. Click **OK**.
-
----
-
-## ⚡ Live Operator Workflow
-
+```json
+{
+  "version": 1,
+  "timestamp": 1753092500123,
+  "requestId": "1753092500123_x8a9k2b1",
+  "source": "control-panel",
+  "engine": "ticker",
+  "action": "update",
+  "payload": {
+    "items": ["తెలంగాణలో విస్తారంగా వర్షాలు..."],
+    "category": "తాజా వార్తలు",
+    "theme": "default",
+    "speed": 50
+  }
+}
 ```
-[ Operator Input ] ──> [ 👁️ Preview ] ──> [ ⚡ Apply (Update Live) ] ──> [ On-Air Ticker ]
-```
-
-1. **Type Headlines**: Enter news items line-by-line in the Control Panel.
-2. **Select Theme & Speed**: Pick Radio Theme (`Default`, `Breaking`, `Election`, `Sports`, `Weather`) and adjust Speed Slider (`20s - 80s`).
-3. **Live Preview**: Observe real-time scrolling preview in the Control Panel.
-4. **Apply (Update Live)**: Click `⚡ Apply (Update Live)` to push updates instantly to the On-Air Ticker.
-5. **Recent History**: Click any previous headline set in **Recent Headlines History** to restore with 1-click!
 
 ---
 

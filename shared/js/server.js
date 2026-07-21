@@ -1,12 +1,17 @@
 /**
- * AV Media Telangana Broadcast Server
- * Native Node.js WebSocket & HTTP Server for OBS Dock <-> Overlay Communication
+ * AV Media Telangana - Unified Broadcast Runtime Server
+ * HTTP Static File Server + Native WebSocket Communication Engine
+ * Single-Process Zero-Dependency Runtime (Node.js built-in modules only)
  */
 
 const http = require('http');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
+
+// Root of repository is two levels up from shared/js/
+const REPO_ROOT = path.resolve(__dirname, '../../');
 
 // Load port from global-config.json if available
 let PORT = 8085;
@@ -18,20 +23,75 @@ try {
       PORT = configData.websocket.port;
     }
   }
-} catch (e) {
-  console.warn('[Broadcast Server] Using default port 8085');
-}
+} catch (e) {}
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=UTF-8',
+  '.css': 'text/css; charset=UTF-8',
+  '.js': 'text/javascript; charset=UTF-8',
+  '.json': 'application/json; charset=UTF-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.ttf': 'font/ttf',
+  '.otf': 'font/otf',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav'
+};
 
 const clients = new Set();
 
+// ==========================================================================
+// 1. HTTP Static File Server
+// ==========================================================================
 const server = http.createServer((req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
+  const parsedUrl = url.parse(req.url);
+  let sanitizePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
+  let filePath = path.join(REPO_ROOT, sanitizePath);
+
+  // Security check: ensure requested file is within REPO_ROOT
+  if (!filePath.startsWith(REPO_ROOT)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    return res.end('403 Forbidden');
+  }
+
+  fs.stat(filePath, (err, stats) => {
+    if (err) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      return res.end(`404 Not Found: ${parsedUrl.pathname}`);
+    }
+
+    // Auto-serve index.html for directory paths
+    if (stats.isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+    }
+
+    fs.readFile(filePath, (error, content) => {
+      if (error) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        return res.end(`404 Not Found: ${parsedUrl.pathname}`);
+      }
+
+      const ext = path.extname(filePath).toLowerCase();
+      const mimeType = MIME_TYPES[ext] || 'application/octet-stream';
+
+      res.writeHead(200, {
+        'Content-Type': mimeType,
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache'
+      });
+      res.end(content, 'utf-8');
+    });
   });
-  res.end(JSON.stringify({ status: 'active', port: PORT, clients: clients.size }));
 });
 
+// ==========================================================================
+// 2. Native WebSocket Server (Upgrade Protocol)
+// ==========================================================================
 server.on('upgrade', (req, socket, head) => {
   const key = req.headers['sec-websocket-key'];
   if (!key) {
@@ -58,7 +118,7 @@ server.on('upgrade', (req, socket, head) => {
     try {
       const message = decodeWebSocketFrame(buffer);
       if (message) {
-        // Broadcast standardized JSON frame to all active overlay & control clients
+        // Broadcast frame to all active connections
         const frame = encodeWebSocketFrame(message);
         for (const client of clients) {
           if (client !== socket && client.writable) {
@@ -126,6 +186,22 @@ function encodeWebSocketFrame(message) {
   return Buffer.concat([header, payload]);
 }
 
-server.listen(PORT, () => {
-  console.log(`📡 AV Media Telangana Broadcast Server Active on Port ${PORT}`);
+// ==========================================================================
+// 3. Server Initialization & Console Log Output
+// ==========================================================================
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`====================================================`);
+  console.log(`📡 Broadcast Runtime Started`);
+  console.log(``);
+  console.log(`HTTP:`);
+  console.log(`http://127.0.0.1:${PORT}/`);
+  console.log(``);
+  console.log(`WebSocket:`);
+  console.log(`ws://127.0.0.1:${PORT}/`);
+  console.log(``);
+  console.log(`Static Root:`);
+  console.log(`${REPO_ROOT}`);
+  console.log(``);
+  console.log(`Ready for OBS.`);
+  console.log(`====================================================`);
 });
