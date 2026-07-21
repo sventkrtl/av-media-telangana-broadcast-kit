@@ -63,26 +63,8 @@ export class SecondaryPlaylistApp {
       });
     }
 
+
     // 5. Connect Published Google Sheet if URL provided in config or load default production playlists
-    const logoHtml = '<span class="spl-logo-wrapper"><img src="/assets/logos/logo-round.png" class="spl-logo-img" width="30" height="30"></span>';
-
-    const processPlaylists = (playlists) => {
-      return playlists.map(pl => {
-        const items = pl.items.map((item, idx) => {
-          if (idx < pl.items.length - 1) {
-            return `${item}${logoHtml}`;
-          }
-          return item;
-        });
-        return new PlaylistModel({
-          id: pl.id,
-          label: pl.label,
-          theme: pl.theme,
-          items: items
-        });
-      });
-    };
-
     if (googleSheetUrl) {
       await this.runtime.connectGoogleSheet({
         url: googleSheetUrl,
@@ -117,7 +99,7 @@ export class SecondaryPlaylistApp {
         })
       ];
 
-      this.runtime.loadPlaylists(processPlaylists(defaultPlaylists));
+      this.runtime.loadPlaylists(defaultPlaylists);
       this.runtime.play();
     }
 
@@ -133,7 +115,7 @@ export class SecondaryPlaylistApp {
             autoPlay: true
           });
         } else if (Array.isArray(msg.payload.playlists) && msg.payload.playlists.length > 0) {
-          this.runtime.loadPlaylists(processPlaylists(msg.payload.playlists));
+          this.runtime.loadPlaylists(msg.payload.playlists);
           this.runtime.play();
         }
       } else if (msg.action === 'pause') {
