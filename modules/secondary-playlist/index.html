@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AV Media Telangana - Secondary News Playlist Overlay</title>
+  <link rel="stylesheet" href="./secondary-playlist.css">
+</head>
+<body>
+  <!-- 1920x1080 OBS Broadcast Canvas -->
+  <div id="spl-overlay" class="spl-overlay-canvas">
+    <!-- Permanent Secondary Crawl Bar (Never animates out/in, stays on screen) -->
+    <div id="spl-crawl-bar" class="spl-crawl-bar">
+      <!-- Left Badge Container -->
+      <div id="spl-badge" class="spl-badge">జగిత్యాల</div>
+
+      <!-- Scrolling Viewport & News Text -->
+      <div class="spl-viewport">
+        <div id="spl-news" class="spl-news-item">వార్తలు ప్రారంభమౌతున్నాయి...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./secondary-playlist.js"></script>
+</body>
+</html>
