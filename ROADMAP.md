@@ -16,6 +16,7 @@
 
 ## 📺 Phase 2 – Graphics (In Progress)
 - [x] **Ticker Engine**: Continuous marquee & news ticker system (`modules/ticker/`)
+- [x] **Broadcast Control Panel (v1.0)**: Central OBS Dock Control Panel (`control-panel/`)
 - [ ] **Lower Third**: Dynamic name, title & lower graphic banners (`modules/lower-third/`)
 - [ ] **Reporter Card**: On-air reporter tag & station identification (`modules/reporter/`)
 - [ ] **Breaking News**: Alert popups & flash banners (`modules/breaking-news/`)
