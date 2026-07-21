@@ -5,7 +5,7 @@
 
 import { JsonProvider } from './placeholders/JsonProvider.js';
 import { ExcelProvider } from './placeholders/ExcelProvider.js';
-import { GoogleSheetProvider } from './placeholders/GoogleSheetProvider.js';
+import { GoogleSheetProvider } from './GoogleSheetProvider.js';
 import { ApiProvider } from './placeholders/ApiProvider.js';
 import { CustomProvider } from './placeholders/CustomProvider.js';
 
