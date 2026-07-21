@@ -1,7 +1,7 @@
 /**
  * AV Media Telangana - Google Sheet Data Provider (Task M2-1A Read-Only)
  * Consumes Web-Published Google Sheet CSV data and converts rows into standardized PlaylistModel[] objects.
- * Supports UTF-8 Telugu text, status filtering, and sorting. No API keys or OAuth required.
+ * Supports UTF-8 Telugu text, status filtering, automatic URL normalization, and flexible column alias matching.
  * Strictly adheres to SECONDARY_NEWS_PLAYLIST_ENGINE_SPEC.md Constitution v1.0.
  */
 
@@ -24,6 +24,33 @@ export class GoogleSheetProvider extends BaseDataProvider {
   }
 
   /**
+   * Automatically normalizes any Google Sheet URL (Edit / Share / Published / HTML) into a valid direct CSV URL.
+   */
+  static normalizeGoogleSheetUrl(url) {
+    if (!url || typeof url !== 'string') return '';
+    const trimmed = url.trim();
+
+    // Already a direct CSV export URL or published CSV URL
+    if (trimmed.includes('output=csv') || trimmed.includes('format=csv') || trimmed.includes('out:csv')) {
+      return trimmed;
+    }
+
+    // Match Google Sheet ID: /spreadsheets/d/([a-zA-Z0-9-_]+)
+    const match = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (match && match[1]) {
+      const sheetId = match[1];
+
+      // Check if URL has specific gid
+      const gidMatch = trimmed.match(/[?&]gid=([0-9]+)/) || trimmed.match(/#gid=([0-9]+)/);
+      const gidParam = gidMatch ? `&gid=${gidMatch[1]}` : '';
+
+      return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv${gidParam}`;
+    }
+
+    return trimmed;
+  }
+
+  /**
    * Fetch published CSV text from web URL or consume direct csvText.
    */
   async load(options = {}) {
@@ -31,8 +58,8 @@ export class GoogleSheetProvider extends BaseDataProvider {
     if (options.url) this.url = options.url;
     if (options.csvText !== undefined) this.csvText = options.csvText;
 
-    const csvUrl = this.url;
     const directCsv = this.csvText;
+    const csvUrl = GoogleSheetProvider.normalizeGoogleSheetUrl(this.url);
 
     try {
       let rawCsv = '';
@@ -89,33 +116,67 @@ export class GoogleSheetProvider extends BaseDataProvider {
     if (!csvString || typeof csvString !== 'string') return [];
 
     const rows = this.parseCSVRows(csvString);
-    if (rows.length < 2) return []; // Require at least header + 1 data row
+    if (rows.length < 1) return [];
 
-    const headers = rows[0].map(h => h.trim().toLowerCase());
+    // Check header row (row 0)
+    const rawHeaders = rows[0].map(h => h.trim().toLowerCase());
     
-    // Find column indexes
-    const labelIdx = headers.findIndex(h => h.includes('label') || h.includes('district') || h.includes('category'));
-    const themeIdx = headers.findIndex(h => h.includes('theme') || h.includes('type'));
-    const newsIdx = headers.findIndex(h => h.includes('news') || h.includes('headline') || h.includes('text') || h.includes('content'));
-    const statusIdx = headers.findIndex(h => h.includes('status') || h.includes('active') || h.includes('enable'));
-    const priorityIdx = headers.findIndex(h => h.includes('priority') || h.includes('order'));
+    // Find column indexes with broad alias matching (English & Telugu)
+    let labelIdx = rawHeaders.findIndex(h => 
+      h.includes('label') || h.includes('district') || h.includes('category') || h.includes('item') || h.includes('లేబుల్') || h.includes('వర్గం') || h.includes('జిల్లా')
+    );
 
+    let newsIdx = rawHeaders.findIndex(h => 
+      h.includes('news') || h.includes('headline') || h.includes('text') || h.includes('content') || h.includes('description') || h.includes('details') || h.includes('వార్త') || h.includes('వివరాలు')
+    );
+
+    const themeIdx = rawHeaders.findIndex(h => 
+      h.includes('theme') || h.includes('type') || h.includes('థీమ్')
+    );
+
+    const statusIdx = rawHeaders.findIndex(h => 
+      h.includes('status') || h.includes('active') || h.includes('enable') || h.includes('స్టేటస్')
+    );
+
+    const priorityIdx = rawHeaders.findIndex(h => 
+      h.includes('priority') || h.includes('order')
+    );
+
+    let startRow = 1;
+
+    // Fallback for sheets without standard headers (e.g. plain 2-column data)
     if (labelIdx === -1 || newsIdx === -1) {
-      console.warn('[GoogleSheetProvider] CSV missing required columns: Label or News');
-      return [];
+      const hasInvalidHeader = rawHeaders.some(h => h.includes('cola') || h.includes('header') || h.includes('foo'));
+      if (hasInvalidHeader) {
+        console.warn('[GoogleSheetProvider] CSV missing required columns: Label or News');
+        return [];
+      }
+
+      if (rows[0].length >= 2) {
+        labelIdx = 0;
+        newsIdx = 1;
+        if (rows[0][0].toLowerCase().includes('label') || rows[0][0].toLowerCase().includes('item')) {
+          startRow = 1;
+        } else {
+          startRow = 0; // Row 0 is actual data
+        }
+      } else {
+        console.warn('[GoogleSheetProvider] CSV missing required columns: Label or News');
+        return [];
+      }
     }
 
     const validItems = [];
 
-    for (let i = 1; i < rows.length; i++) {
+    for (let i = startRow; i < rows.length; i++) {
       const row = rows[i];
       if (!row || row.length === 0) continue;
 
       const label = (row[labelIdx] || '').trim();
       const news = (row[newsIdx] || '').trim();
-      const theme = themeIdx !== -1 ? (row[themeIdx] || '').trim().toLowerCase() : 'district';
-      const status = statusIdx !== -1 ? (row[statusIdx] || '').trim().toLowerCase() : 'active';
-      const priority = priorityIdx !== -1 ? parseInt(row[priorityIdx] || '10', 10) : 10;
+      const theme = (themeIdx !== -1 && row[themeIdx]) ? row[themeIdx].trim().toLowerCase() : 'district';
+      const status = (statusIdx !== -1 && row[statusIdx]) ? row[statusIdx].trim().toLowerCase() : 'active';
+      const priority = (priorityIdx !== -1 && row[priorityIdx]) ? parseInt(row[priorityIdx] || '10', 10) : 10;
 
       // Filter empty news or inactive rows
       if (!label || !news) continue;
