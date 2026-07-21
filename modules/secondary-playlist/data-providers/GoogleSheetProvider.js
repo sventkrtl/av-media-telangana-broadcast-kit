@@ -28,8 +28,11 @@ export class GoogleSheetProvider extends BaseDataProvider {
    */
   async load(options = {}) {
     this.status = 'LOADING';
-    const csvUrl = options.url || this.url;
-    const directCsv = options.csvText || this.csvText;
+    if (options.url) this.url = options.url;
+    if (options.csvText !== undefined) this.csvText = options.csvText;
+
+    const csvUrl = this.url;
+    const directCsv = this.csvText;
 
     try {
       let rawCsv = '';
@@ -50,7 +53,6 @@ export class GoogleSheetProvider extends BaseDataProvider {
       this.status = 'READY';
 
       return new ProviderResult({
-        success: true,
         status: 'success',
         playlists: this.playlists,
         count: this.playlists.length
@@ -60,7 +62,6 @@ export class GoogleSheetProvider extends BaseDataProvider {
       console.error('[GoogleSheetProvider] Load error trapped:', error.message);
 
       return new ProviderResult({
-        success: false,
         status: 'error',
         error: error.message,
         playlists: []
@@ -74,7 +75,6 @@ export class GoogleSheetProvider extends BaseDataProvider {
 
   getPlaylists() {
     return new ProviderResult({
-      success: true,
       status: 'success',
       playlists: this.playlists,
       count: this.playlists.length
