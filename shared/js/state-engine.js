@@ -1,6 +1,6 @@
 /**
  * AV Media Telangana Broadcast State Engine
- * Versioned Broadcast Protocol Schema (v1), Timestamped Frames & Auto Reconnect
+ * Frozen Protocol Schema (v1), Layer-Separated Payload & Reconnect Logic
  */
 
 export class StateEngine {
@@ -9,14 +9,14 @@ export class StateEngine {
     this.wsUrl = wsUrl;
     this.listeners = [];
     this.statusListeners = [];
-    this.lastProcessedNonce = null;
+    this.lastProcessedRequestId = null;
 
     // Exponential Backoff Reconnect Variables
     this.reconnectAttempts = 0;
     this.reconnectDelays = [1000, 2000, 5000]; // 1s -> 2s -> 5s
     this.connectionStatus = 'DISCONNECTED';
 
-    // 1. Initialize WebSocket
+    // 1. Initialize WebSocket Connection
     this.initWebSocket();
 
     // 2. BroadcastChannel Fallback
@@ -34,13 +34,13 @@ export class StateEngine {
       }
     });
 
-    // 4. Polling Fallback
+    // 4. CEF Polling Fallback
     setInterval(() => {
       const raw = localStorage.getItem(this.channelName);
       if (raw) {
         try {
           const data = JSON.parse(raw);
-          if (data && data.nonce !== this.lastProcessedNonce) {
+          if (data && data.requestId !== this.lastProcessedRequestId) {
             this.handleIncoming(data);
           }
         } catch (err) {}
@@ -68,7 +68,7 @@ export class StateEngine {
       this.ws.onopen = () => {
         this.reconnectAttempts = 0;
         this.setStatus('CONNECTED');
-        console.log('[StateEngine] WebSocket Connected.');
+        console.log('[StateEngine] WebSocket Connected (Protocol v1).');
       };
 
       this.ws.onmessage = (e) => {
@@ -97,14 +97,25 @@ export class StateEngine {
     setTimeout(() => this.initWebSocket(), delay);
   }
 
-  emit(engine, action, payload = {}) {
+  /**
+   * Emit Protocol v1 Frame
+   * @param {string} engine - Target graphic engine ('ticker', 'lower-third', 'reporter', 'breaking')
+   * @param {string} action - Intent action ('update', 'pause', 'resume', 'show', 'hide')
+   * @param {Object} payload - Engine-specific data payload
+   * @param {string} source - Origin source identifier ('control-panel', 'mobile', 'automation')
+   */
+  emit(engine, action, payload = {}, source = 'control-panel') {
+    const timestamp = Date.now();
+    const requestId = `${timestamp}_${Math.random().toString(36).substr(2, 8)}`;
+
     const data = {
       version: 1,
-      timestamp: Date.now(),
+      timestamp: timestamp,
+      requestId: requestId,
+      source: source,
       engine: engine || 'ticker',
-      action: action, // 'update', 'pause', 'resume'
-      payload: payload,
-      nonce: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      action: action,
+      payload: payload
     };
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -120,8 +131,8 @@ export class StateEngine {
   }
 
   handleIncoming(data) {
-    if (!data || !data.nonce || data.nonce === this.lastProcessedNonce) return;
-    this.lastProcessedNonce = data.nonce;
+    if (!data || !data.requestId || data.requestId === this.lastProcessedRequestId) return;
+    this.lastProcessedRequestId = data.requestId;
     this.notify(data);
   }
 
