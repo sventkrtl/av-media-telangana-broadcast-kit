@@ -238,6 +238,8 @@ This engine is only a **Runtime Client**.
 ## 17. Performance Rules
 
 - **60 FPS target**.
+- **GPU Transform Only Rule**: Renderer MUST ONLY animate using `transform` (`translateX` / `translate3d`).
+- **NO Layout Reflow**: Renderer MUST NEVER animate `left`, `top`, `width`, or `height` during movement.
 - GPU accelerated transforms.
 - No layout thrashing.
 - No DOM rebuild during scrolling.
