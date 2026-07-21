@@ -24,6 +24,11 @@ export class TickerModule {
       this.config = await ConfigEngine.loadConfig('./config.json');
     }
 
+    const savedPause = localStorage.getItem('av_media_ticker_pause_state');
+    if (savedPause !== null) {
+      this.isPaused = savedPause === 'true';
+    }
+
     this.render();
     this.subscribeStateUpdates();
   }
@@ -44,13 +49,16 @@ export class TickerModule {
 
   setPauseState(paused) {
     this.isPaused = paused;
+    localStorage.setItem('av_media_ticker_pause_state', String(paused));
+    
     const wrapper = this.container?.querySelector('.ticker-wrapper');
-    if (wrapper) {
-      if (paused) {
-        wrapper.classList.add('paused');
-      } else {
-        wrapper.classList.remove('paused');
-      }
+    const track = this.container?.querySelector('.ticker-track');
+
+    if (wrapper) wrapper.classList.toggle('paused', paused);
+    if (track) {
+      track.classList.toggle('paused', paused);
+      track.style.animationPlayState = paused ? 'paused' : 'running';
+      track.style.webkitAnimationPlayState = paused ? 'paused' : 'running';
     }
   }
 
@@ -64,12 +72,14 @@ export class TickerModule {
     const duration = this.config.speed || 50;
     const category = this.config.category || 'తాజా వార్తలు';
     const theme = this.config.theme || 'default';
+    const pauseClass = this.isPaused ? 'paused' : '';
+    const pauseStateStyle = this.isPaused ? 'paused' : 'running';
 
     this.container.innerHTML = `
-      <div class="ticker-wrapper ${this.isPaused ? 'paused' : ''}" data-category="${category}" data-theme="${theme}">
+      <div class="ticker-wrapper ${pauseClass}" data-category="${category}" data-theme="${theme}">
         <div class="ticker-badge">${category}</div>
         <div class="ticker-viewport">
-          <div class="ticker-track scrolling" style="--ticker-duration: ${duration}s">
+          <div class="ticker-track scrolling ${pauseClass}" style="--ticker-duration: ${duration}s; animation-play-state: ${pauseStateStyle}; -webkit-animation-play-state: ${pauseStateStyle}">
             <span class="ticker-item">${fullText}</span>
           </div>
         </div>
