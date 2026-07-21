@@ -1,16 +1,19 @@
 {
   "name": "av-media-telangana-broadcast-kit",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Broadcast Graphics SDK & Production Control System for OBS Studio",
   "main": "server.js",
+  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node tests/secondary-playlist-engine.test.js"
   },
   "keywords": [
     "obs-studio",
     "broadcast-graphics",
     "ticker",
-    "control-panel"
+    "control-panel",
+    "secondary-news-playlist"
   ],
   "author": "AV Media Telangana",
   "license": "MIT"

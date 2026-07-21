@@ -8,3 +8,4 @@ export { FontEngine } from './FontEngine.js';
 export { AudioEngine } from './AudioEngine.js';
 export { ConfigEngine } from './ConfigEngine.js';
 export { ApiEngine } from './ApiEngine.js';
+export { SecondaryNewsPlaylistEngine, PlaylistModel } from '../../modules/secondary-playlist/playlist-engine.js';
