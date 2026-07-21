@@ -13,7 +13,6 @@ export class TickerModule {
   async init() {
     await FontEngine.loadFonts(['Noto Sans Telugu', 'Ramabhadra', 'Outfit']);
     
-    // Check if there is saved live state in localStorage
     const savedLiveState = localStorage.getItem('av_media_ticker_live_state');
     if (savedLiveState) {
       try {
@@ -33,14 +32,12 @@ export class TickerModule {
     this.stateEngine.subscribe((msg) => {
       if (!msg || !msg.action) return;
 
-      if (msg.action === 'TICKER_GO_LIVE') {
+      if (msg.action === 'TICKER_APPLY_LIVE') {
         this.config = { ...this.config, ...msg.payload };
         localStorage.setItem('av_media_ticker_live_state', JSON.stringify(this.config));
         this.render();
-      } else if (msg.action === 'TICKER_PAUSE') {
-        this.setPauseState(true);
-      } else if (msg.action === 'TICKER_PLAY') {
-        this.setPauseState(false);
+      } else if (msg.action === 'TICKER_TOGGLE_PAUSE') {
+        this.setPauseState(msg.payload.isPaused);
       }
     });
   }
@@ -49,49 +46,24 @@ export class TickerModule {
     this.isPaused = paused;
     const track = this.container?.querySelector('.ticker-track');
     if (track) {
-      if (paused) {
-        track.style.animationPlayState = 'paused';
-      } else {
-        track.style.animationPlayState = 'running';
-      }
+      track.style.animationPlayState = paused ? 'paused' : 'running';
     }
   }
 
   render() {
     if (!this.container || !this.config) return;
 
-    // Apply theme
-    this.themeEngine.setTheme(this.config.theme || 'default');
-
     const items = Array.isArray(this.config.items) ? this.config.items : [this.config.items];
     const itemsText = items.join(this.config.separator || ' ✦ ');
     const fullText = `${itemsText} ${this.config.separator || ' ✦ '} ${itemsText}`;
 
-    // Speed calculation: slow = 80s, medium = 50s, fast = 30s
-    let duration = 50;
-    if (typeof this.config.speed === 'number') {
-      duration = this.config.speed;
-    } else if (this.config.speed === 'slow') {
-      duration = 80;
-    } else if (this.config.speed === 'fast') {
-      duration = 30;
-    } else if (this.config.speed === 'medium') {
-      duration = 50;
-    }
-
-    // Dynamic Theme stylesheet link injection
-    let themeLink = document.getElementById('ticker-theme-style');
-    if (!themeLink) {
-      themeLink = document.createElement('link');
-      themeLink.id = 'ticker-theme-style';
-      themeLink.rel = 'stylesheet';
-      document.head.appendChild(themeLink);
-    }
-    themeLink.href = `./themes/${this.config.theme || 'default'}.css`;
+    const duration = this.config.speed || 50;
+    const category = this.config.category || 'తాజా వార్తలు';
+    const theme = this.config.theme || 'default';
 
     this.container.innerHTML = `
-      <div class="ticker-wrapper ticker-container">
-        <div class="ticker-badge">${this.config.category || 'తాజా వార్తలు'}</div>
+      <div class="ticker-wrapper" data-category="${category}" data-theme="${theme}">
+        <div class="ticker-badge">${category}</div>
         <div class="ticker-viewport">
           <div class="ticker-track scrolling" style="--ticker-duration: ${duration}s; animation-play-state: ${this.isPaused ? 'paused' : 'running'}">
             <span class="ticker-item">${fullText}</span>
@@ -102,7 +74,6 @@ export class TickerModule {
   }
 }
 
-// Auto Initialize when loaded in Browser Source
 document.addEventListener('DOMContentLoaded', () => {
   const ticker = new TickerModule('ticker-app');
   ticker.init();

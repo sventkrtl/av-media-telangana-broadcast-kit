@@ -1,9 +1,10 @@
 /* ==========================================================================
-   AV Media Telangana Broadcast Control Panel v1.0 Stylesheet
-   Optimized for OBS Custom Browser Dock & Desktop Viewport
+   AV Media Telangana Broadcast Control Panel v1.1 Stylesheet
+   Optimized for OBS Custom Browser Dock
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@500;600;700&family=Outfit:wght@600;700;800&display=swap');
+@import url('../modules/ticker/animations/ticker-anim.css');
 
 :root {
   --cp-bg: #0F172A;
@@ -12,10 +13,19 @@
   --cp-input-bg: #0F172A;
   --cp-border: #334155;
   --cp-primary-red: #E50914;
+  --cp-accent-green: #10B981;
   --cp-gold: #FFC107;
   --cp-text: #F8FAFC;
   --cp-text-muted: #94A3B8;
-  --cp-green: #10B981;
+
+  /* Category colors */
+  --cat-breaking: #DC2626;
+  --cat-politics: #1E40AF;
+  --cat-crime: #991B1B;
+  --cat-sports: #15803D;
+  --cat-weather: #D97706;
+  --cat-business: #7E22CE;
+  --cat-general: #0284C7;
 }
 
 *, *::before, *::after {
@@ -36,7 +46,7 @@ body {
 
 /* Header */
 .cp-header {
-  height: 52px;
+  height: 50px;
   background: var(--cp-sidebar-bg);
   border-bottom: 1px solid var(--cp-border);
   display: flex;
@@ -51,17 +61,15 @@ body {
   gap: 10px;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 16px;
-  color: var(--cp-text);
-  letter-spacing: 0.5px;
+  font-size: 15px;
 }
 
 .cp-brand-badge {
-  background: var(--cp-primary-red);
+  background: var(--cp-accent-green);
   color: #FFF;
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -69,10 +77,10 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   background: rgba(16, 185, 129, 0.15);
-  color: var(--cp-green);
+  color: var(--cp-accent-green);
   padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid rgba(16, 185, 129, 0.3);
@@ -82,8 +90,8 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--cp-green);
-  box-shadow: 0 0 8px var(--cp-green);
+  background-color: var(--cp-accent-green);
+  box-shadow: 0 0 8px var(--cp-accent-green);
 }
 
 /* App Layout */
@@ -95,7 +103,7 @@ body {
 
 /* Sidebar */
 .cp-sidebar {
-  width: 180px;
+  width: 170px;
   background: var(--cp-sidebar-bg);
   border-right: 1px solid var(--cp-border);
   display: flex;
@@ -108,10 +116,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 10px 10px;
   border-radius: 6px;
   color: var(--cp-text-muted);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -123,7 +131,7 @@ body {
 }
 
 .cp-nav-item.active {
-  background: var(--cp-primary-red);
+  background: var(--cp-accent-green);
   color: #FFF;
 }
 
@@ -137,75 +145,114 @@ body {
 /* Main Content Area */
 .cp-main {
   flex: 1;
-  padding: 16px;
+  padding: 14px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .cp-card {
   background: var(--cp-card-bg);
   border: 1px solid var(--cp-border);
   border-radius: 8px;
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .cp-card-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--cp-gold);
   display: flex;
   align-items: center;
   gap: 6px;
   border-bottom: 1px solid var(--cp-border);
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 /* Form Controls */
 .cp-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .cp-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--cp-text-muted);
+  display: flex;
+  justify-content: space-between;
 }
 
 .cp-textarea, .cp-select, .cp-input {
   background: var(--cp-input-bg);
   border: 1px solid var(--cp-border);
   border-radius: 6px;
-  padding: 10px;
+  padding: 8px;
   color: var(--cp-text);
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
-  transition: border-color 0.2s ease;
 }
 
-.cp-textarea:focus, .cp-select:focus, .cp-input:focus {
+.cp-textarea:focus, .cp-select:focus {
   border-color: var(--cp-gold);
 }
 
 .cp-textarea {
-  min-height: 80px;
+  min-height: 70px;
   resize: vertical;
 }
 
 .cp-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .cp-row > * {
   flex: 1;
+}
+
+/* Radio Group */
+.cp-radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cp-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cp-radio-label input[type="radio"] {
+  accent-color: var(--cp-accent-green);
+}
+
+/* Slider */
+.cp-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cp-slider {
+  flex: 1;
+  accent-color: var(--cp-accent-green);
+}
+
+.cp-slider-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cp-gold);
+  min-width: 32px;
 }
 
 /* Buttons */
@@ -215,9 +262,9 @@ body {
 }
 
 .cp-btn {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -225,20 +272,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: transform 0.1s ease, filter 0.2s ease;
+  transition: transform 0.1s ease, background 0.2s ease;
 }
 
 .cp-btn:active {
   transform: scale(0.97);
-}
-
-.cp-btn-primary {
-  background: var(--cp-primary-red);
-  color: #FFF;
-}
-
-.cp-btn-primary:hover {
-  filter: brightness(1.1);
 }
 
 .cp-btn-secondary {
@@ -246,29 +284,25 @@ body {
   color: #FFF;
 }
 
-.cp-btn-secondary:hover {
-  background: #475569;
-}
-
 .cp-btn-gold {
   background: var(--cp-gold);
   color: #000;
 }
 
-.cp-btn-golive {
-  background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+.cp-btn-apply {
+  background: var(--cp-accent-green);
   color: #FFF;
-  font-size: 14px;
-  padding: 12px;
-  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+  font-size: 13px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 
-/* Preview Box */
-.cp-preview-box {
+/* Interactive Animated Preview Window */
+.cp-preview-container {
   background: #000;
   border: 1px solid var(--cp-border);
   border-radius: 6px;
-  height: 50px;
+  height: 44px;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -277,21 +311,69 @@ body {
 
 .cp-preview-badge {
   height: 100%;
-  padding: 0 12px;
-  background: var(--cp-primary-red);
+  padding: 0 16px;
+  background: var(--cat-general);
   color: #FFF;
   font-weight: 700;
   font-size: 13px;
   display: flex;
   align-items: center;
   white-space: nowrap;
+  z-index: 2;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.5);
 }
 
-.cp-preview-text {
-  padding: 0 12px;
-  font-size: 13px;
-  color: #FFF;
-  white-space: nowrap;
+.cp-preview-viewport {
+  flex: 1;
+  height: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.cp-preview-track {
+  display: flex;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.cp-preview-track.scrolling {
+  animation: marqueeScroll var(--preview-duration, 40s) linear infinite;
+}
+
+.cp-preview-item {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFF;
+  padding: 0 12px;
+}
+
+/* Recent Headlines History List */
+.cp-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.cp-recent-item {
+  background: var(--cp-input-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--cp-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.cp-recent-item:hover {
+  border-color: var(--cp-gold);
+  color: var(--cp-text);
+  background: rgba(255,255,255,0.04);
 }

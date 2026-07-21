@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AV Media Telangana Broadcast Control Panel v1.0</title>
+  <title>AV Media Telangana Broadcast Control Panel v1.1</title>
   <link rel="stylesheet" href="./control-panel.css">
 </head>
 <body>
   <!-- Header Bar -->
   <header class="cp-header">
     <div class="cp-brand">
-      AV MEDIA TELANGANA <span class="cp-brand-badge">v1.0</span>
+      AV MEDIA TELANGANA <span class="cp-brand-badge">v1.1</span>
     </div>
     <div class="cp-status-pill">
-      <span class="cp-status-dot"></span> LIVE ENGINE ACTIVE
+      <span class="cp-status-dot"></span> BROADCAST CONTROL
     </div>
   </header>
 
@@ -26,7 +26,7 @@
       </div>
       <div class="cp-nav-item active" data-tab="ticker">
         <span>Ticker</span>
-        <span class="cp-badge-small" style="background:var(--cp-primary-red)">ACTIVE</span>
+        <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
       </div>
       <div class="cp-nav-item" data-tab="lower-third">
         <span>Lower Third</span>
@@ -50,16 +50,19 @@
     <main class="cp-main">
       <div class="cp-card">
         <div class="cp-card-title">
-          <span>📺 Ticker Broadcast Controller</span>
+          <span>📺 Ticker Control Panel</span>
         </div>
 
         <!-- Headline Input -->
         <div class="cp-form-group">
-          <label class="cp-label" for="headline-input">Headline Text (ప్రధాన వార్తలు)</label>
+          <label class="cp-label" for="headline-input">
+            <span>Headline Text (ప్రధాన వార్తలు)</span>
+            <span style="color:var(--cp-gold)">Line per news item</span>
+          </label>
           <textarea id="headline-input" class="cp-textarea" placeholder="వార్తలను ఇక్కడ నమోదు చేయండి (లైనుకు ఒక వార్త)..."></textarea>
         </div>
 
-        <!-- Category & Theme Row -->
+        <!-- Category & Speed Row -->
         <div class="cp-row">
           <div class="cp-form-group">
             <label class="cp-label" for="category-select">Category (వర్గం)</label>
@@ -69,41 +72,61 @@
               <option value="క్రైమ్">క్రైమ్ (Crime)</option>
               <option value="క్రీడలు">క్రీడలు (Sports)</option>
               <option value="వాతావరణం">వాతావరణం (Weather)</option>
+              <option value="అత్యవసర వర్తమానం">అత్యవసర వర్తమానం (Breaking)</option>
+              <option value="బిజినెస్">బిజినెస్ (Business)</option>
             </select>
           </div>
 
           <div class="cp-form-group">
-            <label class="cp-label" for="theme-select">Theme (థీమ్)</label>
-            <select id="theme-select" class="cp-select">
-              <option value="default">Default Theme (సాధారణ థీమ్)</option>
-              <option value="breaking">Breaking Red (అత్యవసర వర్తమానం)</option>
-            </select>
-          </div>
-
-          <div class="cp-form-group">
-            <label class="cp-label" for="speed-select">Speed (వేగం)</label>
-            <select id="speed-select" class="cp-select">
-              <option value="medium">Medium (సాధారణ)</option>
-              <option value="slow">Slow (నెమ్మదిగా)</option>
-              <option value="fast">Fast (వేగంగా)</option>
-            </select>
+            <label class="cp-label">
+              <span>Speed (వేగం)</span>
+              <span id="speed-val" class="cp-slider-val">50s</span>
+            </label>
+            <div class="cp-slider-container" style="margin-top: 4px;">
+              <span style="font-size:10px; color:var(--cp-text-muted)">Fast (20s)</span>
+              <input id="speed-slider" type="range" class="cp-slider" min="20" max="80" step="5" value="50">
+              <span style="font-size:10px; color:var(--cp-text-muted)">Slow (80s)</span>
+            </div>
           </div>
         </div>
 
-        <!-- Playback Controls -->
-        <div class="cp-row">
-          <div class="cp-btn-group">
-            <button id="btn-pause" class="cp-btn cp-btn-secondary">⏸️ Pause Ticker</button>
-            <button id="btn-play" class="cp-btn cp-btn-secondary">▶️ Resume Ticker</button>
-          </div>
-        </div>
-
-        <!-- Local Preview -->
+        <!-- Theme Selection (Radio Buttons) -->
         <div class="cp-form-group">
-          <label class="cp-label">Local Preview Window</label>
-          <div class="cp-preview-box">
+          <label class="cp-label">Theme Selection</label>
+          <div class="cp-radio-group">
+            <label class="cp-radio-label">
+              <input type="radio" name="theme-radio" value="default" checked> ● Default
+            </label>
+            <label class="cp-radio-label">
+              <input type="radio" name="theme-radio" value="breaking"> ○ Breaking
+            </label>
+            <label class="cp-radio-label">
+              <input type="radio" name="theme-radio" value="election"> ○ Election
+            </label>
+            <label class="cp-radio-label">
+              <input type="radio" name="theme-radio" value="sports"> ○ Sports
+            </label>
+            <label class="cp-radio-label">
+              <input type="radio" name="theme-radio" value="weather"> ○ Weather
+            </label>
+          </div>
+        </div>
+
+        <!-- Pause / Resume Toggle Button -->
+        <div class="cp-row">
+          <button id="btn-toggle-pause" class="cp-btn cp-btn-secondary" style="width:100%;">⏸️ Pause Ticker</button>
+        </div>
+
+        <!-- Animated Preview Canvas Window -->
+        <div class="cp-form-group">
+          <label class="cp-label">Live Animated Preview</label>
+          <div class="cp-preview-container">
             <div id="preview-badge" class="cp-preview-badge">తాజా వార్తలు</div>
-            <div id="preview-text" class="cp-preview-text">మారిన వివరాలు చూడటానికి Preview బటన్ నొక్కండి...</div>
+            <div class="cp-preview-viewport">
+              <div id="preview-track" class="cp-preview-track scrolling">
+                <span id="preview-text" class="cp-preview-item">మారిన వివరాలు చూడటానికి Preview బటన్ నొక్కండి...</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -111,7 +134,17 @@
         <div class="cp-btn-group">
           <button id="btn-preview" class="cp-btn cp-btn-gold">👁️ Preview</button>
           <button id="btn-reset" class="cp-btn cp-btn-secondary">🔄 Reset</button>
-          <button id="btn-golive" class="cp-btn cp-btn-golive" style="flex:2;">🔴 GO LIVE (ON-AIR)</button>
+          <button id="btn-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply (Update Live)</button>
+        </div>
+      </div>
+
+      <!-- Recent Headlines History Card -->
+      <div class="cp-card">
+        <div class="cp-card-title">
+          <span>📜 Recent Headlines History (1-Click Restore)</span>
+        </div>
+        <div id="recent-list" class="cp-recent-list">
+          <div style="font-size:11px; color:var(--cp-text-muted);">No recent headlines yet...</div>
         </div>
       </div>
     </main>

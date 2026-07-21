@@ -1,60 +1,34 @@
 /* ==========================================================================
-   AV Media Telangana Broadcast Kit - Brand System & Design Tokens
+   AV Media Telangana Broadcast Kit - Brand System & Category Token Mapping
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=Ramabhadra&display=swap');
 
 :root {
-  /* --- Color Palette --- */
+  /* --- Category Color Mappings --- */
+  --cat-breaking: #DC2626;
+  --cat-politics: #1E40AF;
+  --cat-crime: #991B1B;
+  --cat-sports: #15803D;
+  --cat-weather: #D97706;
+  --cat-business: #7E22CE;
+  --cat-general: #0284C7;
+
+  /* --- Brand Core Palette --- */
   --color-primary-red: #E50914;
-  --color-primary-dark-red: #B20710;
   --color-accent-gold: #FFC107;
-  --color-accent-yellow: #FFD600;
-  --color-telangana-pink: #E91E63;
   --color-bg-navy: #0B1325;
-  --color-bg-dark-slate: #101827;
-  --color-bg-translucent: rgba(11, 19, 37, 0.92);
-  --color-bg-breaking-translucent: rgba(178, 7, 16, 0.95);
+  --color-bg-slate: #0F172A;
   --color-white: #FFFFFF;
   --color-text-primary: #FFFFFF;
-  --color-text-secondary: #CBD5E1;
-  --color-text-dark: #0F172A;
-  --color-text-gold: #FFD700;
-  --color-live-badge: #FF0000;
+  --color-text-muted: #94A3B8;
 
   /* --- Typography --- */
   --font-family-headline: 'Outfit', 'Noto Sans Telugu', sans-serif;
   --font-family-body: 'Inter', 'Noto Sans Telugu', sans-serif;
   --font-family-telangana: 'Ramabhadra', 'Noto Sans Telugu', sans-serif;
-  --font-family-numeric: 'Outfit', 'Inter', monospace;
 
   /* --- Shadows & Glows --- */
   --shadow-broadcast-glow: 0 4px 20px rgba(0, 0, 0, 0.5);
   --shadow-text-drop: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  --shadow-red-glow: 0 0 15px rgba(229, 9, 20, 0.6);
-  --shadow-gold-glow: 0 0 12px rgba(255, 193, 7, 0.5);
-
-  /* --- Borders & Gradients --- */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --border-gold-accent: 3px solid var(--color-accent-gold);
-  --gradient-broadcast-red: linear-gradient(135deg, #E50914 0%, #8B0000 100%);
-  --gradient-navy-header: linear-gradient(90deg, #0B1325 0%, #1E293B 100%);
-  --gradient-gold-bar: linear-gradient(90deg, #FFD600 0%, #FF9100 100%);
-  --gradient-breaking-news: linear-gradient(90deg, #B20710 0%, #E50914 50%, #B20710 100%);
-
-  /* --- Animation Speeds --- */
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-  /* --- Layout & Safe Area --- */
-  --canvas-width: 1920px;
-  --canvas-height: 1080px;
-  --safe-margin-x: 80px;
-  --safe-margin-y: 54px;
-  --ticker-height: 60px;
-  --lower-third-height: 120px;
 }

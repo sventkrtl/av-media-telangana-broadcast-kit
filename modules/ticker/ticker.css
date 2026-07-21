@@ -1,7 +1,6 @@
 /* Ticker Module Base Styles */
 @import url('../../shared/css/main.css');
 @import url('./animations/ticker-anim.css');
-@import url('./themes/default.css');
 
 .ticker-wrapper {
   position: absolute;
@@ -13,6 +12,8 @@
   align-items: center;
   overflow: hidden;
   z-index: 9000;
+  background: rgba(11, 19, 37, 0.95);
+  border-top: 3px solid var(--color-accent-gold, #FFC107);
 }
 
 .ticker-badge {
@@ -24,9 +25,30 @@
   font-family: var(--font-family-telangana, sans-serif);
   font-size: 22px;
   font-weight: 700;
+  color: #FFFFFF;
   white-space: nowrap;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
   z-index: 2;
+  background-color: var(--cat-general);
+  transition: background-color 0.3s ease;
+}
+
+/* Category Color Mappings */
+.ticker-wrapper[data-category="రాజకీయం"] .ticker-badge { background-color: var(--cat-politics, #1E40AF); }
+.ticker-wrapper[data-category="క్రైమ్"] .ticker-badge { background-color: var(--cat-crime, #991B1B); }
+.ticker-wrapper[data-category="క్రీడలు"] .ticker-badge { background-color: var(--cat-sports, #15803D); }
+.ticker-wrapper[data-category="వాతావరణం"] .ticker-badge { background-color: var(--cat-weather, #D97706); }
+.ticker-wrapper[data-category="బిజినెస్"] .ticker-badge { background-color: var(--cat-business, #7E22CE); }
+.ticker-wrapper[data-category="అత్యవసర వర్తమానం"] .ticker-badge { background-color: var(--cat-breaking, #DC2626); }
+
+/* Theme Styles */
+.ticker-wrapper[data-theme="breaking"] {
+  background: rgba(153, 27, 27, 0.96);
+  border-top-color: #FFD600;
+}
+.ticker-wrapper[data-theme="breaking"] .ticker-badge {
+  background-color: #FFD600;
+  color: #000000;
 }
 
 .ticker-viewport {
@@ -46,9 +68,4 @@
   padding: 0 16px;
   display: inline-flex;
   align-items: center;
-}
-
-.ticker-separator {
-  color: var(--color-accent-gold, #FFC107);
-  margin: 0 12px;
 }
