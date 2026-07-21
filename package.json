@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/secondary-playlist-engine.test.js && node tests/provider-architecture.test.js && node tests/playlist-interpreter.test.js && node tests/static-renderer.test.js && node tests/badge-motion-engine.test.js && node tests/crawl-motion-engine.test.js && node tests/timeline-playback-controller.test.js && node tests/playlist-transition-behavior.test.js && node tests/secondary-playlist-runtime.test.js && node tests/obs-production-validation.test.js && node tests/production-stability-audit.test.js"
+    "test": "node tests/secondary-playlist-engine.test.js && node tests/provider-architecture.test.js && node tests/playlist-interpreter.test.js && node tests/static-renderer.test.js && node tests/badge-motion-engine.test.js && node tests/crawl-motion-engine.test.js && node tests/timeline-playback-controller.test.js && node tests/playlist-transition-behavior.test.js && node tests/secondary-playlist-runtime.test.js && node tests/obs-production-validation.test.js && node tests/production-stability-audit.test.js && node tests/production-acceptance-test.test.js"
   },
   "keywords": [
     "obs-studio",
