@@ -1,7 +1,7 @@
 /**
  * AV Media Telangana - Unified Broadcast Runtime Server
  * HTTP Static File Server + Native WebSocket Communication Engine
- * Single-Process Zero-Dependency Runtime (Node.js built-in modules only)
+ * Health/Version Endpoints & Clean Broadcast Runtime Logs
  */
 
 const http = require('http');
@@ -10,10 +10,11 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-// Root of repository is two levels up from shared/js/
 const REPO_ROOT = path.resolve(__dirname, '../../');
+const startTime = Date.now();
+const VERSION = '1.2.3';
+const PROTOCOL_VERSION = 1;
 
-// Load port from global-config.json if available
 let PORT = 8085;
 try {
   const configPath = path.join(__dirname, '../config/global-config.json');
@@ -45,15 +46,43 @@ const MIME_TYPES = {
 
 const clients = new Set();
 
+function logEvent(message) {
+  const timeStr = new Date().toLocaleTimeString('en-GB');
+  console.log(`[${timeStr}] ${message}`);
+}
+
 // ==========================================================================
-// 1. HTTP Static File Server
+// 1. HTTP Static File Server & System Endpoints (/health, /version)
 // ==========================================================================
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url);
+
+  // Health Endpoint
+  if (parsedUrl.pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    return res.end(JSON.stringify({
+      status: 'ok',
+      http: true,
+      websocket: true,
+      uptime: Math.floor((Date.now() - startTime) / 1000),
+      clients: clients.size,
+      version: VERSION
+    }));
+  }
+
+  // Version Endpoint
+  if (parsedUrl.pathname === '/version') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    return res.end(JSON.stringify({
+      name: 'AV Media Telangana Broadcast Runtime',
+      version: VERSION,
+      protocol: PROTOCOL_VERSION
+    }));
+  }
+
   let sanitizePath = path.normalize(parsedUrl.pathname).replace(/^(\.\.[\/\\])+/, '');
   let filePath = path.join(REPO_ROOT, sanitizePath);
 
-  // Security check: ensure requested file is within REPO_ROOT
   if (!filePath.startsWith(REPO_ROOT)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     return res.end('403 Forbidden');
@@ -65,7 +94,6 @@ const server = http.createServer((req, res) => {
       return res.end(`404 Not Found: ${parsedUrl.pathname}`);
     }
 
-    // Auto-serve index.html for directory paths
     if (stats.isDirectory()) {
       filePath = path.join(filePath, 'index.html');
     }
@@ -90,7 +118,7 @@ const server = http.createServer((req, res) => {
 });
 
 // ==========================================================================
-// 2. Native WebSocket Server (Upgrade Protocol)
+// 2. Native WebSocket Server (Clean Broadcast Runtime Logs)
 // ==========================================================================
 server.on('upgrade', (req, socket, head) => {
   const key = req.headers['sec-websocket-key'];
@@ -113,12 +141,19 @@ server.on('upgrade', (req, socket, head) => {
 
   socket.write(headers.join('\r\n') + '\r\n\r\n');
   clients.add(socket);
+  logEvent('Client Connected');
 
   socket.on('data', (buffer) => {
     try {
       const message = decodeWebSocketFrame(buffer);
       if (message) {
-        // Broadcast frame to all active connections
+        try {
+          const parsed = JSON.parse(message);
+          if (parsed.engine && parsed.action) {
+            logEvent(`${parsed.engine}.${parsed.action}`);
+          }
+        } catch (e) {}
+
         const frame = encodeWebSocketFrame(message);
         for (const client of clients) {
           if (client !== socket && client.writable) {
@@ -129,8 +164,14 @@ server.on('upgrade', (req, socket, head) => {
     } catch (err) {}
   });
 
-  socket.on('close', () => clients.delete(socket));
-  socket.on('error', () => clients.delete(socket));
+  socket.on('close', () => {
+    clients.delete(socket);
+    logEvent('Client Disconnected');
+  });
+
+  socket.on('error', () => {
+    clients.delete(socket);
+  });
 });
 
 function decodeWebSocketFrame(buffer) {
@@ -187,7 +228,7 @@ function encodeWebSocketFrame(message) {
 }
 
 // ==========================================================================
-// 3. Server Initialization & Console Log Output
+// 3. Server Initialization & Output
 // ==========================================================================
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`====================================================`);
@@ -198,6 +239,10 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log(``);
   console.log(`WebSocket:`);
   console.log(`ws://127.0.0.1:${PORT}/`);
+  console.log(``);
+  console.log(`Endpoints:`);
+  console.log(`http://127.0.0.1:${PORT}/health`);
+  console.log(`http://127.0.0.1:${PORT}/version`);
   console.log(``);
   console.log(`Static Root:`);
   console.log(`${REPO_ROOT}`);
