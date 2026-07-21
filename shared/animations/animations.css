@@ -1,0 +1,104 @@
+/* ==========================================================================
+   AV Media Telangana Broadcast Kit - Shared Animation Engine CSS
+   ========================================================================== */
+
+/* --- Slide Animations --- */
+@keyframes slideInFromLeft {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToBottom {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0;
+  }
+}
+
+/* --- Ticker Marquee Animation --- */
+@keyframes marqueeContinuous {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* --- Pulse & Glow Effects --- */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes breakingFlash {
+  0%, 100% {
+    background-color: var(--color-primary-red);
+  }
+  50% {
+    background-color: #FF1744;
+  }
+}
+
+/* --- Utility Animation Classes --- */
+.anim-slide-in-left {
+  animation: slideInFromLeft var(--transition-smooth) forwards;
+}
+
+.anim-slide-out-left {
+  animation: slideOutToLeft var(--transition-normal) forwards;
+}
+
+.anim-slide-in-bottom {
+  animation: slideInFromBottom var(--transition-smooth) forwards;
+}
+
+.anim-slide-out-bottom {
+  animation: slideOutToBottom var(--transition-normal) forwards;
+}
+
+.anim-pulse {
+  animation: livePulse 2s infinite ease-in-out;
+}
+
+.anim-breaking-flash {
+  animation: breakingFlash 1.2s infinite ease-in-out;
+}

@@ -1,0 +1,8 @@
+{
+  "channelName": "AV Media Telangana",
+  "language": "te",
+  "theme": "default",
+  "tickerSpeed": 50,
+  "wsUrl": "ws://localhost:8080",
+  "timeFormat": "12h"
+}

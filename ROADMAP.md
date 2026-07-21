@@ -1,37 +1,43 @@
-# Product Roadmap & Release Targets
+# Development Roadmap
 
-This document tracks upcoming milestones, feature sets, and enhancement goals for the **AV Media Telangana Broadcast Kit**.
-
----
-
-## 🎯 Version 1.0 (Current Baseline)
-- [x] Repository Architecture & Directory Scaffolding
-- [x] Technical & Operational Documentation Framework
-- [ ] Core Overlay Modules (`ticker`, `lower-third`, `breaking-news`, `clock`)
-- [ ] Shared Design System Tokens & Base CSS Theme (`default`, `dark`, `light`, `breaking`)
-- [ ] Basic OBS Studio Scene & Source Setup Guide
+మార్గదర్శకం: మనం ఈ క్రింది ప్రాధాన్యతా క్రమంలో ప్రాజెక్ట్ అభివృద్ధితో ముందుకు వెళ్తాము.
 
 ---
 
-## 🚀 Version 1.1 (Interactive Control & Data Sync)
-- [ ] Control Panel Dashboard (Web UI for live production control)
-- [ ] OBS WebSocket 5.x real-time state synchronization
-- [ ] Live Ticker RSS / Google Sheets / API Data Feed Integration
-- [ ] Live Weather API Connector (`modules/weather`)
-- [ ] Countdown & Event Timer Controller (`modules/countdown`)
+## 🏗️ Phase 1 – Foundation
+- [x] **Repository Setup**: Structure v1.0, `.gitignore`, directory tree & git integration
+- [ ] **Brand System**: Design tokens, color palette, Telugu/English typography (`shared/css/variables.css`)
+- [ ] **Shared Animation Engine**: Standardized CSS keyframes & JS transition helpers (`shared/animations/`)
+- [ ] **Shared CSS**: Reset, layout grid, typography classes & utility classes (`shared/css/`)
+- [ ] **Shared JavaScript**: Core DOM tools, state handlers & helper utilities (`shared/js/`)
+- [ ] **Configuration System**: Global & module-level JSON presets (`shared/config/`)
 
 ---
 
-## 💎 Version 1.2 (Advanced Graphics & Media Management)
-- [ ] Stinger Transition Animations & Custom WebGL/CSS Renderers
-- [ ] Multi-Language Support (Telugu & English typography rendering)
-- [ ] Automatic Sponsor Rotator & Analytics Logging (`modules/sponsor`)
-- [ ] OBS Profile & Scene Pack Exporter
-- [ ] Automated Visual Regression & Layout Testing (`tests/`)
+## 📺 Phase 2 – Graphics
+- [x] **Ticker Engine**: Continuous marquee & news ticker ticker system (`modules/ticker/`)
+- [ ] **Lower Third**: Dynamic name, title & lower graphic banners (`modules/lower-third/`)
+- [ ] **Reporter Card**: On-air reporter tag & station identification (`modules/reporter/`)
+- [ ] **Breaking News**: Alert popups & flash banners (`modules/breaking-news/`)
+- [ ] **Live Bug**: On-screen channel branding badge & live indicator
+- [ ] **Clock**: Real-time broadcast clock (`modules/clock/`)
+- [ ] **Date**: Dynamic date & calendar widget
+- [ ] **Location**: City / location tag widget (`modules/weather/` & location modules)
 
 ---
 
-## 🌟 Future Vision (v2.0+)
-- [ ] Cloud-hosted Multi-Studio Remote Control Panel
-- [ ] AI-assisted Headline Summarization & Automatic Breaking News Ticker Generator
-- [ ] SDI/NDI Hardware Alpha Keying Output Support
+## 🎬 Phase 3 – Studio
+- [ ] **Intro**: Channel opening sequence & bumper graphics
+- [ ] **Outro**: Show closing sequence & credits
+- [ ] **Countdown**: Show start timer & event countdown (`modules/countdown/`)
+- [ ] **Be Right Back**: Intermission & commercial break screen
+- [ ] **Program Titles**: Show title cards & topic headers
+
+---
+
+## ⚡ Phase 4 – Automation
+- [ ] **JSON Loader**: Local & remote data ingestion layer
+- [ ] **WebSocket**: Real-time state synchronization across overlays
+- [ ] **Hotkeys**: Keyboard shortcut triggers for live switching
+- [ ] **OBS Automation**: OBS WebSocket 5.x scene & source automation (`obs/`)
+- [ ] **RSS Feed**: Dynamic RSS & news API feed parser

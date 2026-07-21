@@ -1,0 +1,45 @@
+/* ==========================================================================
+   AV Media Telangana Broadcast Kit - Main Master CSS Entrypoint
+   ========================================================================== */
+
+@import url('./variables.css');
+@import url('./reset.css');
+@import url('../animations/animations.css');
+
+/* --- Broadcast Utility Classes --- */
+.text-telangana {
+  font-family: var(--font-family-telangana);
+  line-height: 1.4;
+}
+
+.text-gold {
+  color: var(--color-accent-gold);
+}
+
+.text-red {
+  color: var(--color-primary-red);
+}
+
+.text-shadow-drop {
+  text-shadow: var(--shadow-text-drop);
+}
+
+.glow-red {
+  box-shadow: var(--shadow-red-glow);
+}
+
+.glow-gold {
+  box-shadow: var(--shadow-gold-glow);
+}
+
+.gradient-red {
+  background: var(--gradient-broadcast-red);
+}
+
+.gradient-navy {
+  background: var(--gradient-navy-header);
+}
+
+.gradient-gold {
+  background: var(--gradient-gold-bar);
+}

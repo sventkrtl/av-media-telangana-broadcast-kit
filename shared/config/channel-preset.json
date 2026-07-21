@@ -1,0 +1,14 @@
+{
+  "station": {
+    "name": "AV MEDIA TELANGANA",
+    "tagline": "లైవ్ న్యూస్ & అప్‌డేట్స్",
+    "logo": "../../assets/logos/av-media-logo.png"
+  },
+  "defaultTheme": "default",
+  "tickerCategories": [
+    "తాజా వార్తలు",
+    "తెలంగాణ",
+    "రాజకీయం",
+    "క్రీడలు"
+  ]
+}
