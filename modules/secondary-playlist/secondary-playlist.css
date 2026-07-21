@@ -71,15 +71,16 @@ body, html {
   align-items: center;
 }
 
-/* News Crawl Item */
+/* News Crawl Item — continuous inline content stream */
 .spl-news-item {
   position: absolute;
+  top: 50%;                              /* anchor to vertical mid-point of viewport */
   white-space: nowrap;
   font-size: 18px;
   font-weight: 500;
   color: #FFFFFF;
   line-height: 1;
-  transform: translate3d(1920px, 0, 0);
+  transform: translate3d(1920px, -50%, 0); /* start off-screen right, vertically centred */
 }
 
 /* Logo Wrapper */
