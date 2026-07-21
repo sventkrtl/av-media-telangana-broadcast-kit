@@ -112,9 +112,17 @@ export class TimelinePlaybackController {
         }
         break;
 
+
       case EVENT_TYPES.LOGO_SEPARATOR:
-        // Static separator display
+        // SPEC Section 10 & 16: Logo scrolls inline at the same constant velocity as news text.
+        // The logo has already been injected into newsElement by the onEventStart callback.
+        // We now crawl it through the viewport — newsElement carries the <img> at this point.
+        if (this.crawlMotionEngine && newsElement) {
+          const vpWidth = (containerElement && containerElement.offsetWidth) ? containerElement.offsetWidth : 1920;
+          await this.crawlMotionEngine.crawl(newsElement, '', vpWidth);
+        }
         break;
+
 
       case EVENT_TYPES.NEWS_END:
         break;

@@ -48,6 +48,17 @@ export class SecondaryPlaylistApp {
           badgeEl.style.backgroundColor = THEME_COLOR_MAP[event.theme] || THEME_COLOR_MAP.district;
         } else if (event.type === 'NEWS_START') {
           newsEl.innerHTML = event.payload ? event.payload.newsContent : '';
+        } else if (event.type === 'LOGO_SEPARATOR') {
+          // SPEC Section 9: Height=80% of crawl bar height, Width=auto, preserve aspect ratio.
+          // SPEC Section 10 & 16: Logo scrolls inline with the crawl — NOT a floating overlay.
+          const crawlBarHeight = containerEl ? containerEl.offsetHeight : 52;
+          const logoHeight = Math.round(crawlBarHeight * 0.8);
+          newsEl.innerHTML = `<img
+            src="/assets/logos/logo-round.png"
+            class="spl-logo-img"
+            alt="AV Media Logo"
+            style="height:${logoHeight}px;width:auto;object-fit:contain;display:inline-block;vertical-align:middle;"
+          >`;
         }
       });
     }
