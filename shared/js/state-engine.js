@@ -1,29 +1,34 @@
 /**
- * Broadcast Event Bus (Optimized for OBS CEF file:// and http:// origins)
+ * AV Media Telangana Broadcast State Engine
+ * Real-Time WebSocket (ws://localhost:8085) + BroadcastChannel + LocalStorage Fallback
  */
 
 export class StateEngine {
-  constructor(channelName = 'av_media_broadcast_channel') {
+  constructor(channelName = 'av_media_broadcast_channel', wsUrl = 'ws://localhost:8085') {
     this.channelName = channelName;
-    this.bc = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(channelName) : null;
+    this.wsUrl = wsUrl;
     this.listeners = [];
     this.lastProcessedNonce = null;
 
-    // 1. BroadcastChannel Listener
-    if (this.bc) {
-      this.bc.onmessage = (e) => this.handleIncoming(e.data);
+    // 1. WebSocket Engine (Port 8085 for OBS QtWebEngine Dock <-> OBS CEF Overlay)
+    this.initWebSocket();
+
+    // 2. BroadcastChannel Engine
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        this.bc = new BroadcastChannel(channelName);
+        this.bc.onmessage = (e) => this.handleIncoming(e.data);
+      } catch (err) {}
     }
 
-    // 2. Storage Event Listener (Cross-tab)
+    // 3. Storage Listener
     window.addEventListener('storage', (e) => {
       if (e.key === this.channelName && e.newValue) {
-        try {
-          this.handleIncoming(JSON.parse(e.newValue));
-        } catch (err) {}
+        try { this.handleIncoming(JSON.parse(e.newValue)); } catch (err) {}
       }
     });
 
-    // 3. OBS CEF file:// Polling Fallback (300ms) for guaranteed zero-drop sync
+    // 4. CEF Polling Fallback
     setInterval(() => {
       const raw = localStorage.getItem(this.channelName);
       if (raw) {
@@ -37,17 +42,39 @@ export class StateEngine {
     }, 300);
   }
 
+  initWebSocket() {
+    try {
+      this.ws = new WebSocket(this.wsUrl);
+      this.ws.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          this.handleIncoming(data);
+        } catch (err) {}
+      };
+      this.ws.onclose = () => {
+        setTimeout(() => this.initWebSocket(), 3000);
+      };
+      this.ws.onerror = () => {
+        try { this.ws.close(); } catch(e) {}
+      };
+    } catch (e) {}
+  }
+
   emit(action, payload) {
     const data = {
       action,
       payload,
       nonce: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
-    
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      try { this.ws.send(JSON.stringify(data)); } catch (e) {}
+    }
+
     if (this.bc) {
       try { this.bc.postMessage(data); } catch (e) {}
     }
-    
+
     localStorage.setItem(this.channelName, JSON.stringify(data));
     this.handleIncoming(data);
   }
