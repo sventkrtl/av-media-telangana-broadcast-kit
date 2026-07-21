@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node tests/secondary-playlist-engine.test.js"
+    "test": "node tests/secondary-playlist-engine.test.js && node tests/provider-architecture.test.js"
   },
   "keywords": [
     "obs-studio",
