@@ -1,20 +1,35 @@
 /**
- * AV Media Telangana Broadcast Kit - Zero-Dependency Broadcast Server
+ * AV Media Telangana Broadcast Server
  * Native Node.js WebSocket & HTTP Server for OBS Dock <-> Overlay Communication
  */
 
 const http = require('http');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
-const PORT = 8085;
+// Load port from global-config.json if available
+let PORT = 8085;
+try {
+  const configPath = path.join(__dirname, '../config/global-config.json');
+  if (fs.existsSync(configPath)) {
+    const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    if (configData.websocket && configData.websocket.port) {
+      PORT = configData.websocket.port;
+    }
+  }
+} catch (e) {
+  console.warn('[Broadcast Server] Using default port 8085');
+}
+
 const clients = new Set();
 
 const server = http.createServer((req, res) => {
   res.writeHead(200, {
-    'Content-Type': 'text/plain',
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
   });
-  res.end('AV Media Telangana Broadcast Server Active (Port 8085)');
+  res.end(JSON.stringify({ status: 'active', port: PORT, clients: clients.size }));
 });
 
 server.on('upgrade', (req, socket, head) => {
@@ -43,6 +58,7 @@ server.on('upgrade', (req, socket, head) => {
     try {
       const message = decodeWebSocketFrame(buffer);
       if (message) {
+        // Broadcast standardized JSON frame to all active overlay & control clients
         const frame = encodeWebSocketFrame(message);
         for (const client of clients) {
           if (client !== socket && client.writable) {

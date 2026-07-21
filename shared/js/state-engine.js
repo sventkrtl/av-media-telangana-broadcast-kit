@@ -1,19 +1,25 @@
 /**
  * AV Media Telangana Broadcast State Engine
- * Real-Time WebSocket (ws://localhost:8085) + BroadcastChannel + LocalStorage Fallback
+ * Standardized Protocol, Exponential Backoff Reconnect, & Status Notifications
  */
 
 export class StateEngine {
-  constructor(channelName = 'av_media_broadcast_channel', wsUrl = 'ws://localhost:8085') {
+  constructor(channelName = 'av_media_broadcast_channel', wsUrl = 'ws://127.0.0.1:8085') {
     this.channelName = channelName;
     this.wsUrl = wsUrl;
     this.listeners = [];
+    this.statusListeners = [];
     this.lastProcessedNonce = null;
 
-    // 1. WebSocket Engine (Port 8085 for OBS QtWebEngine Dock <-> OBS CEF Overlay)
+    // Exponential Backoff Reconnect Variables
+    this.reconnectAttempts = 0;
+    this.reconnectDelays = [1000, 2000, 5000]; // 1s -> 2s -> 5s
+    this.connectionStatus = 'DISCONNECTED';
+
+    // 1. Initialize WebSocket
     this.initWebSocket();
 
-    // 2. BroadcastChannel Engine
+    // 2. BroadcastChannel Fallback
     if (typeof BroadcastChannel !== 'undefined') {
       try {
         this.bc = new BroadcastChannel(channelName);
@@ -21,14 +27,14 @@ export class StateEngine {
       } catch (err) {}
     }
 
-    // 3. Storage Listener
+    // 3. Storage Listener Fallback
     window.addEventListener('storage', (e) => {
       if (e.key === this.channelName && e.newValue) {
         try { this.handleIncoming(JSON.parse(e.newValue)); } catch (err) {}
       }
     });
 
-    // 4. CEF Polling Fallback
+    // 4. Polling Fallback
     setInterval(() => {
       const raw = localStorage.getItem(this.channelName);
       if (raw) {
@@ -42,28 +48,60 @@ export class StateEngine {
     }, 300);
   }
 
+  setStatus(status) {
+    if (this.connectionStatus !== status) {
+      this.connectionStatus = status;
+      this.statusListeners.forEach(cb => cb(status));
+    }
+  }
+
+  onStatusChange(callback) {
+    this.statusListeners.push(callback);
+    callback(this.connectionStatus);
+  }
+
   initWebSocket() {
     try {
+      this.setStatus('RECONNECTING');
       this.ws = new WebSocket(this.wsUrl);
+
+      this.ws.onopen = () => {
+        this.reconnectAttempts = 0;
+        this.setStatus('CONNECTED');
+        console.log('[StateEngine] WebSocket Connected.');
+      };
+
       this.ws.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data);
           this.handleIncoming(data);
         } catch (err) {}
       };
+
       this.ws.onclose = () => {
-        setTimeout(() => this.initWebSocket(), 3000);
+        this.setStatus('RECONNECTING');
+        this.scheduleReconnect();
       };
+
       this.ws.onerror = () => {
         try { this.ws.close(); } catch(e) {}
       };
-    } catch (e) {}
+    } catch (e) {
+      this.scheduleReconnect();
+    }
   }
 
-  emit(action, payload) {
+  scheduleReconnect() {
+    const delay = this.reconnectDelays[Math.min(this.reconnectAttempts, this.reconnectDelays.length - 1)];
+    this.reconnectAttempts++;
+    setTimeout(() => this.initWebSocket(), delay);
+  }
+
+  emit(engine, action, payload = {}) {
     const data = {
-      action,
-      payload,
+      engine: engine || 'ticker',
+      action: action, // 'update', 'pause', 'resume'
+      payload: payload,
       nonce: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 

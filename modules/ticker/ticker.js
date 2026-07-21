@@ -37,12 +37,19 @@ export class TickerModule {
     this.stateEngine.subscribe((msg) => {
       if (!msg || !msg.action) return;
 
-      if (msg.action === 'TICKER_APPLY_LIVE') {
-        this.config = { ...this.config, ...msg.payload };
-        localStorage.setItem('av_media_ticker_live_state', JSON.stringify(this.config));
-        this.render();
-      } else if (msg.action === 'TICKER_TOGGLE_PAUSE') {
-        this.setPauseState(msg.payload.isPaused);
+      // Standard Protocol Protocol Matching
+      if (msg.engine === 'ticker' || !msg.engine) {
+        if (msg.action === 'update' || msg.action === 'TICKER_APPLY_LIVE') {
+          this.config = { ...this.config, ...msg.payload };
+          localStorage.setItem('av_media_ticker_live_state', JSON.stringify(this.config));
+          this.render();
+        } else if (msg.action === 'pause') {
+          this.setPauseState(true);
+        } else if (msg.action === 'resume') {
+          this.setPauseState(false);
+        } else if (msg.action === 'TICKER_TOGGLE_PAUSE') {
+          this.setPauseState(msg.payload.isPaused);
+        }
       }
     });
   }

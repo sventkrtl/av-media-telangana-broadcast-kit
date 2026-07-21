@@ -15,6 +15,9 @@ export class ControlPanelApp {
     this.unsavedBadge = document.getElementById('unsaved-badge');
     this.statusLastUpdated = document.getElementById('status-last-updated');
 
+    this.statusPill = document.querySelector('.cp-status-pill');
+    this.statusDot = document.querySelector('.cp-status-dot');
+
     this.previewBadge = document.getElementById('preview-badge');
     this.previewTrack = document.getElementById('preview-track');
     this.previewText = document.getElementById('preview-text');
@@ -39,8 +42,44 @@ export class ControlPanelApp {
     this.bindEvents();
     this.bindShortcuts();
     this.setupAutoSaveDraft();
+    this.setupStatusListener();
     this.updatePreview();
     this.updateCharCounter();
+  }
+
+  setupStatusListener() {
+    this.stateEngine.onStatusChange((status) => {
+      if (!this.statusPill) return;
+
+      if (status === 'CONNECTED') {
+        this.statusPill.style.color = '#10B981';
+        this.statusPill.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        this.statusPill.style.background = 'rgba(16, 185, 129, 0.15)';
+        if (this.statusDot) {
+          this.statusDot.style.background = '#10B981';
+          this.statusDot.style.boxShadow = '0 0 6px #10B981';
+        }
+        this.statusPill.childNodes[1].nodeValue = ' LIVE ENGINE CONNECTED';
+      } else if (status === 'RECONNECTING') {
+        this.statusPill.style.color = '#D97706';
+        this.statusPill.style.borderColor = 'rgba(217, 119, 6, 0.3)';
+        this.statusPill.style.background = 'rgba(217, 119, 6, 0.15)';
+        if (this.statusDot) {
+          this.statusDot.style.background = '#D97706';
+          this.statusDot.style.boxShadow = '0 0 6px #D97706';
+        }
+        this.statusPill.childNodes[1].nodeValue = ' RECONNECTING...';
+      } else {
+        this.statusPill.style.color = '#EF4444';
+        this.statusPill.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        this.statusPill.style.background = 'rgba(239, 68, 68, 0.15)';
+        if (this.statusDot) {
+          this.statusDot.style.background = '#EF4444';
+          this.statusDot.style.boxShadow = '0 0 6px #EF4444';
+        }
+        this.statusPill.childNodes[1].nodeValue = ' OFFLINE (FALLBACK)';
+      }
+    });
   }
 
   getSelectedTheme() {
@@ -230,7 +269,8 @@ export class ControlPanelApp {
     this.saveToRecent(data);
     this.markDirty(false);
 
-    this.stateEngine.emit('TICKER_APPLY_LIVE', data);
+    // Standardized Message Schema
+    this.stateEngine.emit('ticker', 'update', data);
     localStorage.setItem('av_media_ticker_live_state', JSON.stringify(data));
     this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
 
@@ -249,12 +289,13 @@ export class ControlPanelApp {
       this.btnTogglePause.textContent = '▶️ Resume Ticker';
       this.btnTogglePause.style.background = '#D97706';
       if (this.previewTrack) this.previewTrack.style.animationPlayState = 'paused';
+      this.stateEngine.emit('ticker', 'pause', { isPaused: true });
     } else {
       this.btnTogglePause.textContent = '⏸️ Pause Ticker';
       this.btnTogglePause.style.background = '#334155';
       if (this.previewTrack) this.previewTrack.style.animationPlayState = 'running';
+      this.stateEngine.emit('ticker', 'resume', { isPaused: false });
     }
-    this.stateEngine.emit('TICKER_TOGGLE_PAUSE', { isPaused: this.isPaused });
   }
 
   bindShortcuts() {
