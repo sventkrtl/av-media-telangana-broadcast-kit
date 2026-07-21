@@ -148,6 +148,7 @@ export class ControlPanelApp {
     const textString = data.items.join(' ✦ ');
     this.previewText.textContent = `${textString} ✦ ${textString}`;
     this.previewTrack.style.setProperty('--preview-duration', `${data.speed}s`);
+    this.previewTrack.style.animationPlayState = this.isPaused ? 'paused' : 'running';
   }
 
   saveToRecent(data) {
@@ -247,9 +248,11 @@ export class ControlPanelApp {
     if (this.isPaused) {
       this.btnTogglePause.textContent = '▶️ Resume Ticker';
       this.btnTogglePause.style.background = '#D97706';
+      if (this.previewTrack) this.previewTrack.style.animationPlayState = 'paused';
     } else {
       this.btnTogglePause.textContent = '⏸️ Pause Ticker';
       this.btnTogglePause.style.background = '#334155';
+      if (this.previewTrack) this.previewTrack.style.animationPlayState = 'running';
     }
     this.stateEngine.emit('TICKER_TOGGLE_PAUSE', { isPaused: this.isPaused });
   }

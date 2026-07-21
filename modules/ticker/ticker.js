@@ -44,9 +44,13 @@ export class TickerModule {
 
   setPauseState(paused) {
     this.isPaused = paused;
-    const track = this.container?.querySelector('.ticker-track');
-    if (track) {
-      track.style.animationPlayState = paused ? 'paused' : 'running';
+    const wrapper = this.container?.querySelector('.ticker-wrapper');
+    if (wrapper) {
+      if (paused) {
+        wrapper.classList.add('paused');
+      } else {
+        wrapper.classList.remove('paused');
+      }
     }
   }
 
@@ -62,10 +66,10 @@ export class TickerModule {
     const theme = this.config.theme || 'default';
 
     this.container.innerHTML = `
-      <div class="ticker-wrapper" data-category="${category}" data-theme="${theme}">
+      <div class="ticker-wrapper ${this.isPaused ? 'paused' : ''}" data-category="${category}" data-theme="${theme}">
         <div class="ticker-badge">${category}</div>
         <div class="ticker-viewport">
-          <div class="ticker-track scrolling" style="--ticker-duration: ${duration}s; animation-play-state: ${this.isPaused ? 'paused' : 'running'}">
+          <div class="ticker-track scrolling" style="--ticker-duration: ${duration}s">
             <span class="ticker-item">${fullText}</span>
           </div>
         </div>

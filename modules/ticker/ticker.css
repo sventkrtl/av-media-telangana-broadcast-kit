@@ -16,6 +16,11 @@
   border-top: 3px solid var(--color-accent-gold, #FFC107);
 }
 
+/* Pause State Rule */
+.ticker-wrapper.paused .ticker-track {
+  animation-play-state: paused !important;
+}
+
 .ticker-badge {
   height: 100%;
   padding: 0 24px;
