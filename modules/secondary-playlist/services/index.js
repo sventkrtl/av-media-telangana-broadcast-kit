@@ -3,3 +3,4 @@
  */
 
 export { GoogleSheetRefreshService } from './GoogleSheetRefreshService.js';
+export { GoogleSheetProviderStatus } from './GoogleSheetProviderStatus.js';
