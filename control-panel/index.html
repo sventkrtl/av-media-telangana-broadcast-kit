@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AV Media Telangana Broadcast Control Panel v1.1</title>
+  <title>AV Media Telangana Broadcast Control Panel v1.2</title>
   <link rel="stylesheet" href="./control-panel.css">
 </head>
 <body>
   <!-- Header Bar -->
   <header class="cp-header">
     <div class="cp-brand">
-      AV MEDIA TELANGANA <span class="cp-brand-badge">v1.1</span>
+      AV MEDIA TELANGANA <span class="cp-brand-badge">v1.2</span>
     </div>
-    <div class="cp-status-pill">
-      <span class="cp-status-dot"></span> BROADCAST CONTROL
+    <div class="cp-header-right">
+      <div class="cp-status-pill">
+        <span class="cp-status-dot"></span> BROADCAST CONTROL
+      </div>
+      <span id="btn-settings-gear" class="cp-settings-icon" title="Settings Panel">⚙️</span>
     </div>
   </header>
 
@@ -40,10 +43,6 @@
         <span>Reporter Card</span>
         <span class="cp-badge-small">SOON</span>
       </div>
-      <div class="cp-nav-item" data-tab="settings">
-        <span>Control Panel</span>
-        <span class="cp-badge-small">SOON</span>
-      </div>
     </nav>
 
     <!-- Main Workspace -->
@@ -51,13 +50,14 @@
       <div class="cp-card">
         <div class="cp-card-title">
           <span>📺 Ticker Control Panel</span>
+          <span id="unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
         </div>
 
         <!-- Headline Input -->
         <div class="cp-form-group">
           <label class="cp-label" for="headline-input">
             <span>Headline Text (ప్రధాన వార్తలు)</span>
-            <span style="color:var(--cp-gold)">Line per news item</span>
+            <span id="char-counter" class="cp-char-counter">0 / 180 chars</span>
           </label>
           <textarea id="headline-input" class="cp-textarea" placeholder="వార్తలను ఇక్కడ నమోదు చేయండి (లైనుకు ఒక వార్త)..."></textarea>
         </div>
@@ -117,10 +117,11 @@
           <button id="btn-toggle-pause" class="cp-btn cp-btn-secondary" style="width:100%;">⏸️ Pause Ticker</button>
         </div>
 
-        <!-- Animated Preview Canvas Window -->
+        <!-- Distinct Preview Mode Canvas -->
         <div class="cp-form-group">
           <label class="cp-label">Live Animated Preview</label>
           <div class="cp-preview-container">
+            <span class="cp-preview-tag">[ PREVIEW CANVAS ]</span>
             <div id="preview-badge" class="cp-preview-badge">తాజా వార్తలు</div>
             <div class="cp-preview-viewport">
               <div id="preview-track" class="cp-preview-track scrolling">
@@ -144,10 +145,31 @@
           <span>📜 Recent Headlines History (1-Click Restore)</span>
         </div>
         <div id="recent-list" class="cp-recent-list">
-          <div style="font-size:11px; color:var(--cp-text-muted);">No recent headlines yet...</div>
+          <div style="font-size:11px; color:var(--cp-text-muted);">No recent headlines saved yet...</div>
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Status Bar & Key Hints Footer -->
+  <footer class="cp-footer">
+    <div id="status-last-updated">✓ Last Updated: Never</div>
+    <div class="cp-shortcut-hint">
+      <span><span class="cp-key-badge">Ctrl+Enter</span> Apply</span>
+      <span><span class="cp-key-badge">Ctrl+P</span> Preview</span>
+      <span><span class="cp-key-badge">Ctrl+Space</span> Pause</span>
+      <span><span class="cp-key-badge">Esc</span> Reset</span>
+    </div>
+  </footer>
+
+  <!-- Modal Toast for Settings Placeholder -->
+  <div id="settings-modal" class="cp-modal">
+    <div class="cp-modal-content">
+      <div style="font-size: 28px; margin-bottom: 8px;">⚙️</div>
+      <h3 style="font-size: 15px; color: var(--cp-gold); margin-bottom: 6px;">Settings Panel</h3>
+      <p style="font-size: 12px; color: var(--cp-text-muted); margin-bottom: 14px;">Broadcast Settings & Station Profile Manager - Coming Soon in v2.0</p>
+      <button id="btn-modal-close" class="cp-btn cp-btn-secondary" style="width: 100%;">Close</button>
+    </div>
   </div>
 
   <script type="module" src="./control-panel.js"></script>

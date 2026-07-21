@@ -1,6 +1,6 @@
 /* ==========================================================================
-   AV Media Telangana Broadcast Control Panel v1.1 Stylesheet
-   Optimized for OBS Custom Browser Dock
+   AV Media Telangana Broadcast Control Panel v1.2 Stylesheet
+   Responsive OBS Dock & Desktop Interface
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@500;600;700&family=Outfit:wght@600;700;800&display=swap');
@@ -46,22 +46,22 @@ body {
 
 /* Header */
 .cp-header {
-  height: 50px;
+  height: 48px;
   background: var(--cp-sidebar-bg);
   border-bottom: 1px solid var(--cp-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 14px;
 }
 
 .cp-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .cp-brand-badge {
@@ -73,6 +73,24 @@ body {
   font-weight: 700;
 }
 
+.cp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cp-settings-icon {
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--cp-text-muted);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.cp-settings-icon:hover {
+  color: var(--cp-gold);
+  transform: rotate(45deg);
+}
+
 .cp-status-pill {
   display: flex;
   align-items: center;
@@ -81,48 +99,47 @@ body {
   font-weight: 600;
   background: rgba(16, 185, 129, 0.15);
   color: var(--cp-accent-green);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 12px;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .cp-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background-color: var(--cp-accent-green);
-  box-shadow: 0 0 8px var(--cp-accent-green);
+  box-shadow: 0 0 6px var(--cp-accent-green);
 }
 
-/* App Layout */
+/* App Layout & Responsiveness */
 .cp-body {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* Sidebar */
 .cp-sidebar {
-  width: 170px;
+  width: 160px;
   background: var(--cp-sidebar-bg);
   border-right: 1px solid var(--cp-border);
   display: flex;
   flex-direction: column;
-  padding: 12px 8px;
+  padding: 10px 6px;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .cp-nav-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 10px;
+  padding: 8px 10px;
   border-radius: 6px;
   color: var(--cp-text-muted);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .cp-nav-item:hover {
@@ -137,29 +154,28 @@ body {
 
 .cp-badge-small {
   font-size: 9px;
-  padding: 2px 5px;
+  padding: 2px 4px;
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Main Content Area */
 .cp-main {
   flex: 1;
-  padding: 14px;
+  padding: 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .cp-card {
   background: var(--cp-card-bg);
   border: 1px solid var(--cp-border);
   border-radius: 8px;
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .cp-card-title {
@@ -168,16 +184,31 @@ body {
   color: var(--cp-gold);
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
   border-bottom: 1px solid var(--cp-border);
   padding-bottom: 6px;
+}
+
+.cp-unsaved-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cp-gold);
+  background: rgba(255, 193, 7, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  display: none;
+}
+
+.cp-unsaved-badge.visible {
+  display: inline-block;
 }
 
 /* Form Controls */
 .cp-form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .cp-label {
@@ -186,6 +217,11 @@ body {
   color: var(--cp-text-muted);
   display: flex;
   justify-content: space-between;
+}
+
+.cp-char-counter {
+  font-size: 10px;
+  color: var(--cp-text-muted);
 }
 
 .cp-textarea, .cp-select, .cp-input {
@@ -204,31 +240,32 @@ body {
 }
 
 .cp-textarea {
-  min-height: 70px;
+  min-height: 65px;
   resize: vertical;
 }
 
 .cp-row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .cp-row > * {
   flex: 1;
+  min-width: 130px;
 }
 
-/* Radio Group */
 .cp-radio-group {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .cp-radio-label {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -236,11 +273,10 @@ body {
   accent-color: var(--cp-accent-green);
 }
 
-/* Slider */
 .cp-slider-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .cp-slider {
@@ -249,16 +285,16 @@ body {
 }
 
 .cp-slider-val {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--cp-gold);
-  min-width: 32px;
+  min-width: 28px;
 }
 
-/* Buttons */
 .cp-btn-group {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .cp-btn {
@@ -279,16 +315,8 @@ body {
   transform: scale(0.97);
 }
 
-.cp-btn-secondary {
-  background: #334155;
-  color: #FFF;
-}
-
-.cp-btn-gold {
-  background: var(--cp-gold);
-  color: #000;
-}
-
+.cp-btn-secondary { background: #334155; color: #FFF; }
+.cp-btn-gold { background: var(--cp-gold); color: #000; }
 .cp-btn-apply {
   background: var(--cp-accent-green);
   color: #FFF;
@@ -297,10 +325,10 @@ body {
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
 }
 
-/* Interactive Animated Preview Window */
+/* Distinct Preview Mode Canvas */
 .cp-preview-container {
-  background: #000;
-  border: 1px solid var(--cp-border);
+  background: #18181B; /* Grey Canvas distinction */
+  border: 1px dashed #475569;
   border-radius: 6px;
   height: 44px;
   overflow: hidden;
@@ -309,13 +337,27 @@ body {
   align-items: center;
 }
 
+.cp-preview-tag {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  font-size: 8px;
+  font-weight: 800;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
 .cp-preview-badge {
   height: 100%;
-  padding: 0 16px;
+  padding: 0 14px;
   background: var(--cat-general);
   color: #FFF;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -343,7 +385,7 @@ body {
 }
 
 .cp-preview-item {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #FFF;
   padding: 0 12px;
@@ -353,8 +395,8 @@ body {
 .cp-recent-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 140px;
+  gap: 5px;
+  max-height: 120px;
   overflow-y: auto;
 }
 
@@ -362,18 +404,86 @@ body {
   background: var(--cp-input-bg);
   border: 1px solid var(--cp-border);
   border-radius: 4px;
-  padding: 6px 10px;
+  padding: 6px 8px;
   font-size: 11px;
   color: var(--cp-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
 }
 
 .cp-recent-item:hover {
   border-color: var(--cp-gold);
   color: var(--cp-text);
   background: rgba(255,255,255,0.04);
+}
+
+/* Status Bar & Footer */
+.cp-footer {
+  height: 28px;
+  background: var(--cp-sidebar-bg);
+  border-top: 1px solid var(--cp-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 10px;
+  color: var(--cp-text-muted);
+}
+
+.cp-shortcut-hint {
+  display: flex;
+  gap: 8px;
+}
+
+.cp-key-badge {
+  background: #334155;
+  color: #F8FAFC;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* Modal Toast for Settings Placeholder */
+.cp-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.cp-modal.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cp-modal-content {
+  background: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  max-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+}
+
+/* Responsive CSS for OBS Dock resizing */
+@media (max-width: 480px) {
+  .cp-sidebar {
+    width: 120px;
+  }
+  .cp-shortcut-hint {
+    display: none;
+  }
 }
