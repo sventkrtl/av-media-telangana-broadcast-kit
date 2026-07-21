@@ -1,0 +1,297 @@
+/* ==========================================================================
+   AV Media Telangana Broadcast Control Panel v1.0 Stylesheet
+   Optimized for OBS Custom Browser Dock & Desktop Viewport
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@500;600;700&family=Outfit:wght@600;700;800&display=swap');
+
+:root {
+  --cp-bg: #0F172A;
+  --cp-sidebar-bg: #1E293B;
+  --cp-card-bg: #1E293B;
+  --cp-input-bg: #0F172A;
+  --cp-border: #334155;
+  --cp-primary-red: #E50914;
+  --cp-gold: #FFC107;
+  --cp-text: #F8FAFC;
+  --cp-text-muted: #94A3B8;
+  --cp-green: #10B981;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans Telugu', sans-serif;
+  background-color: var(--cp-bg);
+  color: var(--cp-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* Header */
+.cp-header {
+  height: 52px;
+  background: var(--cp-sidebar-bg);
+  border-bottom: 1px solid var(--cp-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.cp-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--cp-text);
+  letter-spacing: 0.5px;
+}
+
+.cp-brand-badge {
+  background: var(--cp-primary-red);
+  color: #FFF;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cp-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--cp-green);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cp-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--cp-green);
+  box-shadow: 0 0 8px var(--cp-green);
+}
+
+/* App Layout */
+.cp-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.cp-sidebar {
+  width: 180px;
+  background: var(--cp-sidebar-bg);
+  border-right: 1px solid var(--cp-border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px;
+  gap: 4px;
+}
+
+.cp-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--cp-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--cp-text);
+}
+
+.cp-nav-item.active {
+  background: var(--cp-primary-red);
+  color: #FFF;
+}
+
+.cp-badge-small {
+  font-size: 9px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Main Content Area */
+.cp-main {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cp-card {
+  background: var(--cp-card-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cp-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cp-gold);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--cp-border);
+  padding-bottom: 8px;
+}
+
+/* Form Controls */
+.cp-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cp-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cp-text-muted);
+}
+
+.cp-textarea, .cp-select, .cp-input {
+  background: var(--cp-input-bg);
+  border: 1px solid var(--cp-border);
+  border-radius: 6px;
+  padding: 10px;
+  color: var(--cp-text);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cp-textarea:focus, .cp-select:focus, .cp-input:focus {
+  border-color: var(--cp-gold);
+}
+
+.cp-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.cp-row {
+  display: flex;
+  gap: 12px;
+}
+
+.cp-row > * {
+  flex: 1;
+}
+
+/* Buttons */
+.cp-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.cp-btn {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+.cp-btn:active {
+  transform: scale(0.97);
+}
+
+.cp-btn-primary {
+  background: var(--cp-primary-red);
+  color: #FFF;
+}
+
+.cp-btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.cp-btn-secondary {
+  background: #334155;
+  color: #FFF;
+}
+
+.cp-btn-secondary:hover {
+  background: #475569;
+}
+
+.cp-btn-gold {
+  background: var(--cp-gold);
+  color: #000;
+}
+
+.cp-btn-golive {
+  background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+  color: #FFF;
+  font-size: 14px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+/* Preview Box */
+.cp-preview-box {
+  background: #000;
+  border: 1px solid var(--cp-border);
+  border-radius: 6px;
+  height: 50px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cp-preview-badge {
+  height: 100%;
+  padding: 0 12px;
+  background: var(--cp-primary-red);
+  color: #FFF;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.cp-preview-text {
+  padding: 0 12px;
+  font-size: 13px;
+  color: #FFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
