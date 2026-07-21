@@ -1,6 +1,7 @@
 /**
- * AV Media Telangana - Secondary Playlist OBS Runtime (Task 4A Integration)
- * Unified Master Orchestrator linking PlaylistEngine, Interpreter, PlaybackController, BadgeMotion, CrawlMotion, & StaticRenderer.
+ * AV Media Telangana - Secondary Playlist OBS Runtime (Task 4A & M2-1D Integration)
+ * Unified Master Orchestrator linking PlaylistEngine, Interpreter, PlaybackController, BadgeMotion, CrawlMotion, StaticRenderer,
+ * GoogleSheetProvider, GoogleSheetRefreshService, & GoogleSheetProviderStatus.
  * Strictly adheres to SECONDARY_NEWS_PLAYLIST_ENGINE_SPEC.md Constitution v1.0.
  */
 
@@ -9,6 +10,8 @@ import { PlaylistInterpreter } from './interpreter/index.js';
 import { TimelinePlaybackController, PlaylistTransitionManager } from './playback/index.js';
 import { BadgeMotionEngine, CrawlMotionEngine } from './motion/index.js';
 import { StaticRenderer } from './renderer/index.js';
+import { GoogleSheetProvider } from './data-providers/GoogleSheetProvider.js';
+import { GoogleSheetRefreshService, GoogleSheetProviderStatus } from './services/index.js';
 
 export class SecondaryPlaylistRuntime {
   constructor(options = {}) {
@@ -24,6 +27,11 @@ export class SecondaryPlaylistRuntime {
     this.crawlMotionEngine = null;
     this.staticRenderer = null;
     this.transitionManager = null;
+
+    // Google Sheet Integration Services (Task M2-1D)
+    this.googleSheetProvider = null;
+    this.googleSheetRefreshService = null;
+    this.googleSheetStatus = null;
 
     this.isInitialized = false;
     this.isLooping = options.loop !== false; // Default infinite loop
@@ -56,11 +64,94 @@ export class SecondaryPlaylistRuntime {
       });
 
       this.isInitialized = true;
+
+      // Auto-connect Google Sheet if url or csvText provided in options
+      if (options.googleSheetUrl || options.csvUrl || options.csvText) {
+        await this.connectGoogleSheet({
+          url: options.googleSheetUrl || options.csvUrl,
+          csvText: options.csvText,
+          pollInterval: options.pollInterval || 30000,
+          autoPlay: options.autoPlay !== false
+        });
+      }
+
       return true;
     } catch (error) {
       console.error('[SecondaryPlaylistRuntime] Initialization error:', error);
       return false;
     }
+  }
+
+  /**
+   * Connect and bind GoogleSheetProvider, RefreshService, & Status monitor.
+   * Manages Cold Startup & Safe Hot Reloads.
+   */
+  async connectGoogleSheet(options = {}) {
+    if (!this.isInitialized) return false;
+
+    const url = options.url || options.googleSheetUrl || '';
+    const csvText = options.csvText || null;
+    const pollInterval = typeof options.pollInterval === 'number' ? options.pollInterval : 30000;
+    const autoPlay = options.autoPlay !== false;
+
+    this.googleSheetProvider = new GoogleSheetProvider({ url, csvText });
+    await this.googleSheetProvider.initialize();
+
+    this.googleSheetStatus = new GoogleSheetProviderStatus({
+      csvUrl: url,
+      pollInterval
+    });
+
+    this.googleSheetRefreshService = new GoogleSheetRefreshService({
+      provider: this.googleSheetProvider,
+      runtime: this,
+      intervalMs: pollInterval
+    });
+
+    // Wire status telemetry hooks
+    this.googleSheetRefreshService.onUpdate((playlists) => {
+      if (this.googleSheetStatus) {
+        this.googleSheetStatus.recordSyncSuccess(playlists);
+      }
+    });
+
+    this.googleSheetRefreshService.onError((errorMsg) => {
+      if (this.googleSheetStatus) {
+        this.googleSheetStatus.recordSyncFailure(errorMsg);
+      }
+    });
+
+    // Cold Startup Check
+    if (this.googleSheetStatus) this.googleSheetStatus.recordSyncStart();
+    const initialSyncSuccess = await this.googleSheetRefreshService.checkForUpdates();
+
+    if (initialSyncSuccess && autoPlay) {
+      this.play();
+    }
+
+    // Start continuous background polling
+    this.googleSheetRefreshService.start();
+    return initialSyncSuccess;
+  }
+
+  /**
+   * Get telemetry and health status from GoogleSheetProviderStatus.
+   */
+  getProviderStatus() {
+    if (this.googleSheetStatus) {
+      return this.googleSheetStatus.getStatus();
+    }
+    return {
+      status: 'OFFLINE',
+      lastSync: null,
+      pollInterval: 0,
+      csvUrl: '',
+      playlistCount: 0,
+      newsCount: 0,
+      datasetVersion: 0,
+      lastError: 'GoogleSheetProvider not connected',
+      failureCount: 0
+    };
   }
 
   /**
@@ -139,6 +230,18 @@ export class SecondaryPlaylistRuntime {
 
   destroy() {
     this.stop();
+
+    if (this.googleSheetRefreshService) {
+      this.googleSheetRefreshService.stop();
+      this.googleSheetRefreshService = null;
+    }
+
+    if (this.googleSheetStatus) {
+      this.googleSheetStatus.reset();
+      this.googleSheetStatus = null;
+    }
+
+    this.googleSheetProvider = null;
     this.containerElement = null;
     this.badgeElement = null;
     this.newsElement = null;
