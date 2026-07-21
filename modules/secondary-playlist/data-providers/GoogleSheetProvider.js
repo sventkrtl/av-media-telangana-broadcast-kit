@@ -24,11 +24,19 @@ export class GoogleSheetProvider extends BaseDataProvider {
   }
 
   /**
-   * Automatically normalizes any Google Sheet URL (Edit / Share / Published / HTML) into a valid direct CSV URL.
+   * Automatically normalizes any Google Sheet URL (Edit / Share / Published / HTML / Nested OBS Params) into a valid direct CSV URL.
    */
   static normalizeGoogleSheetUrl(url) {
     if (!url || typeof url !== 'string') return '';
-    const trimmed = url.trim();
+    let trimmed = url.trim();
+
+    // If full OBS URL containing ?sheetUrl= or &sheetUrl= was pasted by mistake, extract inner Google Sheet URL
+    if (trimmed.includes('sheetUrl=')) {
+      const matchParam = trimmed.match(/[?&]sheetUrl=([^&]+)/);
+      if (matchParam && matchParam[1]) {
+        trimmed = decodeURIComponent(matchParam[1]);
+      }
+    }
 
     // Already a direct CSV export URL or published CSV URL
     if (trimmed.includes('output=csv') || trimmed.includes('format=csv') || trimmed.includes('out:csv')) {
