@@ -1,0 +1,11 @@
+/* Ticker Breaking Theme */
+.ticker-container {
+  background: rgba(178, 7, 16, 0.96);
+  border-top: 3px solid #FFD600;
+}
+
+.ticker-badge {
+  background: #FFD600;
+  color: #000000;
+  font-weight: 800;
+}

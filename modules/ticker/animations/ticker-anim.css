@@ -1,0 +1,15 @@
+/* Ticker Module Animations */
+@keyframes marqueeScroll {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.ticker-track.scrolling {
+  animation: marqueeScroll var(--ticker-duration, 30s) linear infinite;
+}

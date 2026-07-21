@@ -1,0 +1,54 @@
+/* Ticker Module Base Styles */
+@import url('../../shared/css/main.css');
+@import url('./animations/ticker-anim.css');
+@import url('./themes/default.css');
+
+.ticker-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  z-index: 9000;
+}
+
+.ticker-badge {
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-telangana, sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.ticker-viewport {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.ticker-item {
+  font-family: var(--font-family-telangana, 'Noto Sans Telugu', sans-serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFFFFF;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ticker-separator {
+  color: var(--color-accent-gold, #FFC107);
+  margin: 0 12px;
+}

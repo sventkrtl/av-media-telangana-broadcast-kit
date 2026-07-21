@@ -1,0 +1,10 @@
+/* Ticker Default Theme */
+.ticker-container {
+  background: rgba(11, 19, 37, 0.95);
+  border-top: 3px solid var(--color-accent-gold, #FFC107);
+}
+
+.ticker-badge {
+  background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+  color: #FFFFFF;
+}
