@@ -17,6 +17,7 @@ export class ControlPanelApp {
 
     this.statusPill = document.querySelector('.cp-status-pill');
     this.statusDot = document.querySelector('.cp-status-dot');
+    this.statusText = document.getElementById('status-text');
 
     this.previewBadge = document.getElementById('preview-badge');
     this.previewTrack = document.getElementById('preview-track');
@@ -49,7 +50,7 @@ export class ControlPanelApp {
 
   setupStatusListener() {
     this.stateEngine.onStatusChange((status) => {
-      if (!this.statusPill) return;
+      if (!this.statusPill || !this.statusText) return;
 
       if (status === 'CONNECTED') {
         this.statusPill.style.color = '#10B981';
@@ -59,7 +60,7 @@ export class ControlPanelApp {
           this.statusDot.style.background = '#10B981';
           this.statusDot.style.boxShadow = '0 0 6px #10B981';
         }
-        this.statusPill.childNodes[1].nodeValue = ' LIVE ENGINE CONNECTED';
+        this.statusText.textContent = 'LIVE ENGINE CONNECTED';
       } else if (status === 'RECONNECTING') {
         this.statusPill.style.color = '#D97706';
         this.statusPill.style.borderColor = 'rgba(217, 119, 6, 0.3)';
@@ -68,7 +69,7 @@ export class ControlPanelApp {
           this.statusDot.style.background = '#D97706';
           this.statusDot.style.boxShadow = '0 0 6px #D97706';
         }
-        this.statusPill.childNodes[1].nodeValue = ' RECONNECTING...';
+        this.statusText.textContent = 'RECONNECTING...';
       } else {
         this.statusPill.style.color = '#EF4444';
         this.statusPill.style.borderColor = 'rgba(239, 68, 68, 0.3)';
@@ -77,7 +78,7 @@ export class ControlPanelApp {
           this.statusDot.style.background = '#EF4444';
           this.statusDot.style.boxShadow = '0 0 6px #EF4444';
         }
-        this.statusPill.childNodes[1].nodeValue = ' OFFLINE (FALLBACK)';
+        this.statusText.textContent = 'OFFLINE (FALLBACK)';
       }
     });
   }
