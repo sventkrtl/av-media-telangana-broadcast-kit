@@ -94,7 +94,7 @@ export class SecondaryPlaylistApp {
           theme: 'sports',
           items: [
             'ఇండియా వర్సెస్ ఆస్ట్రేలియా బోర్డర్-గవాస్కర్ ట్రోఫీ మూడో టెస్ట్ రేపే ప్రారంభం',
-            'హైదరాబాద్‌లోని ఉప్పల్ స్టేడియంలో అంతర్జాతీయ బ్యాడ్మింటన్ సిరీస్ పోటీలు'
+            'హైదరాబాద్‌లోని ఉప్పల్ స్టేడి్యంలో అంతర్జాతీయ బ్యాడ్మింటన్ సిరీస్ పోటీలు'
           ]
         }),
         new PlaylistModel({
@@ -114,9 +114,17 @@ export class SecondaryPlaylistApp {
     this.stateEngine.subscribe((msg) => {
       if (!msg || msg.engine !== 'secondary-playlist') return;
 
-      if (msg.action === 'update' && msg.payload && Array.isArray(msg.payload.playlists)) {
-        this.runtime.loadPlaylists(processPlaylists(msg.payload.playlists));
-        this.runtime.play();
+      if (msg.action === 'update' && msg.payload) {
+        if (msg.payload.sheetUrl) {
+          this.runtime.connectGoogleSheet({
+            url: msg.payload.sheetUrl,
+            pollInterval: msg.payload.pollInterval || 30000,
+            autoPlay: true
+          });
+        } else if (Array.isArray(msg.payload.playlists) && msg.payload.playlists.length > 0) {
+          this.runtime.loadPlaylists(processPlaylists(msg.payload.playlists));
+          this.runtime.play();
+        }
       } else if (msg.action === 'pause') {
         this.runtime.pause();
       } else if (msg.action === 'resume') {

@@ -1,7 +1,7 @@
 /**
  * AV Media Telangana - Google Sheet Data Provider (Task M2-1A Read-Only)
  * Consumes Web-Published Google Sheet CSV data and converts rows into standardized PlaylistModel[] objects.
- * Supports UTF-8 Telugu text, status filtering, automatic URL normalization, and flexible column alias matching.
+ * Supports UTF-8 Telugu text, status filtering, automatic URL normalization, tab auto-detection (gid probing), and flexible column alias matching.
  * Strictly adheres to SECONDARY_NEWS_PLAYLIST_ENGINE_SPEC.md Constitution v1.0.
  */
 
@@ -85,6 +85,29 @@ export class GoogleSheetProvider extends BaseDataProvider {
       }
 
       this.playlists = this.parseCSVToPlaylists(rawCsv);
+
+      // Tab Auto-Detection: If default tab returns 0 playlists and no explicit gid was specified in URL, probe other gids (gid=2, gid=1, etc.)
+      if (this.playlists.length === 0 && csvUrl.includes('/spreadsheets/d/') && !this.url.includes('gid=')) {
+        const candidateGids = [2, 1, 3, 4, 5];
+        for (const gid of candidateGids) {
+          try {
+            const probeUrl = csvUrl.includes('?') ? `${csvUrl}&gid=${gid}` : `${csvUrl}?gid=${gid}`;
+            const probeResp = await fetch(probeUrl);
+            if (probeResp.ok) {
+              const probeCsv = await probeResp.text();
+              const parsed = this.parseCSVToPlaylists(probeCsv);
+              if (parsed.length > 0) {
+                console.log(`[GoogleSheetProvider] Auto-detected active news feed tab at gid=${gid}`);
+                this.playlists = parsed;
+                break;
+              }
+            }
+          } catch (e) {
+            // Ignore individual tab probe exceptions
+          }
+        }
+      }
+
       this.status = 'READY';
 
       return new ProviderResult({
