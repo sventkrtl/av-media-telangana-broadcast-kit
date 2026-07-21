@@ -1,6 +1,6 @@
 /**
  * AV Media Telangana Broadcast State Engine
- * Standardized Protocol, Exponential Backoff Reconnect, & Status Notifications
+ * Versioned Broadcast Protocol Schema (v1), Timestamped Frames & Auto Reconnect
  */
 
 export class StateEngine {
@@ -99,6 +99,8 @@ export class StateEngine {
 
   emit(engine, action, payload = {}) {
     const data = {
+      version: 1,
+      timestamp: Date.now(),
       engine: engine || 'ticker',
       action: action, // 'update', 'pause', 'resume'
       payload: payload,
