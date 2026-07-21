@@ -157,8 +157,19 @@ export class ControlPanelApp {
     } catch (e) {}
 
     const headlineText = data.items.join(' | ');
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
     recent = recent.filter(item => item.headlineText !== headlineText);
-    recent.unshift({ headlineText, category: data.category, theme: data.theme, speed: data.speed, items: data.items, timestamp: Date.now() });
+    recent.unshift({ 
+      headlineText, 
+      category: data.category, 
+      theme: data.theme, 
+      speed: data.speed, 
+      items: data.items, 
+      timeStr,
+      timestamp: Date.now() 
+    });
 
     if (recent.length > 10) recent = recent.slice(0, 10);
     localStorage.setItem('av_media_recent_headlines', JSON.stringify(recent));
@@ -178,10 +189,13 @@ export class ControlPanelApp {
 
     this.recentList.innerHTML = recent.map((item, idx) => `
       <div class="cp-recent-item" data-idx="${idx}">
-        <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85%;">
-          <strong style="color:var(--cp-gold)">[${item.category}]</strong> ${item.headlineText}
+        <div style="display:flex; align-items:center; gap:8px; overflow:hidden; max-width:85%;">
+          <span style="font-size:10px; font-weight:700; color:var(--cp-text-muted); background:#0F172A; padding:1px 4px; border-radius:3px;">${item.timeStr || '14:30'}</span>
+          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <strong style="color:var(--cp-gold)">[${item.category}]</strong> ${item.headlineText}
+          </span>
         </div>
-        <span style="font-size:10px; color:var(--cp-accent-green)">Restore ↩</span>
+        <span style="font-size:12px; color:var(--cp-accent-green); font-weight:bold;" title="Restore headline">↻</span>
       </div>
     `).join('');
 
@@ -207,7 +221,8 @@ export class ControlPanelApp {
 
   handleApply() {
     const data = this.getFormData();
-    const timeStr = new Date().toLocaleTimeString();
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
     data.lastUpdated = timeStr;
 
     this.updatePreview();
@@ -218,7 +233,6 @@ export class ControlPanelApp {
     localStorage.setItem('av_media_ticker_live_state', JSON.stringify(data));
     this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
 
-    // Visual Feedback
     const originalText = this.btnApply.textContent;
     this.btnApply.textContent = '✅ LIVE UPDATED!';
     this.btnApply.style.background = '#059669';
@@ -242,22 +256,18 @@ export class ControlPanelApp {
 
   bindShortcuts() {
     document.addEventListener('keydown', (e) => {
-      // Ctrl + Enter: Apply Live
       if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();
         this.handleApply();
       }
-      // Ctrl + P: Preview
       else if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
         e.preventDefault();
         this.updatePreview();
       }
-      // Ctrl + Space: Toggle Pause
       else if (e.ctrlKey && e.code === 'Space') {
         e.preventDefault();
         this.handleTogglePause();
       }
-      // Esc: Reset Form
       else if (e.key === 'Escape') {
         this.loadSavedState();
         this.markDirty(false);
@@ -301,7 +311,6 @@ export class ControlPanelApp {
       });
     });
 
-    // Settings Modal
     this.settingsGear.addEventListener('click', () => {
       this.settingsModal.classList.add('visible');
     });
