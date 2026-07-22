@@ -120,13 +120,13 @@ export class PrimaryStaticRenderer {
     if (isDom && !existingText) {
       text.className = 'ph-headline-text';
       text.style.fontFamily = PRIMARY_RENDER_CONSTANTS.FONT_FAMILY;
-      text.style.fontSize = '42px'; // Calibrated font size for TV legibility
-      text.style.fontWeight = '700';
+      text.style.fontSize = '36px'; // Calibrated font size for un-clipped ascenders/descenders
+      text.style.fontWeight = '500'; // Clean vector rendering without faux-bold smudging
       text.style.whiteSpace = 'nowrap';
       text.style.overflow = 'hidden';
       text.style.textOverflow = 'clip';
       text.style.width = '100%';
-      text.style.lineHeight = '1.2';
+      text.style.lineHeight = '1.4'; // Generous line height preventing glyph clipping
     }
     this.textElement = text;
 

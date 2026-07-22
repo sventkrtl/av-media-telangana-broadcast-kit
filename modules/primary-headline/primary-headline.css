@@ -64,13 +64,14 @@ html, body {
 .ph-headline-text {
   color: #FFFFFF;
   font-family: 'Ramabhadra', 'Noto Sans Telugu', system-ui, sans-serif;
-  font-size: 42px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 500;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
   width: 100%;
-  line-height: 1.2;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
   will-change: clip-path, opacity;
 }
