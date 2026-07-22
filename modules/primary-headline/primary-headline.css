@@ -80,4 +80,5 @@ html, body {
   width: 100%;
   line-height: normal;
   letter-spacing: 0.2px;
+  margin-top: -6px; /* Optical Center calibration for Ramabhadra Telugu baseline */
 }
