@@ -663,7 +663,10 @@ export class ControlPanelApp {
 
       this.breakingHeadlines = [...headlines];
 
-      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = statusObj.status;
+      if (this.bnTelemetryStatus) {
+        this.bnTelemetryStatus.textContent = statusObj.status;
+        this.bnTelemetryStatus.style.color = (statusObj.status === 'ERROR') ? '#EF4444' : (statusObj.status === 'READY' ? '#10B981' : 'var(--cp-gold)');
+      }
       if (this.bnTelemetryError) {
         this.bnTelemetryError.textContent = statusObj.lastError ? statusObj.lastError : 'None (Operating Normally)';
         this.bnTelemetryError.style.color = statusObj.lastError ? '#EF4444' : '#10B981';
@@ -688,7 +691,10 @@ export class ControlPanelApp {
       }
     } catch (err) {
       console.error('[ControlPanel] Error fetching Breaking feed:', err);
-      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = 'ERROR';
+      if (this.bnTelemetryStatus) {
+        this.bnTelemetryStatus.textContent = 'ERROR';
+        this.bnTelemetryStatus.style.color = '#EF4444';
+      }
       if (this.bnTelemetryError) {
         this.bnTelemetryError.textContent = err.message || 'Fetch failed';
         this.bnTelemetryError.style.color = '#EF4444';
