@@ -120,7 +120,7 @@ export class PrimaryStaticRenderer {
     if (isDom && !existingText) {
       text.className = 'ph-headline-text';
       text.style.fontFamily = PRIMARY_RENDER_CONSTANTS.FONT_FAMILY;
-      text.style.fontSize = '36px'; // Calibrated font size for un-clipped ascenders/descenders
+      text.style.fontSize = '40px'; // Calibrated font size for maximum safe visual presence without clipping
       text.style.fontWeight = '500'; // Clean vector rendering without faux-bold smudging
       text.style.whiteSpace = 'nowrap';
       text.style.overflow = 'hidden';
