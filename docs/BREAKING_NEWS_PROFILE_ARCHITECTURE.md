@@ -188,5 +188,39 @@ Operator Pastes Google Sheet URL
 
 ---
 
-*Document version: v2.1.0 (B1-1 Google Sheet Integration).*
+## 🎛️ 9. Control Panel Workflow & Operator Lifecycle (Task B1-2)
+
+### Two-Step Editorial Workflow
+
+To enforce broadcast safety:
+> **CONSTITUTIONAL RULE**:
+> **Breaking feed synchronization SHALL NEVER trigger an on-air event automatically.**
+
+```
+1. Feed Config / Sync:
+   Google Sheet URL ➔ Click "Apply Feed" / "Sync Now" ➔ Update Preview Card ➔ WAIT (Off-Air)
+
+2. Broadcast Trigger:
+   Click "🔴 SHOW NOW" (or Ctrl+Enter) ➔ Emit `breaking-news:preempt` ➔ Red Bar On-Air (Primary Pauses)
+
+3. Release Broadcast:
+   Click "■ STOP" (or Esc) ➔ Emit `breaking-news:release` ➔ Red Bar Out (Primary Auto-Resumes)
+```
+
+### Manual Headline Override:
+- Textarea allows typing an urgent manual headline.
+- Clicking `SHOW NOW (Manual)` broadcasts the manual headline immediately without overwriting the Google Sheet feed.
+- Clicking `CLEAR` empties the textarea and resets the preview card.
+
+### Telemetry & Safeguards:
+- **Telemetry Monitor**: State (`Idle`/`Active`), Last Trigger Time, Feed Status (`ONLINE`/`OFFLINE`/`ERROR`), Current Source (`Google Sheet`/`Manual`).
+- **Duplicate Safeguard**: Clicking `SHOW NOW` while already active safely rejects duplicate triggers.
+- **Idle Safeguard**: Clicking `STOP` while already idle is safely ignored.
+- **Keyboard Shortcuts**: `Ctrl + Enter` (SHOW NOW), `Esc` (STOP) when `🔴 Breaking Profile` tab is active.
+- **Persistence**: Persists `av_media_breaking_sheet_url` in `localStorage` ONLY. Manual text, active state, and sessions are never persisted.
+
+---
+
+*Document version: v2.1.0 (B1-2 Control Panel Integration).*
+
 

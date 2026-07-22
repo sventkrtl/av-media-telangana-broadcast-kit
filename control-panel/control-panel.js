@@ -1,5 +1,6 @@
 import { StateEngine } from '../shared/js/state-engine.js';
 import { PlaylistModel } from '../modules/secondary-playlist/playlist-engine.js';
+import { BreakingNewsDataAdapter } from '../modules/breaking-news/adapters/BreakingNewsDataAdapter.js';
 
 export class ControlPanelApp {
   constructor() {
@@ -71,6 +72,29 @@ export class ControlPanelApp {
     this.phTelemetryInterval = document.getElementById('ph-telemetry-interval');
     this.phTelemetryError = document.getElementById('ph-telemetry-error');
 
+    // DOM Elements - Breaking Profile Tab
+    this.bnSheetUrl = document.getElementById('bn-sheet-url');
+    this.btnBnApply = document.getElementById('btn-bn-apply');
+    this.btnBnFetch = document.getElementById('btn-bn-fetch');
+    this.bnUnsavedBadge = document.getElementById('bn-unsaved-badge');
+    this.btnBnShowNow = document.getElementById('btn-bn-show-now');
+    this.btnBnStop = document.getElementById('btn-bn-stop');
+    this.bnManualInput = document.getElementById('bn-manual-input');
+    this.btnBnManualShow = document.getElementById('btn-bn-manual-show');
+    this.btnBnManualClear = document.getElementById('btn-bn-manual-clear');
+    this.bnPreviewHeadline = document.getElementById('bn-preview-headline');
+    this.bnLiveBadge = document.getElementById('bn-live-badge');
+    this.bnTelemetryState = document.getElementById('bn-telemetry-state');
+    this.bnTelemetryLastTrigger = document.getElementById('bn-telemetry-lasttrigger');
+    this.bnTelemetryStatus = document.getElementById('bn-telemetry-status');
+    this.bnTelemetrySource = document.getElementById('bn-telemetry-source');
+    this.bnTelemetryError = document.getElementById('bn-telemetry-error');
+
+    this.breakingAdapter = new BreakingNewsDataAdapter();
+    this.isBreakingActive = false;
+    this.breakingSource = 'Google Sheet';
+    this.breakingHeadlines = [];
+
     this.isPhPaused = false;
     this.phDatasetVersion = 1;
 
@@ -81,6 +105,7 @@ export class ControlPanelApp {
     this.loadSavedState();
     this.loadDraft();
     this.loadSavedPrimaryState();
+    this.loadSavedBreakingState();
     this.renderRecentHeadlines();
     this.bindEvents();
     this.bindShortcuts();
@@ -95,7 +120,7 @@ export class ControlPanelApp {
     document.querySelectorAll('.cp-nav-item').forEach(item => {
       item.addEventListener('click', () => {
         const tab = item.dataset.tab;
-        if (tab === 'ticker' || tab === 'secondary-playlist' || tab === 'primary-headline') {
+        if (tab === 'ticker' || tab === 'secondary-playlist' || tab === 'primary-headline' || tab === 'breaking') {
           document.querySelectorAll('.cp-nav-item').forEach(i => i.classList.remove('active'));
           item.classList.add('active');
 
@@ -574,7 +599,9 @@ export class ControlPanelApp {
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();
-        if (this.activeTab === 'secondary-playlist') {
+        if (this.activeTab === 'breaking') {
+          this.handleBreakingShowNow();
+        } else if (this.activeTab === 'secondary-playlist') {
           this.handleSecondaryApply();
         } else if (this.activeTab === 'primary-headline') {
           this.handlePrimaryHeadlineApply();
@@ -597,11 +624,164 @@ export class ControlPanelApp {
         }
       }
       else if (e.key === 'Escape') {
-        this.loadSavedState();
-        this.markDirty(false);
-        this.updatePreview();
+        if (this.activeTab === 'breaking') {
+          this.handleBreakingStop();
+        } else {
+          this.loadSavedState();
+          this.markDirty(false);
+          this.updatePreview();
+        }
       }
     });
+  }
+
+  loadSavedBreakingState() {
+    const savedUrl = localStorage.getItem('av_media_breaking_sheet_url');
+    if (savedUrl && this.bnSheetUrl) {
+      this.bnSheetUrl.value = savedUrl;
+      this.handleBreakingApply(false);
+    }
+  }
+
+  async handleBreakingApply(saveUrl = true) {
+    const url = this.bnSheetUrl ? this.bnSheetUrl.value.trim() : '';
+    if (saveUrl && url) {
+      localStorage.setItem('av_media_breaking_sheet_url', url);
+    }
+    if (this.bnUnsavedBadge) this.bnUnsavedBadge.classList.remove('visible');
+
+    if (!url) {
+      this.updateBreakingPreview('(No Breaking Sheet URL configured)');
+      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = 'UNCONFIGURED';
+      return;
+    }
+
+    try {
+      const headlines = await this.breakingAdapter.fetchBreakingHeadlines(url);
+      const statusObj = this.breakingAdapter.getStatus();
+
+      this.breakingHeadlines = [...headlines];
+
+      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = statusObj.status;
+      if (this.bnTelemetryError) {
+        this.bnTelemetryError.textContent = statusObj.lastError ? statusObj.lastError : 'None (Operating Normally)';
+        this.bnTelemetryError.style.color = statusObj.lastError ? '#EF4444' : '#10B981';
+      }
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+      this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
+
+      // TWO-STEP EDITORIAL WORKFLOW RULE:
+      // Apply Feed / Sync Now ONLY updates preview card without auto-broadcasting on-air!
+      this.updateBreakingPreview();
+
+      if (this.btnBnApply) {
+        const origText = this.btnBnApply.textContent;
+        this.btnBnApply.textContent = '✅ FEED APPLIED!';
+        this.btnBnApply.style.background = '#059669';
+        setTimeout(() => {
+          this.btnBnApply.textContent = origText;
+          this.btnBnApply.style.background = '';
+        }, 1500);
+      }
+    } catch (err) {
+      console.error('[ControlPanel] Error fetching Breaking feed:', err);
+      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = 'ERROR';
+      if (this.bnTelemetryError) {
+        this.bnTelemetryError.textContent = err.message || 'Fetch failed';
+        this.bnTelemetryError.style.color = '#EF4444';
+      }
+    }
+  }
+
+  handleBreakingShowNow(isManual = false) {
+    if (this.isBreakingActive) {
+      console.warn('[ControlPanel] Duplicate SHOW NOW rejected. Breaking Profile is already active.');
+      return;
+    }
+
+    const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
+    let targetHeadline = '';
+
+    if (isManual || manualText) {
+      targetHeadline = manualText;
+      this.breakingSource = 'Manual';
+    } else if (this.breakingHeadlines.length > 0) {
+      targetHeadline = this.breakingHeadlines[0];
+      this.breakingSource = 'Google Sheet';
+    } else {
+      alert('నోటిఫికేషన్: ప్రసారం చేయడానికి ఎలాంటి వార్త లేదు! దయచేసి Google Sheet ని Sync చేయండి లేదా రాతపూర్వక వార్తను నమోదు చేయండి.');
+      return;
+    }
+
+    if (!targetHeadline) return;
+
+    this.isBreakingActive = true;
+    this.stateEngine.emit('breaking-news', 'preempt', { headline: targetHeadline });
+
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+    if (this.bnLiveBadge) {
+      this.bnLiveBadge.textContent = 'ON-AIR';
+      this.bnLiveBadge.parentElement.style.color = '#DC2626';
+    }
+    if (this.bnTelemetryState) {
+      this.bnTelemetryState.textContent = 'ACTIVE';
+      this.bnTelemetryState.style.color = '#DC2626';
+    }
+    if (this.bnTelemetryLastTrigger) this.bnTelemetryLastTrigger.textContent = timeStr;
+    if (this.bnTelemetrySource) this.bnTelemetrySource.textContent = this.breakingSource;
+
+    this.updateBreakingPreview(targetHeadline);
+  }
+
+  handleBreakingStop() {
+    if (!this.isBreakingActive) {
+      console.log('[ControlPanel] STOP ignored safely: Breaking Profile is already idle.');
+      return;
+    }
+
+    this.isBreakingActive = false;
+    this.stateEngine.emit('breaking-news', 'release', {});
+
+    if (this.bnLiveBadge) {
+      this.bnLiveBadge.textContent = 'OFF-AIR';
+      this.bnLiveBadge.parentElement.style.color = '#10B981';
+    }
+    if (this.bnTelemetryState) {
+      this.bnTelemetryState.textContent = 'IDLE';
+      this.bnTelemetryState.style.color = 'var(--cp-text)';
+    }
+
+    this.updateBreakingPreview();
+  }
+
+  handleBreakingManualClear() {
+    if (this.bnManualInput) this.bnManualInput.value = '';
+    this.updateBreakingPreview();
+  }
+
+  updateBreakingPreview(customText = null) {
+    if (!this.bnPreviewHeadline) return;
+
+    if (customText) {
+      this.bnPreviewHeadline.textContent = customText;
+      return;
+    }
+
+    const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
+    if (manualText) {
+      this.bnPreviewHeadline.textContent = `[MANUAL] ${manualText}`;
+      return;
+    }
+
+    if (this.breakingHeadlines.length > 0) {
+      this.bnPreviewHeadline.textContent = `[SHEET] ${this.breakingHeadlines[0]}`;
+    } else {
+      this.bnPreviewHeadline.textContent = '(No breaking headline loaded - Enter text or sync feed)';
+    }
   }
 
   bindEvents() {
@@ -650,6 +830,36 @@ export class ControlPanelApp {
     if (this.phPayloadInput) {
       this.phPayloadInput.addEventListener('input', () => {
         if (this.phUnsavedBadge) this.phUnsavedBadge.classList.add('visible');
+      });
+    }
+
+    // Breaking Profile Buttons
+    if (this.btnBnApply) {
+      this.btnBnApply.addEventListener('click', () => this.handleBreakingApply());
+    }
+    if (this.btnBnFetch) {
+      this.btnBnFetch.addEventListener('click', () => this.handleBreakingApply());
+    }
+    if (this.btnBnShowNow) {
+      this.btnBnShowNow.addEventListener('click', () => this.handleBreakingShowNow(false));
+    }
+    if (this.btnBnStop) {
+      this.btnBnStop.addEventListener('click', () => this.handleBreakingStop());
+    }
+    if (this.btnBnManualShow) {
+      this.btnBnManualShow.addEventListener('click', () => this.handleBreakingShowNow(true));
+    }
+    if (this.btnBnManualClear) {
+      this.btnBnManualClear.addEventListener('click', () => this.handleBreakingManualClear());
+    }
+    if (this.bnSheetUrl) {
+      this.bnSheetUrl.addEventListener('input', () => {
+        if (this.bnUnsavedBadge) this.bnUnsavedBadge.classList.add('visible');
+      });
+    }
+    if (this.bnManualInput) {
+      this.bnManualInput.addEventListener('input', () => {
+        this.updateBreakingPreview();
       });
     }
 

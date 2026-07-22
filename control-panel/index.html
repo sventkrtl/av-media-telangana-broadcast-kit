@@ -44,8 +44,8 @@
         <span class="cp-badge-small">SOON</span>
       </div>
       <div class="cp-nav-item" data-tab="breaking">
-        <span>Breaking News</span>
-        <span class="cp-badge-small">SOON</span>
+        <span>🔴 Breaking Profile</span>
+        <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
       </div>
       <div class="cp-nav-item" data-tab="reporter">
         <span>Reporter Card</span>
@@ -301,6 +301,89 @@
           </div>
           <div style="font-size:10px; color:var(--cp-text-muted); margin-top:4px;">
             <strong>Diagnostics / Last Error:</strong> <span id="ph-telemetry-error" style="color:var(--cp-accent-green)">None (Operating Normally)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: BREAKING PROFILE -->
+      <div id="tab-breaking" class="cp-tab-pane" style="display:none; flex-direction:column; gap:12px;">
+        <!-- Card 1: Feed Configuration -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>🔴 Breaking Profile Feed Configuration</span>
+            <span id="bn-unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
+          </div>
+
+          <div class="cp-form-group">
+            <label class="cp-label" for="bn-sheet-url">
+              <span>Google Sheet Published CSV URL</span>
+              <span style="font-size:10px; color:var(--cp-gold)">Breaking Profile Tab (GID=3)</span>
+            </label>
+            <input id="bn-sheet-url" type="url" class="cp-input" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+          </div>
+
+          <div class="cp-btn-group">
+            <button id="btn-bn-fetch" class="cp-btn cp-btn-secondary">🔄 Sync Now</button>
+            <button id="btn-bn-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply Feed</button>
+          </div>
+        </div>
+
+        <!-- Card 2: Breaking Operator Controls & Manual Override -->
+        <div class="cp-card" style="border-left: 4px solid #DC2626;">
+          <div class="cp-card-title">
+            <span>⚡ Operator On-Air Controls</span>
+            <span id="bn-status-pill" class="cp-status-pill" style="color:#DC2626; background:rgba(220,38,38,0.15);">
+              ● <span id="bn-live-badge">OFF-AIR</span>
+            </span>
+          </div>
+
+          <!-- Main Broadcast Action Buttons -->
+          <div class="cp-btn-group" style="margin-bottom:12px;">
+            <button id="btn-bn-show-now" class="cp-btn" style="flex:2; background:#DC2626; color:#FFF; font-weight:bold; font-size:14px;">🔴 SHOW NOW</button>
+            <button id="btn-bn-stop" class="cp-btn cp-btn-secondary" style="flex:1; font-weight:bold;">■ STOP</button>
+          </div>
+
+          <!-- Manual Headline Input -->
+          <div class="cp-form-group">
+            <label class="cp-label" for="bn-manual-input">
+              <span>Manual Breaking Headline Override (ప్రత్యక్ష అత్యవసర ప్రకటన)</span>
+              <span style="font-size:10px; color:var(--cp-text-muted)">ఒక సారి అత్యవసర వర్తమానం (Sheet ని మార్చదు)</span>
+            </label>
+            <textarea id="bn-manual-input" class="cp-textarea" style="min-height:75px;" placeholder="ఉదాహరణ: 🚨 అత్యవసరం: జగిత్యాల వద్ద భారీ వర్షాలు - రెడ్ అలర్ట్ జారీ!"></textarea>
+          </div>
+
+          <div class="cp-btn-group">
+            <button id="btn-bn-manual-show" class="cp-btn" style="background:#EF4444; color:#FFF;">🔴 SHOW NOW (Manual)</button>
+            <button id="btn-bn-manual-clear" class="cp-btn cp-btn-secondary">CLEAR</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Preview Card -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>👁️ Breaking Headline Preview (పరిశీలన)</span>
+            <span style="font-size:10px; color:var(--cp-text-muted)">Off-Air Verification</span>
+          </div>
+          <div style="background:#0F172A; border:1px solid #334155; border-radius:6px; padding:12px; min-height:50px; display:flex; align-items:center;">
+            <div id="bn-preview-headline" style="color:#FFF; font-family:'Ramabhadra', 'Mandali', sans-serif; font-size:18px; font-weight:bold; line-height:1.4;">
+              (No breaking headline loaded - Enter text or sync feed)
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Telemetry & Monitoring -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📡 Telemetry &amp; State Monitor</span>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px; color:var(--cp-text-muted);">
+            <div><strong>Current State:</strong> <span id="bn-telemetry-state" style="color:var(--cp-text)">IDLE</span></div>
+            <div><strong>Last Trigger Time:</strong> <span id="bn-telemetry-lasttrigger" style="color:var(--cp-gold)">Never</span></div>
+            <div><strong>Provider Status:</strong> <span id="bn-telemetry-status" style="color:#10B981">UNINITIALIZED</span></div>
+            <div><strong>Active Source:</strong> <span id="bn-telemetry-source" style="color:var(--cp-text)">Google Sheet</span></div>
+          </div>
+          <div style="font-size:10px; color:var(--cp-text-muted); margin-top:4px;">
+            <strong>Diagnostics / Last Error:</strong> <span id="bn-telemetry-error" style="color:var(--cp-accent-green)">None (Operating Normally)</span>
           </div>
         </div>
       </div>
