@@ -28,24 +28,28 @@ export class StateEngine {
     }
 
     // 3. Storage Listener Fallback
-    window.addEventListener('storage', (e) => {
-      if (e.key === this.channelName && e.newValue) {
-        try { this.handleIncoming(JSON.parse(e.newValue)); } catch (err) {}
-      }
-    });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (e) => {
+        if (e.key === this.channelName && e.newValue) {
+          try { this.handleIncoming(JSON.parse(e.newValue)); } catch (err) {}
+        }
+      });
+    }
 
     // 4. CEF Polling Fallback
-    setInterval(() => {
-      const raw = localStorage.getItem(this.channelName);
-      if (raw) {
-        try {
-          const data = JSON.parse(raw);
-          if (data && data.requestId !== this.lastProcessedRequestId) {
-            this.handleIncoming(data);
-          }
-        } catch (err) {}
-      }
-    }, 300);
+    if (typeof localStorage !== 'undefined') {
+      setInterval(() => {
+        const raw = localStorage.getItem(this.channelName);
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            if (data && data.requestId !== this.lastProcessedRequestId) {
+              this.handleIncoming(data);
+            }
+          } catch (err) {}
+        }
+      }, 300);
+    }
   }
 
   setStatus(status) {
@@ -61,6 +65,7 @@ export class StateEngine {
   }
 
   initWebSocket() {
+    if (typeof WebSocket === 'undefined') return;
     try {
       this.setStatus('RECONNECTING');
       this.ws = new WebSocket(this.wsUrl);
@@ -126,7 +131,9 @@ export class StateEngine {
       try { this.bc.postMessage(data); } catch (e) {}
     }
 
-    localStorage.setItem(this.channelName, JSON.stringify(data));
+    if (typeof localStorage !== 'undefined') {
+      try { localStorage.setItem(this.channelName, JSON.stringify(data)); } catch (e) {}
+    }
     this.handleIncoming(data);
   }
 

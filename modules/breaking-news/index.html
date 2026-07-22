@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+  <title>AV Media Telangana - Breaking News Profile Overlay</title>
+  <link rel="stylesheet" href="breaking-news.css">
+</head>
+<body>
+  <!-- 1920x1080 OBS Broadcast Overlay Canvas -->
+  <div id="bn-overlay" class="bn-overlay-canvas">
+    <!-- Breaking News Container — Y: 890px, Height: 135px -->
+    <div id="bn-container" class="bn-container">
+      <!-- Urgent Red Bar Background — #DC2626 -->
+      <div id="ph-blue-bar" class="bn-red-bar">
+        <!-- Headline Viewport — Animation / Reveal layer (owns clip-path and opacity) -->
+        <div id="ph-headline-viewport" class="bn-headline-viewport">
+          <!-- Centered Headline Text — 59px Ramabhadra + translateY(-11px) -->
+          <div id="ph-headline-text" class="bn-headline-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="breaking-news.js"></script>
+</body>
+</html>
