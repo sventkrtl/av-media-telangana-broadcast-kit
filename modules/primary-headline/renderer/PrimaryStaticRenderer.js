@@ -120,13 +120,14 @@ export class PrimaryStaticRenderer {
     if (isDom && !existingText) {
       text.className = 'ph-headline-text';
       text.style.fontFamily = PRIMARY_RENDER_CONSTANTS.FONT_FAMILY;
-      text.style.fontSize = '40px'; // Calibrated font size for maximum safe visual presence without clipping
+      text.style.fontSize = '40px'; // Calibrated font size for maximum safe visual presence
       text.style.fontWeight = '500'; // Clean vector rendering without faux-bold smudging
       text.style.whiteSpace = 'nowrap';
-      text.style.overflow = 'hidden';
+      text.style.overflowX = 'hidden';
+      text.style.overflowY = 'visible';
       text.style.textOverflow = 'clip';
       text.style.width = '100%';
-      text.style.lineHeight = '1.4'; // Generous line height preventing glyph clipping
+      text.style.lineHeight = 'normal'; // Native Ramabhadra font metrics line height
     }
     this.textElement = text;
 
