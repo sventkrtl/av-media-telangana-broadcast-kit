@@ -67,7 +67,21 @@ export class PrimaryHeadlineApp {
 
     // 5. Subscribe to WebSocket broadcast channel for Control Panel messages
     this.stateEngine.subscribe((msg) => {
-      if (!msg || (msg.engine !== 'primary-headline' && msg.engine !== 'global')) return;
+      if (!msg) return;
+
+      // Handle Breaking News Preemption & Release Handshake
+      if (msg.engine === 'breaking-news') {
+        if (msg.action === 'preempt') {
+          console.log('[PrimaryHeadlineApp] Preempted by Breaking News. Pausing primary playback.');
+          this.runtime.pause();
+        } else if (msg.action === 'release') {
+          console.log('[PrimaryHeadlineApp] Released by Breaking News. Resuming primary playback.');
+          this.runtime.resume();
+        }
+        return;
+      }
+
+      if (msg.engine !== 'primary-headline' && msg.engine !== 'global') return;
 
       if (msg.action === 'update' && msg.payload) {
         if (msg.payload.sheetUrl) {
