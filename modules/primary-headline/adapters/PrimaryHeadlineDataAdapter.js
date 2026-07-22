@@ -128,6 +128,137 @@ export class PrimaryHeadlineDataAdapter {
   }
 
   // ----------------------------------------------------
+  // Direct CSV Fetch for Primary Headline Sheet Format
+  // ----------------------------------------------------
+
+  /**
+   * Directly fetch and parse the Primary Headline Google Sheet CSV.
+   * Handles the format: Order, Active, Priority, Headline, Repeat
+   * This bypasses GoogleSheetProvider's PlaylistModel parser which
+   * requires a 'Label' column not present in the Primary Headline sheet.
+   *
+   * Also probes alternate gids (0,1,2) to auto-detect the correct tab.
+   *
+   * @param {string} url - Google Sheet URL (any format: edit, share, export)
+   * @returns {Promise<Array<string>>} Clean, active headline strings in order
+   */
+  async fetchHeadlinesCsvDirect(url) {
+    const normalizedBase = GoogleSheetProvider.normalizeGoogleSheetUrl(url);
+
+    // Build list of URLs to probe: explicit gid first, then gid=1, 0, 2
+    const urlsToProbe = [];
+    if (normalizedBase.includes('gid=')) {
+      urlsToProbe.push(normalizedBase);
+    } else {
+      // Probe gid=1 first (most common Primary Headline tab position), then 0, 2
+      const base = normalizedBase.includes('?') ? normalizedBase : normalizedBase;
+      urlsToProbe.push(`${base}&gid=1`, `${base}&gid=0`, `${base}&gid=2`, `${base}&gid=3`);
+    }
+
+    for (const probeUrl of urlsToProbe) {
+      try {
+        const response = await fetch(probeUrl);
+        if (!response.ok) continue;
+
+        const csvText = await response.text();
+        const headlines = this._parsePrimaryHeadlineCsv(csvText);
+
+        if (headlines.length > 0) {
+          console.log(`[PrimaryHeadlineDataAdapter] Direct CSV fetch succeeded. URL: ${probeUrl}, Headlines: ${headlines.length}`);
+          return headlines;
+        }
+      } catch (err) {
+        // Try next URL
+      }
+    }
+
+    return [];
+  }
+
+  /**
+   * Parse a CSV string that has at minimum a 'Headline' column.
+   * Supports formats:
+   *   - Order, Active, Priority, Headline, Repeat  (Primary Headline sheet)
+   *   - Headline (single column)
+   *   - Active, Headline (two columns)
+   *
+   * Rows with Active = FALSE/false/0 are excluded.
+   * Order column is used for sorting if present.
+   *
+   * @param {string} csvText
+   * @returns {Array<string>}
+   */
+  _parsePrimaryHeadlineCsv(csvText) {
+    if (!csvText || typeof csvText !== 'string') return [];
+
+    const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length < 2) return [];
+
+    // Parse header row
+    const headers = this._parseCsvRow(lines[0]).map(h => h.trim().toLowerCase());
+
+    const headlineIdx = headers.findIndex(h =>
+      h.includes('headline') || h.includes('text') || h.includes('news') || h.includes('content')
+    );
+    if (headlineIdx === -1) return [];
+
+    const activeIdx = headers.findIndex(h => h.includes('active') || h.includes('status') || h.includes('enable'));
+    const orderIdx = headers.findIndex(h => h === 'order' || h === 'priority');
+
+    const items = [];
+    for (let i = 1; i < lines.length; i++) {
+      const row = this._parseCsvRow(lines[i]);
+      if (!row || row.length === 0) continue;
+
+      const headline = (row[headlineIdx] || '').trim();
+      if (!headline) continue;
+
+      // Skip inactive rows
+      if (activeIdx !== -1) {
+        const activeVal = (row[activeIdx] || '').trim().toLowerCase();
+        if (activeVal === 'false' || activeVal === '0' || activeVal === 'inactive' || activeVal === 'disabled') {
+          continue;
+        }
+      }
+
+      const order = orderIdx !== -1 ? parseInt(row[orderIdx] || '9999', 10) : i;
+      items.push({ headline, order: isNaN(order) ? i : order });
+    }
+
+    // Sort by order, preserve editorial sequence
+    items.sort((a, b) => a.order - b.order);
+    return items.map(item => item.headline);
+  }
+
+  /**
+   * Minimal RFC 4180-compliant CSV row parser.
+   * Handles quoted fields containing commas and newlines.
+   */
+  _parseCsvRow(line) {
+    const fields = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        fields.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    fields.push(current);
+    return fields;
+  }
+
+  // ----------------------------------------------------
   // Connection & Refresh Service Lifecycle
   // ----------------------------------------------------
 
@@ -152,8 +283,54 @@ export class PrimaryHeadlineDataAdapter {
     this.provider.url = normalizedUrl;
     this.statusTracker.setCsvUrl(normalizedUrl);
 
-    // Initial fetch
+    // STRATEGY 1: Direct CSV fetch (handles Primary Headline sheet format)
     this.statusTracker.recordSyncStart();
+    try {
+      const headlines = await this.fetchHeadlinesCsvDirect(url);
+
+      if (headlines.length > 0) {
+        this.lastValidHeadlines = [...headlines];
+        this.statusTracker.recordSyncSuccess([]);
+
+        if (this.runtime && this.runtime.isInitialized) {
+          this.runtime.loadHeadlines(headlines);
+          if (autoPlay) {
+            this.runtime.play();
+          }
+        }
+
+        this._notifyUpdated(headlines);
+
+        // Start background polling via refresh service
+        this.refreshService.setIntervalMs(pollInterval);
+        this.refreshService.onUpdate(async () => {
+          try {
+            const newHeadlines = await this.fetchHeadlinesCsvDirect(url);
+            if (newHeadlines.length > 0 && !this._areHeadlinesEqual(newHeadlines, this.lastValidHeadlines)) {
+              this.scheduleSafeHotReload(newHeadlines);
+            }
+          } catch (e) {
+            this._notifyError(e);
+          }
+        });
+        this.refreshService.start();
+
+        // Wire safe hot reload listener to runtime
+        if (this.runtime) {
+          this.runtime.onHeadlineComplete(() => {
+            if (this.isReloadPending && this.pendingHeadlines) {
+              this.applyPendingReload();
+            }
+          });
+        }
+
+        return this.lastValidHeadlines;
+      }
+    } catch (err) {
+      console.warn('[PrimaryHeadlineDataAdapter] Direct CSV strategy failed, trying provider fallback:', err.message);
+    }
+
+    // STRATEGY 2: Fallback to GoogleSheetProvider (Secondary Playlist PlaylistModel format)
     try {
       const result = await this.provider.fetchPlaylists();
 
@@ -173,7 +350,7 @@ export class PrimaryHeadlineDataAdapter {
 
           this._notifyUpdated(headlines);
         } else {
-          console.warn('[PrimaryHeadlineDataAdapter] Fetched feed contains zero active headlines.');
+          console.warn('[PrimaryHeadlineDataAdapter] Both strategies returned zero headlines.');
         }
       } else {
         const errMsg = result ? result.error : 'Unknown provider fetch failure';
@@ -183,36 +360,7 @@ export class PrimaryHeadlineDataAdapter {
     } catch (err) {
       this.statusTracker.recordSyncFailure(err.message);
       this._notifyError(err);
-      console.warn('[PrimaryHeadlineDataAdapter] Fetch failed. Retaining last valid dataset.');
-    }
-
-    // Configure and start background refresh service
-    this.refreshService.setIntervalMs(pollInterval);
-
-    // Listen to background updates from refresh service
-    this.refreshService.onUpdate((result) => {
-      if (result && result.success && Array.isArray(result.data)) {
-        const newHeadlines = this.extractHeadlines(result.data);
-        if (newHeadlines.length > 0 && !this._areHeadlinesEqual(newHeadlines, this.lastValidHeadlines)) {
-          this.scheduleSafeHotReload(newHeadlines);
-        }
-      }
-    });
-
-    this.refreshService.onError((err) => {
-      this.statusTracker.recordSyncFailure(err.message || 'Background poll error');
-      this._notifyError(err);
-    });
-
-    this.refreshService.start();
-
-    // Wire safe hot reload listener to runtime's headline completion event
-    if (this.runtime) {
-      this.runtime.onHeadlineComplete(() => {
-        if (this.isReloadPending && this.pendingHeadlines) {
-          this.applyPendingReload();
-        }
-      });
+      console.warn('[PrimaryHeadlineDataAdapter] Both strategies failed. Retaining last valid dataset.');
     }
 
     return this.lastValidHeadlines;
