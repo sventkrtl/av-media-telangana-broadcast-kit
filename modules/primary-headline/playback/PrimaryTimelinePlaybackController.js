@@ -257,8 +257,8 @@ export class PrimaryTimelinePlaybackController extends HeadlinePlaybackContract 
     // 2. Notify onStageStart listeners
     this._notifyStart(event);
 
-    // 3. Update Static Renderer text if TEXT_IN or BAR_IN
-    if (event.type === EVENT_TYPES.TEXT_IN && event.payload && event.payload.headlineText) {
+    // 3. Update Static Renderer text if BAR_IN or TEXT_IN
+    if ((event.type === EVENT_TYPES.BAR_IN || event.type === EVENT_TYPES.TEXT_IN) && event.payload && event.payload.headlineText) {
       if (this.staticRenderer && this.staticRenderer.isInitialized) {
         this.staticRenderer.renderHeadline(event.payload.headlineText);
       }

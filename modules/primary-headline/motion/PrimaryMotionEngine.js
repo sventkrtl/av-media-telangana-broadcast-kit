@@ -200,6 +200,12 @@ export class PrimaryMotionEngine {
         barEl.style.transform = 'scaleX(0)';
         barEl.style.opacity = '1';
 
+        // Keep text element hidden during initial BAR_IN scaleX expansion
+        if (this.currentTextElement && this.currentTextElement.style) {
+          this.currentTextElement.style.opacity = '0';
+          this.currentTextElement.style.clipPath = 'inset(0 50% 0 50%)';
+        }
+
         void barEl.offsetWidth; // Force style reflow flush
 
         barEl.style.transition = `transform ${durationMs}ms cubic-bezier(0, 0, 0.2, 1)`;

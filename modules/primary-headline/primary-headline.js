@@ -40,12 +40,6 @@ export class PrimaryHeadlineApp {
       loop: true
     });
 
-    // Manually link DOM nodes if already present in index.html
-    if (this.runtime.staticRenderer) {
-      if (barEl) this.runtime.staticRenderer.barElement = barEl;
-      if (textEl) this.runtime.staticRenderer.textElement = textEl;
-    }
-
     // 3. Create Thin Adapter
     this.adapter = new PrimaryHeadlineDataAdapter({
       runtime: this.runtime,

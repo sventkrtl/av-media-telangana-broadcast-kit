@@ -126,9 +126,20 @@ $$\text{1. Idea} \longrightarrow \text{2. Discussion} \longrightarrow \text{3. C
 4. **Approval**: Lock Constitution (Level 2 Approval).
 5. **Implementation**: Build Runtime, Provider, Renderer, and Motion engines.
 6. **Testing**: Pass all automated test suites and 1,000-cycle stability audits.
-7. **Production Validation**: Cross-device display and OBS Studio verification.
+7. **Production Validation**: Cross-device display and OBS Studio visual verification.
 8. **Freeze**: Mark module as Constitutionally Frozen ❄️.
 9. **Annotated Git Tag**: Create versioned Git release tag (`vX.Y.Z`).
+
+### 📺 OBS Visual Validation Mandatory Rule
+An OBS/Overlay task is **NOT complete** until the following elements are explicitly verified visually in a live Browser Source / CEF render:
+- ✓ **Layout**: Absolute geometry & canvas bounds
+- ✓ **Typography**: Font rendering, Telugu legibility, single-line compliance
+- ✓ **Motion**: Correct stage sequence & direction
+- ✓ **Timing**: Correct stage durations (BAR_IN 300ms ➔ TEXT_IN 300ms ➔ HOLD 4000ms ➔ TEXT_OUT 300ms ➔ BAR_OUT 300ms)
+- ✓ **Runtime**: Continuous looping & error resilience
+- ✓ **Live OBS Browser Source**: Clean execution in actual browser viewport
+
+> **Unit tests alone are NOT sufficient for broadcast completion.**
 
 ---
 

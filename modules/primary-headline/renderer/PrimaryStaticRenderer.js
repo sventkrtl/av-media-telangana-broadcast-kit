@@ -87,53 +87,57 @@ export class PrimaryStaticRenderer {
       container.style.pointerEvents = 'none';
     }
 
-    // 2. Create Blue Background Bar
-    const bar = isDom ? document.createElement('div') : { tagName: 'DIV', style: {} };
-    if (isDom) {
-      bar.id = 'ph-blue-bar';
+    // Check for pre-existing DOM elements in index.html to prevent duplication
+    const existingBar = isDom && container.querySelector ? container.querySelector('#ph-blue-bar') : null;
+    const existingText = isDom && container.querySelector ? container.querySelector('#ph-headline-text') : null;
+
+    // 2. Create or Reuse Blue Background Bar
+    const bar = existingBar || (isDom ? document.createElement('div') : { tagName: 'DIV', style: {} });
+    bar.id = bar.id || 'ph-blue-bar';
+    if (!bar.style) bar.style = {};
+    bar.style.backgroundColor = PRIMARY_RENDER_CONSTANTS.BAR_BG_COLOR;
+    if (isDom && !existingBar) {
       bar.className = 'ph-blue-bar';
       bar.style.position = 'absolute';
       bar.style.top = '0';
       bar.style.left = '0';
       bar.style.width = '100%';
       bar.style.height = '100%';
-      bar.style.backgroundColor = PRIMARY_RENDER_CONSTANTS.BAR_BG_COLOR;
       bar.style.display = 'flex';
       bar.style.alignItems = 'center';
       bar.style.justifyContent = 'center';
       bar.style.padding = `0 ${PRIMARY_RENDER_CONSTANTS.SIDE_PADDING}px`;
       bar.style.boxSizing = 'border-box';
-    } else {
-      bar.id = 'ph-blue-bar';
-      bar.style = { backgroundColor: PRIMARY_RENDER_CONSTANTS.BAR_BG_COLOR };
     }
     this.barElement = bar;
 
-    // 3. Create Centered Headline Text Element
-    const text = isDom ? document.createElement('div') : { tagName: 'DIV', style: {} };
-    if (isDom) {
-      text.id = 'ph-headline-text';
+    // 3. Create or Reuse Centered Headline Text Element
+    const text = existingText || (isDom ? document.createElement('div') : { tagName: 'DIV', style: {} });
+    text.id = text.id || 'ph-headline-text';
+    if (!text.style) text.style = {};
+    text.style.color = PRIMARY_RENDER_CONSTANTS.TEXT_COLOR;
+    text.style.textAlign = 'center';
+    if (isDom && !existingText) {
       text.className = 'ph-headline-text';
-      text.style.color = PRIMARY_RENDER_CONSTANTS.TEXT_COLOR;
       text.style.fontFamily = PRIMARY_RENDER_CONSTANTS.FONT_FAMILY;
       text.style.fontSize = '32px'; // Base font size before runtime auto-scaling
       text.style.fontWeight = '700';
-      text.style.textAlign = 'center';
       text.style.whiteSpace = 'nowrap';
       text.style.overflow = 'hidden';
       text.style.textOverflow = 'clip';
       text.style.width = '100%';
       text.style.lineHeight = '1.2';
-    } else {
-      text.id = 'ph-headline-text';
-      text.style = { color: PRIMARY_RENDER_CONSTANTS.TEXT_COLOR, textAlign: 'center' };
     }
     this.textElement = text;
 
-    // Mount DOM nodes
+    // Mount DOM nodes if not pre-existing
     if (isDom && container.appendChild) {
-      bar.appendChild(text);
-      container.appendChild(bar);
+      if (!existingBar) {
+        bar.appendChild(text);
+        container.appendChild(bar);
+      } else if (!existingText && bar.appendChild) {
+        bar.appendChild(text);
+      }
     }
 
     this.isInitialized = true;
