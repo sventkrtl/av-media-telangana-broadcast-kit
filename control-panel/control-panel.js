@@ -88,6 +88,7 @@ export class ControlPanelApp {
     this.bnTelemetryLastTrigger = document.getElementById('bn-telemetry-lasttrigger');
     this.bnTelemetryStatus = document.getElementById('bn-telemetry-status');
     this.bnTelemetrySource = document.getElementById('bn-telemetry-source');
+    this.bnTelemetryFeedName = document.getElementById('bn-telemetry-feed-name');
     this.bnTelemetryError = document.getElementById('bn-telemetry-error');
 
     this.breakingAdapter = new BreakingNewsDataAdapter();
@@ -733,6 +734,9 @@ export class ControlPanelApp {
     }
     if (this.bnTelemetryLastTrigger) this.bnTelemetryLastTrigger.textContent = timeStr;
     if (this.bnTelemetrySource) this.bnTelemetrySource.textContent = this.breakingSource;
+    if (this.bnTelemetryFeedName) {
+      this.bnTelemetryFeedName.textContent = (this.breakingSource === 'Manual') ? 'Manual Entry' : 'Breaking Profile';
+    }
 
     this.updateBreakingPreview(targetHeadline);
   }
