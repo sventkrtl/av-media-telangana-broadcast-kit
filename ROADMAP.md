@@ -11,6 +11,19 @@
 
 ---
 
+## 🏛️ Repository Engineering Governance
+> All development in this repository is governed by [`ENGINEERING_GOVERNANCE.md`](./ENGINEERING_GOVERNANCE.md).
+>
+> 1. **Level 1**: `ROADMAP.md`
+> 2. **Level 2**: Engine Constitutions (`*_SPEC.md`) — *Supreme authority per engine*
+> 3. **Level 3**: Architecture Decision Records (`docs/adr/`)
+> 4. **Level 4**: Implementation
+> 5. **Level 5**: Testing
+> 6. **Level 6**: Production Validation
+> 7. **Level 7**: Freeze & Release Tag (`vX.Y.Z`)
+
+---
+
 ## 📈 Version Roadmap & Sprint Targets
 
 - [x] **v1.0.0**: Repository Setup & Core SDK Engines (`shared/engines/`)
