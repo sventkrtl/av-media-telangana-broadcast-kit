@@ -1,6 +1,8 @@
 > ఇది Project Constitution.
 >
 > అంటే ఇకపై AI ఊహించకూడదు. మనం నిర్ణయించిన Rules మాత్రమే Follow చేయాలి.
+>
+> **Governance Rule**: ఈ Document ఎప్పటికీ Edit చేయకూడదు. ఒకసారి Accepted అయితే, భవిష్యత్తులో మార్పులు వస్తే `PRIMARY_HEADLINE_ENGINE_SPEC_v2.md` లేదా ADR (Architecture Decision Record) రూపంలో మాత్రమే నమోదు చేయాలి.
 
 ---
 
@@ -12,7 +14,7 @@ This document overrides any AI assumptions, UI redesign ideas, or future creativ
 
 If there is any conflict between previous implementations, suggestions, or ideas and this document, **THIS DOCUMENT ALWAYS WINS**.
 
-This engine specification is now **Feature Locked by Specification**.
+This document is the **ONLY** source of truth for the Primary Headline Engine.
 
 ---
 
@@ -22,13 +24,12 @@ This engine specification is now **Feature Locked by Specification**.
 **Primary Headline Engine**
 
 ### Purpose
-Display the channel's most important headline.
+Present the channel's most important headline with premium broadcast presentation.
 
 ### This is NOT:
-- ❌ A ticker
-- ❌ A crawl
-- ❌ A marquee
-- ❌ A playlist crawl
+- ❌ A Ticker
+- ❌ A Crawl
+- ❌ A Playlist Marquee
 
 ### This IS:
 - A **Headline Presentation Engine** designed to showcase high-priority broadcast headlines one at a time with supreme clarity.
@@ -53,60 +54,92 @@ All positioning coordinates are **ABSOLUTE** within the 1080p Broadcast Canvas. 
 
 ---
 
-## 3. Visual Role & Priority
+## 3. Bar & Text Styling Rules
 
-- The Primary Headline Bar has **higher visual hierarchy and priority** than the Secondary Crawl.
-- **Only ONE headline** is visible on screen at any given instant.
-
----
-
-## 4. Bar Behaviour (Permanent Layer)
-
-The Primary Headline Bar structure itself is a **permanent broadcast element**.
-
-The Bar **NEVER**:
-- ❌ Slides In
-- ❌ Slides Out
-- ❌ Fades In
-- ❌ Fades Out
-- ❌ Disappears during scene or headline changes
-
-Only the headline content inside the bar animates during headline transitions.
+- **Bar Background Color**: **Always Blue** (`#0F172A` / `#1E3A8A` broadcast blue base token).
+- **Text Color**: **Always White** (`#FFFFFF`).
+- **Bar Structure**: Permanent layer. The bar itself **never moves** after its initial entry reveal.
+- **Headline Content**: Only the headline content inside the bar changes between items.
 
 ---
 
-## 5. Headline Behaviour & Transitions
+## 4. Typography & Layout Constraints
 
-### Sequence
-1. Headline 1 enters.
-2. Headline 1 remains static and fully visible for the designated hold duration.
-3. Headline 1 exits.
-4. Headline 2 enters.
-5. Continuous infinite loop.
+### Primary Font Stack
+1. `Ramabhadra` (Primary Telugu Headline Font)
+2. `Noto Sans Telugu` (Secondary Fallback)
+3. `sans-serif` (System Fallback)
 
-### Strict Transition Rules
-- Headline content ONLY animates.
-- The background bar remains completely stationary.
+### Alignment Rules
+- **Text Alignment**: **Always Center** (`text-align: center`).
+- ❌ **Never** Left
+- ❌ **Never** Right
+- ❌ **Never** Justify
+
+### Strict Text Constraints
+- **Single Line Only**: Exactly **ONE** line is allowed.
+- ❌ Multiple lines are **strictly prohibited**.
+- ❌ **No Scrolling** / No Crawling
+- ❌ **No Marquee** / No horizontal movement
+- ❌ **No Icons**
+- ❌ **No Emojis**
+- ❌ **No Bullets**
+- Headline text must always remain centered within the bar.
 
 ---
 
-## 6. Strict Prohibition of Scrolling (NO CRAWL / MARQUEE)
+## 5. Automatic Font Scaling
 
-The text content in the Primary Headline Engine:
-- ❌ Must **NEVER** crawl.
-- ❌ Must **NEVER** marquee.
-- ❌ Must **NEVER** move horizontally across the screen.
-
-All headline content presentation must be stationary during the hold phase.
+- Automatically scale font size down so that any headline fits onto a **single line**.
+- **Never wrap text** to a second line.
+- Font scaling algorithm must preserve visual legibility and readability across all screen sizes.
 
 ---
 
-## 7. Content Source & Looping Strategy
+## 6. Primary Motion Language (5-Stage Animation Lifecycle)
 
-- **Source**: Dedicated Google Sheet for Primary Headlines.
-- **Structure**: One row = One headline.
-- **Loop Strategy**: Infinite continuous sequence:
-  `Headline 1 → Headline 2 → ... → Headline N → Headline 1`
+The Primary Headline Engine adheres to a strict 5-stage motion lifecycle:
+
+```
+[Stage 1: Bar Reveal] ➔ [Stage 2: Headline Reveal] ➔ [Stage 3: Headline Hold] ➔ [Stage 4: Headline Hide] ➔ [Stage 5: Bar Hide]
+```
+
+### Stage 1: Blue Bar Reveal
+- **Direction**: Left → Right
+- **Duration**: `300 ms`
+- **Animation Type**: Scale Reveal (`transform: scaleX(0)` → `scaleX(1)`)
+- **Transform Origin**: `Left`
+- **Constraint**: The bar **NEVER translates** (no `translateX`). The bar **ONLY reveals** via scaleX.
+
+### Stage 2: Headline Reveal
+- **Direction**: Center → Outside (symmetrical reveal)
+- **Duration**: `300 ms`
+- **Constraint**: The headline **NEVER slides**. The headline **NEVER moves horizontally**. The headline is revealed symmetrically from its center point.
+
+### Stage 3: Headline Hold
+- **Duration**: `4000 ms` (4 Seconds)
+- **State**: Stationary. **Zero movement**.
+
+### Stage 4: Headline Hide
+- **Direction**: Outside → Center
+- **Duration**: `300 ms`
+- **Animation Type**: Symmetrical collapse back to center (exact reverse of Stage 2 Headline Reveal).
+
+### Stage 5: Blue Bar Hide (Optional End-of-Feed or Transition)
+- **Direction**: Right → Left
+- **Duration**: `300 ms`
+- **Animation Type**: Scale collapse (`scaleX(1)` → `scaleX(0)` with transform origin `Right`, exact reverse of Stage 1 Bar Reveal).
+
+---
+
+## 7. Playback & Looping Strategy
+
+Continuous infinite loop sequence:
+
+$$\text{Headline 1} \longrightarrow \text{Headline 2} \longrightarrow \text{Headline 3} \longrightarrow \dots \longrightarrow \text{Headline } N \longrightarrow \text{Headline 1 (Loop)}$$
+
+- Each headline completes Stage 2 (Reveal), Stage 3 (Hold 4000ms), and Stage 4 (Hide) before the next headline enters via Stage 2.
+- The blue bar remains visible and fixed on screen between consecutive headlines during normal loop playback.
 
 ---
 
@@ -114,33 +147,44 @@ All headline content presentation must be stationary during the hold phase.
 
 - When a **Breaking News Event** is triggered by the future Breaking Engine:
   1. The Breaking Engine **temporarily replaces** the Primary Headline content.
-  2. Primary Headline playback pauses/defers.
-  3. When the Breaking News event concludes, the Primary Headline Engine **resumes automatically** from where it was suspended or from the latest feed item.
+  2. Primary Headline playback pauses/defers safely.
+  3. When the Breaking News event concludes, the Primary Headline Engine **resumes automatically** from the next scheduled headline item in the queue.
 
 ---
 
-## 9. Performance & Animation Constraints
+## 9. Performance Constraints
 
-- **Target**: 60 FPS continuous smooth animation.
-- **Transforms**: Use **GPU-accelerated CSS properties only** (`transform: translate3d()`, `opacity`).
-- **Reflow Prevention**: **Zero DOM layout reflows** during transitions (`width`, `height`, `margin`, `padding`, `top`, `left` MUST NOT be animated).
+- **Target Frame Rate**: **60 FPS** smooth animation.
+- **Hardware Acceleration**: **GPU accelerated transforms only** (`transform: scaleX()`, `opacity`, `translate3d()`).
+- **Reflow Prevention**: **Zero layout reflows**. Never animate `width`, `height`, `margin`, `padding`, `top`, or `left`.
+- **DOM Efficiency**: No unnecessary DOM destruction or rebuilds during playback loop.
 
 ---
 
-## 10. Scope Boundaries (Out of Scope for P1-0)
+## 10. Visual Philosophy
 
-The following components are strictly out of scope for this specification task:
+> **"The animation exists to support readability."**
+> 
+> **"The animation must NEVER draw more attention than the headline itself."**
+> 
+> **"The viewer should remember the NEWS, not the animation."**
+
+---
+
+## 11. Scope Boundaries (Out of Scope for P1-0)
+
+The following components are strictly out of scope for Task P1-0:
 - No JavaScript runtime code.
 - No HTML/CSS renderer implementation.
 - No animation driver code.
 - No Google Sheet Provider implementation.
 - No Control Panel tab or UI.
-- No OBS scene implementation.
+- No OBS integration.
 
 ---
 
-## 11. Document Status
+## 12. Immutability & ADR Governance
 
-- **Status**: ✅ CONSTITUTIONALLY LOCKED
-- **Phase**: P1-0 (Foundation Specification)
-- **Governance**: All future code, providers, and modules for the Primary Headline Engine MUST conform 100% to this document.
+- **Document Immutability**: Once accepted by the team, `PRIMARY_HEADLINE_ENGINE_SPEC.md` is **IMMUTABLE**. It must never be directly edited or overwritten for future feature iterations.
+- **Future Changes**: Any future architectural or design revisions must be documented in `PRIMARY_HEADLINE_ENGINE_SPEC_v2.md` or created as numbered **Architecture Decision Records (ADRs)** in `docs/adr/`.
+- **Historical Traceability**: Versioned governance ensures a complete, unbroken record of "Why was this decision made?" for future developers and maintainers.
