@@ -83,6 +83,19 @@ When an engine reaches **Level 7 (Freeze & Release Tag)**, it enters **FROZEN** 
 - ❌ **No Architecture Changes**
 - ❌ **No Layout / Visual Redesigns**
 
+### 🧊 Absolutely Immutable Provider Modules
+The following data provider components are **FROZEN & IMMUTABLE**:
+- `GoogleSheetProvider` (`modules/secondary-playlist/data-providers/GoogleSheetProvider.js`)
+- `GoogleSheetRefreshService` (`modules/secondary-playlist/services/GoogleSheetRefreshService.js`)
+- `GoogleSheetProviderStatus` (`modules/secondary-playlist/services/GoogleSheetProviderStatus.js`)
+- `ProviderRegistry` (`modules/secondary-playlist/data-providers/ProviderRegistry.js`)
+- `ProviderFactory` (`modules/secondary-playlist/data-providers/ProviderFactory.js`)
+
+**Protection Rules**:
+1. These files **MUST NOT** be modified, reformatted, extended, or given new methods.
+2. The Primary Headline Engine (or any future graphic engine) **MUST** consume existing providers **ONLY through their public API**.
+3. If adaptation is required for a new engine, developers/AI **MUST create a thin adapter** inside `modules/[new-engine]/`. Existing provider files must remain 100% untouched.
+
 ---
 
 ## 🎥 6. Production & Design Philosophies
