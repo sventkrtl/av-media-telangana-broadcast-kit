@@ -119,4 +119,28 @@ Breaking News Engine
 
 ---
 
+## ⚡ 8. Breaking Priority Rule (Race Condition Lock)
+
+To eliminate race conditions between Primary Auto-Loop background timers and Breaking manual triggers, the following strict execution lock is enforced:
+
+```
+If Breaking Profile is Active:
+    ├── IGNORE Primary Auto Timer
+    ├── IGNORE Primary Loop Iterator
+    └── IGNORE Primary Scheduler Events
+
+Result: ONLY Breaking Profile owns screen display.
+
+Upon STOP Trigger:
+    ├── Release Screen Lock
+    └── Primary Profile resumes seamlessly from paused state
+```
+
+### Race Condition Prevention Contract:
+1. **Screen Exclusive Ownership**: When Breaking Profile activates (`🔴 SHOW NOW`), it locks out all Primary background timers (`setInterval`, `setTimeout`, and schedule ticks).
+2. **Ignored Auto Events**: Any Google Sheet auto-refresh boundary or timer tick occurring while Breaking is active is queued silently without interrupting the Breaking display.
+3. **Clean Release Handshake**: Primary background timers and loop execution reactivate **ONLY** after the operator clicks `■ STOP` (or the single-cycle Breaking collapse animation completes).
+
+---
+
 *Specification approved for v2.1.0 Sprint.*
