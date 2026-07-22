@@ -142,7 +142,7 @@ export class PrimaryStaticRenderer {
       text.style.overflow = 'visible'; // Fully unconstrained glyph rendering
       text.style.width = '100%';
       text.style.lineHeight = 'normal'; // Native Ramabhadra font metrics line height
-      text.style.marginTop = '-6px'; // Optical Center baseline shift for Ramabhadra Telugu font
+      text.style.marginTop = '-7px'; // Optical Center final calibration for Ramabhadra 56px in 135px bar
     }
     this.textElement = text;
 
