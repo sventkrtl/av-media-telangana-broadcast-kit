@@ -1,5 +1,5 @@
 /**
- * AV Media Telangana - Task B1-0 Breaking News Profile Foundation Unit Tests
+ * AV Media Telangana - Task B1-1 Breaking News Profile Unit Tests
  *
  * Test Suite verifying:
  *   1. Profile Isolation & Red Bar Theme Configuration (#DC2626)
@@ -7,7 +7,9 @@
  *   3. No Primary Mutation (Runtime Ownership Rule compliance)
  *   4. Manual Trigger Lifecycle (SHOW NOW / STOP)
  *   5. Preemption & Release Handshake (Primary pause & auto-resume contract)
- *   6. Frozen Dependency Compliance
+ *   6. Dedicated Breaking Profile Feed Schema (Order | Active | Priority | Headline | Repeat)
+ *   7. Mandated Architecture Isolation & Error Handling (Missing Breaking Sheet ➔ 0 Headlines ➔ ERROR Status ➔ Zero Primary/Secondary data loaded)
+ *   8. Frozen Dependency Compliance
  *
  * Run with: node tests/breaking-news-profile.test.js
  */
@@ -27,7 +29,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../');
 
 console.log('====================================================');
-console.log('🧪 Running Task B1-0 Breaking News Profile Unit Tests');
+console.log('🧪 Running Task B1-1 Breaking News Profile Unit Tests');
 console.log('====================================================');
 
 // Mock DOM container for node environment
@@ -101,7 +103,8 @@ async function runTests() {
     const initialPrimaryIndex = primaryRuntime.playbackController.currentIndex;
 
     // 2. Trigger Breaking News display
-    await profile.showNow('🚨 BREAKING: Major Emergency Announcement');
+    const playPromise1 = profile.showNow('🚨 BREAKING: Major Emergency Announcement');
+    assert.strictEqual(profile.isActive, true, '[FAILED] isActive must be true while playing');
 
     // 3. Assert Primary Engine state remains 100% UNMUTATED
     assert.deepStrictEqual(
@@ -114,6 +117,7 @@ async function runTests() {
       initialPrimaryIndex,
       '[FAILED] Breaking Profile MUST NOT mutate Primary Headline playback index'
     );
+    await playPromise1;
     console.log('[PASSED] Runtime Ownership Rule verified: Primary queue & index remain 100% unmutated');
 
     // ----------------------------------------------------
@@ -176,7 +180,7 @@ async function runTests() {
       }
     });
 
-    await mockProfile.showNow('🚨 URGENT: Heavy Rainfall Alert');
+    mockProfile.showNow('🚨 URGENT: Heavy Rainfall Alert').catch(() => {});
     assert.strictEqual(preemptReceived, true, '[FAILED] StateEngine should receive preempt event on showNow');
 
     mockProfile.stop();
@@ -184,23 +188,47 @@ async function runTests() {
     console.log('[PASSED] Preemption & Release Handshake protocol verified via StateEngine');
 
     // ----------------------------------------------------
-    // TEST GROUP 6: Thin Data Adapter Verification
+    // TEST GROUP 6: Dedicated Breaking Profile Feed Schema Parsing
     // ----------------------------------------------------
-    console.log('\n--- Group 6: Thin Data Adapter Verification ---');
+    console.log('\n--- Group 6: Dedicated Breaking Profile Feed Schema Parsing ---');
 
     const adapter = new BreakingNewsDataAdapter();
-    const sampleCsv = `Order,Active,Headline\n1,TRUE,🚨 Breaking News Item 1\n2,FALSE,Inactive Item\n3,TRUE,🚨 Breaking News Item 2`;
-    const parsedHeadlines = adapter.parseBreakingCsv(sampleCsv);
+    const fullSchemaCsv = `Order,Active,Priority,Headline,Repeat\n1,TRUE,10,🚨 Emergency Alert 1,TRUE\n2,FALSE,5,Inactive Alert,FALSE\n3,TRUE,1,🚨 Emergency Alert 2,FALSE`;
 
-    assert.strictEqual(parsedHeadlines.length, 2, '[FAILED] Adapter should parse exactly 2 active headlines');
-    assert.strictEqual(parsedHeadlines[0], '🚨 Breaking News Item 1');
-    assert.strictEqual(parsedHeadlines[1], '🚨 Breaking News Item 2');
-    console.log('[PASSED] BreakingNewsDataAdapter parses active headlines correctly');
+    const parsedItems = adapter.parseBreakingItems(fullSchemaCsv);
+    assert.strictEqual(parsedItems.length, 2, '[FAILED] Should parse exactly 2 active breaking items');
+    assert.strictEqual(parsedItems[0].headline, '🚨 Emergency Alert 1', '[FAILED] Should be sorted by Order ascending');
+    assert.strictEqual(parsedItems[0].repeat, true, '[FAILED] Should preserve Repeat boolean');
+    assert.strictEqual(parsedItems[1].headline, '🚨 Emergency Alert 2');
+    assert.strictEqual(parsedItems[1].repeat, false, '[FAILED] Should preserve Repeat boolean');
+
+    const simpleHeadlines = adapter.parseBreakingCsv(fullSchemaCsv);
+    assert.strictEqual(simpleHeadlines.length, 2, '[FAILED] parseBreakingCsv should return 2 active headlines');
+    assert.strictEqual(simpleHeadlines[0], '🚨 Emergency Alert 1');
+    assert.strictEqual(simpleHeadlines[1], '🚨 Emergency Alert 2');
+    console.log('[PASSED] BreakingNewsDataAdapter parses full schema (Order, Active, Priority, Headline, Repeat) correctly');
 
     // ----------------------------------------------------
-    // TEST GROUP 7: Frozen Dependency Protection Compliance
+    // TEST GROUP 7: Mandated Missing Breaking Sheet Architecture Isolation Test
     // ----------------------------------------------------
-    console.log('\n--- Group 7: Frozen Dependency Protection Compliance ---');
+    console.log('\n--- Group 7: Mandated Missing Breaking Sheet Architecture Isolation Test ---');
+
+    const isolatedAdapter = new BreakingNewsDataAdapter();
+    // Test with invalid URL where no Breaking Profile tab is found
+    const result = await isolatedAdapter.fetchBreakingHeadlines('http://127.0.0.1:9999/nonexistent-sheet.csv');
+
+    assert.strictEqual(result.length, 0, '[FAILED] Missing Breaking sheet MUST return 0 headlines');
+    const statusObj = isolatedAdapter.getStatus();
+    assert.strictEqual(statusObj.status, 'ERROR', '[FAILED] Status MUST be ERROR when Breaking sheet is missing');
+    assert(statusObj.lastError.includes('Breaking Profile'), '[FAILED] Error message must state Breaking Profile tab missing');
+    assert.strictEqual(isolatedAdapter.lastValidHeadlines.length, 0, '[FAILED] Zero Primary or Secondary data loaded into Breaking Profile');
+
+    console.log('[PASSED] Architecture Isolation Mandate Verified: Missing Breaking Sheet returns 0 headlines, Status ERROR, zero Primary/Secondary fallback');
+
+    // ----------------------------------------------------
+    // TEST GROUP 8: Frozen Dependency Protection Compliance
+    // ----------------------------------------------------
+    console.log('\n--- Group 8: Frozen Dependency Protection Compliance ---');
 
     const frozenFiles = [
       'modules/primary-headline/runtime/PrimaryHeadlineRuntime.js',
@@ -211,7 +239,9 @@ async function runTests() {
       'modules/primary-headline/HeadlineStateMachine.js',
       'modules/primary-headline/primary-headline.css',
       'modules/primary-headline/index.html',
-      'modules/secondary-playlist/data-providers/GoogleSheetProvider.js'
+      'modules/secondary-playlist/data-providers/GoogleSheetProvider.js',
+      'modules/secondary-playlist/services/GoogleSheetRefreshService.js',
+      'modules/secondary-playlist/services/GoogleSheetProviderStatus.js'
     ];
 
     frozenFiles.forEach(relPath => {
@@ -226,8 +256,9 @@ async function runTests() {
     primaryRuntime.destroy();
 
     console.log('\n====================================================');
-    console.log('✅ ALL TASK B1-0 BREAKING NEWS PROFILE TESTS PASSED!');
+    console.log('✅ ALL TASK B1-1 BREAKING NEWS PROFILE TESTS PASSED!');
     console.log('====================================================\n');
+    process.exit(0);
   } catch (err) {
     console.error('\n❌ TEST FAILED:', err);
     process.exit(1);

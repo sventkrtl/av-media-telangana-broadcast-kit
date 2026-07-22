@@ -140,4 +140,53 @@ To maintain clear architectural boundaries and prevent scope creep:
 
 ---
 
-*Document version: v2.1.0 Foundation (B1-0).*
+## 📊 8. Breaking Profile Google Sheet Feed Specification (Task B1-1)
+
+### Dedicated Feed Tab Name & Schema
+
+The Breaking News Profile consumes its feed exclusively from a dedicated Google Sheet tab:
+
+- **Tab Name**: `Breaking Profile`
+- **Standard GID**: `gid=3`
+
+#### Schema:
+`| Order | Active | Priority | Headline | Repeat |`
+
+| Column | Data Type | Required | Description |
+|--------|-----------|----------|-------------|
+| **Order** | Integer | Optional | Sorting order (1, 2, 3...) |
+| **Active** | Boolean | Required | `TRUE`/`FALSE` or `1`/`0` filter |
+| **Priority** | Integer | Optional | Headline priority rating |
+| **Headline** | String | Required | Urgent Telugu/English breaking headline text |
+| **Repeat** | Boolean/Int | Optional | Repeat count or repeat flag |
+
+*Note*: No `Label`, `Theme`, `District`, or `Category` columns are required or consumed.
+
+### Strict Resolution Sequence & Zero Fallback Rule
+
+```
+Operator Pastes Google Sheet URL
+    │
+    ▼
+1. Try Tab Name: sheet=Breaking Profile (or sheet=Breaking+Profile)
+    │
+    ├── Found AND Schema Valid AND Active Rows > 0 ➔ ✅ USE THIS
+    │
+    ▼
+2. Try Configured Breaking GID: gid=3 (or explicit user Breaking GID)
+    │
+    ├── Found AND Schema Valid AND Active Rows > 0 ➔ ✅ USE THIS
+    │
+    ▼
+3. STOP & RETURN ERROR (0 Headlines, Provider Status: ERROR)
+   ❌ DO NOT FALLBACK TO PRIMARY (GID 1) OR SECONDARY (GID 2) TABS!
+```
+
+### Feed Independence & Architecture Isolation Rules:
+1. **No Engine Fallback**: If the `Breaking Profile` tab is missing, unparseable, or contains zero active rows, `BreakingNewsDataAdapter` MUST return `0 Headlines` with `status: ERROR`. It MUST NEVER read from Primary (`gid=1`) or Secondary (`gid=2`) tabs.
+2. **No Breaking Queue Reading**: Breaking Profile SHALL NOT consume or read from Breaking Queue (deferred to v3.x).
+
+---
+
+*Document version: v2.1.0 (B1-1 Google Sheet Integration).*
+
