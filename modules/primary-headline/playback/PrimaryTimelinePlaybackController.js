@@ -246,7 +246,7 @@ export class PrimaryTimelinePlaybackController extends HeadlinePlaybackContract 
   async _executeEvent(event) {
     if (!event || !event.type) return null;
 
-    const { barElement, textElement } = this.activeContainerElements;
+    const { barElement, viewportElement, textElement } = this.activeContainerElements;
 
     // 1. Sync State Machine transition
     const targetState = this._mapEventToState(event.type);
@@ -264,10 +264,12 @@ export class PrimaryTimelinePlaybackController extends HeadlinePlaybackContract 
       }
     }
 
-    // 4. Delegate motion stage execution to MotionEngine (sequential await)
+    // 4. Delegate motion stage execution to MotionEngine (sequential await).
+    //    P1-7E Rendering Isolation: viewportElement receives clip-path / opacity (not textElement).
+    //    textElement is the pure glyph rendering layer and is never touched by the Motion Engine.
     let motionResult = null;
     if (this.motionEngine && MOTION_STAGES[event.type]) {
-      motionResult = await this.motionEngine.play(event.type, barElement, textElement);
+      motionResult = await this.motionEngine.play(event.type, barElement, viewportElement || textElement);
     }
 
     // 5. Notify onStageComplete listeners

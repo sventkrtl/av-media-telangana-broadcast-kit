@@ -174,8 +174,9 @@ export class PrimaryHeadlineRuntime {
 
     try {
       const containerElements = {
-        barElement: this.staticRenderer ? this.staticRenderer.barElement : null,
-        textElement: this.staticRenderer ? this.staticRenderer.textElement : null
+        barElement:      this.staticRenderer ? this.staticRenderer.barElement      : null,
+        viewportElement: this.staticRenderer ? this.staticRenderer.viewportElement : null, // P1-7E animation target
+        textElement:     this.staticRenderer ? this.staticRenderer.textElement     : null
       };
 
       return await this.playbackController.play(containerElements);
@@ -218,8 +219,9 @@ export class PrimaryHeadlineRuntime {
   async next() {
     if (this.playbackController) {
       return await this.playbackController.step({
-        barElement: this.staticRenderer ? this.staticRenderer.barElement : null,
-        textElement: this.staticRenderer ? this.staticRenderer.textElement : null
+        barElement:      this.staticRenderer ? this.staticRenderer.barElement      : null,
+        viewportElement: this.staticRenderer ? this.staticRenderer.viewportElement : null, // P1-7E animation target
+        textElement:     this.staticRenderer ? this.staticRenderer.textElement     : null
       });
     }
   }

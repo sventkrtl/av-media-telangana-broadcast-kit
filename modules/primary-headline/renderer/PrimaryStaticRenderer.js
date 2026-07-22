@@ -37,7 +37,8 @@ export class PrimaryStaticRenderer {
   constructor(options = {}) {
     this.containerElement = null;
     this.barElement = null;
-    this.textElement = null;
+    this.viewportElement = null; // Animation layer: owns clip-path & opacity
+    this.textElement = null;     // Rendering layer: pure glyph output only
     this.isInitialized = false;
     this.currentText = '';
   }
@@ -88,8 +89,9 @@ export class PrimaryStaticRenderer {
     }
 
     // Check for pre-existing DOM elements in index.html to prevent duplication
-    const existingBar = isDom && container.querySelector ? container.querySelector('#ph-blue-bar') : null;
-    const existingText = isDom && container.querySelector ? container.querySelector('#ph-headline-text') : null;
+    const existingBar      = isDom && container.querySelector ? container.querySelector('#ph-blue-bar')         : null;
+    const existingViewport = isDom && container.querySelector ? container.querySelector('#ph-headline-viewport') : null;
+    const existingText     = isDom && container.querySelector ? container.querySelector('#ph-headline-text')     : null;
 
     // 2. Create or Reuse Blue Background Bar
     const bar = existingBar || (isDom ? document.createElement('div') : { tagName: 'DIV', style: {} });
@@ -111,7 +113,21 @@ export class PrimaryStaticRenderer {
     }
     this.barElement = bar;
 
-    // 3. Create or Reuse Centered Headline Text Element
+    // 3. Create or Reuse Headline Viewport (Animation Layer: clip-path & opacity target)
+    //    This wrapper owns clip-path / opacity so the inner text element is NEVER clipped
+    //    by clip-path during the reveal/collapse animation (Rendering Isolation Experiment P1-7E).
+    const viewport = existingViewport || (isDom ? document.createElement('div') : { tagName: 'DIV', style: {} });
+    viewport.id = viewport.id || 'ph-headline-viewport';
+    if (!viewport.style) viewport.style = {};
+    if (isDom && !existingViewport) {
+      viewport.className = 'ph-headline-viewport';
+      viewport.style.width = '100%';
+      viewport.style.overflow = 'visible';
+    }
+    this.viewportElement = viewport;
+
+    // 4. Create or Reuse Centered Headline Text Element (Pure Glyph Rendering Layer)
+    //    No clip-path, no opacity, no will-change on this element.
     const text = existingText || (isDom ? document.createElement('div') : { tagName: 'DIV', style: {} });
     text.id = text.id || 'ph-headline-text';
     if (!text.style) text.style = {};
@@ -123,9 +139,7 @@ export class PrimaryStaticRenderer {
       text.style.fontSize = '40px'; // Calibrated font size for maximum safe visual presence
       text.style.fontWeight = '500'; // Clean vector rendering without faux-bold smudging
       text.style.whiteSpace = 'nowrap';
-      text.style.overflowX = 'hidden';
-      text.style.overflowY = 'visible';
-      text.style.textOverflow = 'clip';
+      text.style.overflow = 'visible'; // Fully unconstrained glyph rendering
       text.style.width = '100%';
       text.style.lineHeight = 'normal'; // Native Ramabhadra font metrics line height
     }
@@ -134,10 +148,14 @@ export class PrimaryStaticRenderer {
     // Mount DOM nodes if not pre-existing
     if (isDom && container.appendChild) {
       if (!existingBar) {
-        bar.appendChild(text);
+        viewport.appendChild(text);
+        bar.appendChild(viewport);
         container.appendChild(bar);
-      } else if (!existingText && bar.appendChild) {
-        bar.appendChild(text);
+      } else if (!existingViewport && bar.appendChild) {
+        viewport.appendChild(text);
+        bar.appendChild(viewport);
+      } else if (!existingText && viewport.appendChild) {
+        viewport.appendChild(text);
       }
     }
 
@@ -145,7 +163,8 @@ export class PrimaryStaticRenderer {
     return {
       containerElement: this.containerElement,
       barElement: this.barElement,
-      textElement: this.textElement
+      viewportElement: this.viewportElement, // Animation target for Motion Engine
+      textElement: this.textElement          // Pure glyph rendering element
     };
   }
 
