@@ -64,6 +64,7 @@ All new features, architecture changes, and behaviour changes are **LOCKED**.
 
 | Module | Status | Frozen Since |
 |---|---|---|
+| `PRIMARY_HEADLINE_ENGINE_SPEC.md` | 📜 CONSTITUTION APPROVED | P1-0 (v1.0) |
 | `modules/ticker/` | ❄️ FROZEN | v1.2.1 |
 | `modules/secondary-playlist/SecondaryPlaylistRuntime.js` | ❄️ FROZEN | v2.0.0 |
 | `modules/secondary-playlist/interpreter/` | ❄️ FROZEN | v2.0.0 |
