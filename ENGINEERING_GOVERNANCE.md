@@ -141,6 +141,16 @@ An OBS/Overlay task is **NOT complete** until the following elements are explici
 
 > **Unit tests alone are NOT sufficient for broadcast completion.**
 
+### 🎨 Visual Calibration Rule
+Before module Freeze, the following visual parameters may be calibrated without changing architecture:
+- • **Font Size** (e.g. calibrating headline text size for TV legibility)
+- • **Font Weight**
+- • **Color Tone** (e.g. calibrating broadcast blue hue `#1E3A8A`)
+- • **Shadow Strength**
+- • **Padding & Spacing**
+
+> **No motion, no runtime, no behavior, and no timeline changes are permitted during visual calibration.**
+
 ---
 
 ## 📋 8. Active Module Governance Matrix

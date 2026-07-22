@@ -43,14 +43,14 @@ html, body {
   pointer-events: none;
 }
 
-/* Blue Background Bar — Always Blue #0F172A / #1E3A8A */
+/* Blue Background Bar — Vibrant Corporate Broadcast Blue #1E3A8A */
 .ph-blue-bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #0F172A;
+  background-color: #1E3A8A;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +64,7 @@ html, body {
 .ph-headline-text {
   color: #FFFFFF;
   font-family: 'Ramabhadra', 'Noto Sans Telugu', system-ui, sans-serif;
-  font-size: 32px;
+  font-size: 42px;
   font-weight: 700;
   text-align: center;
   white-space: nowrap;

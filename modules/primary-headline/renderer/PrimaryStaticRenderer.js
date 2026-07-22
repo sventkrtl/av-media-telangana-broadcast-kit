@@ -27,7 +27,7 @@ export const PRIMARY_RENDER_CONSTANTS = Object.freeze({
   BAR_WIDTH: 1920,
   BAR_HEIGHT: 135,
   BAR_BOTTOM: 1025,
-  BAR_BG_COLOR: '#0F172A',
+  BAR_BG_COLOR: '#1E3A8A',
   TEXT_COLOR: '#FFFFFF',
   FONT_FAMILY: "'Ramabhadra', 'Noto Sans Telugu', system-ui, sans-serif",
   SIDE_PADDING: 40 // Title-safe horizontal margin in px
@@ -120,7 +120,7 @@ export class PrimaryStaticRenderer {
     if (isDom && !existingText) {
       text.className = 'ph-headline-text';
       text.style.fontFamily = PRIMARY_RENDER_CONSTANTS.FONT_FAMILY;
-      text.style.fontSize = '32px'; // Base font size before runtime auto-scaling
+      text.style.fontSize = '42px'; // Calibrated font size for TV legibility
       text.style.fontWeight = '700';
       text.style.whiteSpace = 'nowrap';
       text.style.overflow = 'hidden';

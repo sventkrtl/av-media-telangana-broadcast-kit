@@ -72,7 +72,7 @@ export function runTests() {
   assert(renderer.isInitialized === true, 'Renderer initializes successfully');
   assert(domRefs.barElement !== null, 'Blue Bar element created');
   assert(domRefs.textElement !== null, 'Headline Text element created');
-  assert(domRefs.barElement.style.backgroundColor === PRIMARY_RENDER_CONSTANTS.BAR_BG_COLOR, 'Blue Bar uses Always Blue color (#0F172A)');
+  assert(domRefs.barElement.style.backgroundColor === PRIMARY_RENDER_CONSTANTS.BAR_BG_COLOR, 'Blue Bar uses Always Blue color (#1E3A8A)');
   assert(domRefs.textElement.style.color === PRIMARY_RENDER_CONSTANTS.TEXT_COLOR, 'Headline Text uses Always White color (#FFFFFF)');
   assert(domRefs.textElement.style.textAlign === 'center', 'Headline Text is center aligned');
 
