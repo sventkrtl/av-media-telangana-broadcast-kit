@@ -86,13 +86,24 @@ All positioning coordinates are **ABSOLUTE** within the 1080p Broadcast Canvas. 
 - ❌ **No Bullets**
 - Headline text must always remain centered within the bar.
 
+### 🛡️ Broadcast Safe Margin Rule
+- The Primary Headline must remain fully readable inside the broadcast title-safe area.
+- **No headline text may touch the left or right visual edges** of the blue bar.
+- Minimum horizontal side padding must be strictly preserved at all times so auto-scaled text never collides with bar boundaries.
+
 ---
 
-## 5. Automatic Font Scaling
+## 5. Automatic Font Scaling & Editorial Overflow Rule
 
+### Automatic Font Scaling
 - Automatically scale font size down so that any headline fits onto a **single line**.
 - **Never wrap text** to a second line.
-- Font scaling algorithm must preserve visual legibility and readability across all screen sizes.
+
+### ✍️ Editorial Responsibility Rule
+- The engine guarantees **single-line presentation only**.
+- If an extremely long headline (e.g., 250–300 characters) cannot remain readable after automatic scaling, **the engine MUST NOT wrap the text**.
+- The headline **must be shortened by the editorial team**.
+- **Readability always takes precedence over displaying an entire lengthy sentence.**
 
 ---
 
@@ -104,30 +115,41 @@ The Primary Headline Engine adheres to a strict 5-stage motion lifecycle:
 [Stage 1: Bar Reveal] ➔ [Stage 2: Headline Reveal] ➔ [Stage 3: Headline Hold] ➔ [Stage 4: Headline Hide] ➔ [Stage 5: Bar Hide]
 ```
 
-### Stage 1: Blue Bar Reveal
+### ⏱️ Explicit Motion Synchronization Rule
+- **Stage 2 (Headline Reveal) MUST NOT begin until Stage 1 (Blue Bar Reveal) has completed successfully.**
+- Likewise, **Stage 5 (Blue Bar Hide) MUST NOT begin until Stage 4 (Headline Hide) has completed.**
+- **No overlapping animation stages are permitted.**
+
+---
+
+### Stage Details
+
+#### Stage 1: Blue Bar Reveal
 - **Direction**: Left → Right
 - **Duration**: `300 ms`
 - **Animation Type**: Scale Reveal (`transform: scaleX(0)` → `scaleX(1)`)
 - **Transform Origin**: `Left`
 - **Constraint**: The bar **NEVER translates** (no `translateX`). The bar **ONLY reveals** via scaleX.
 
-### Stage 2: Headline Reveal
+#### Stage 2: Headline Reveal
 - **Direction**: Center → Outside (symmetrical reveal)
 - **Duration**: `300 ms`
+- **Synchronization**: Waits for Stage 1 completion.
 - **Constraint**: The headline **NEVER slides**. The headline **NEVER moves horizontally**. The headline is revealed symmetrically from its center point.
 
-### Stage 3: Headline Hold
+#### Stage 3: Headline Hold
 - **Duration**: `4000 ms` (4 Seconds)
 - **State**: Stationary. **Zero movement**.
 
-### Stage 4: Headline Hide
+#### Stage 4: Headline Hide
 - **Direction**: Outside → Center
 - **Duration**: `300 ms`
 - **Animation Type**: Symmetrical collapse back to center (exact reverse of Stage 2 Headline Reveal).
 
-### Stage 5: Blue Bar Hide (Optional End-of-Feed or Transition)
+#### Stage 5: Blue Bar Hide (Optional End-of-Feed or Transition)
 - **Direction**: Right → Left
 - **Duration**: `300 ms`
+- **Synchronization**: Waits for Stage 4 completion.
 - **Animation Type**: Scale collapse (`scaleX(1)` → `scaleX(0)` with transform origin `Right`, exact reverse of Stage 1 Bar Reveal).
 
 ---
