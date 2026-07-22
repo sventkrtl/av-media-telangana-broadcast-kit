@@ -31,6 +31,7 @@
 - [x] **v1.2.0**: Ticker Engine & Control Panel UI Refinements
 - [x] **v1.2.1**: **Ticker Stable Freeze** ❄️ (Bug Fixes Only, CEF Performance Audit & Memory Optimization)
 - [x] **v2.0.0**: **Secondary News Playlist Engine** — Google Sheet Provider, Refresh Service, Telemetry, OBS Runtime, Continuous Crawl Rendering — **FROZEN** ❄️
+- [ ] **v2.0.1-ph**: **Primary Headline Engine v1.0.0** — Runtime, Motion, Renderer, Typography, OBS Overlay, Control Panel Integration — **(P1-8 Control Panel Integration in progress)**
 - [ ] **v2.1.0**: **Lower Third Engine** (Approach: Design ➔ OBS Prototype ➔ Control Panel Tab ➔ Testing)
 - [ ] **v2.2.0**: **Reporter Card Engine**
 - [ ] **v2.3.0**: **Breaking News Engine**

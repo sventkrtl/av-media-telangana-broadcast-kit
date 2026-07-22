@@ -35,6 +35,10 @@
         <span>Secondary Playlist</span>
         <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
       </div>
+      <div class="cp-nav-item" data-tab="primary-headline">
+        <span>Primary Headline</span>
+        <span class="cp-badge-small" style="background:var(--cp-accent-green)">ACTIVE</span>
+      </div>
       <div class="cp-nav-item" data-tab="lower-third">
         <span>Lower Third</span>
         <span class="cp-badge-small">SOON</span>
@@ -229,6 +233,74 @@
           </div>
           <div style="font-size:10px; color:var(--cp-text-muted); margin-top:4px;">
             <strong>Diagnostics / Last Error:</strong> <span id="spl-telemetry-error" style="color:var(--cp-accent-green)">None (Operating Normally)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: PRIMARY HEADLINE -->
+      <div id="tab-primary-headline" class="cp-tab-pane" style="display:none; flex-direction:column; gap:12px;">
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📰 Primary Headline Control Panel</span>
+            <span id="ph-unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
+          </div>
+
+          <!-- Google Sheet Published CSV URL Input -->
+          <div class="cp-form-group">
+            <label class="cp-label" for="ph-sheet-url">
+              <span>Google Sheet Published CSV URL</span>
+              <span style="font-size:10px; color:var(--cp-gold)">Primary Headlines Feed Tab</span>
+            </label>
+            <input id="ph-sheet-url" type="url" class="cp-input" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+          </div>
+
+          <!-- Refresh Interval Row -->
+          <div class="cp-row">
+            <div class="cp-form-group">
+              <label class="cp-label" for="ph-poll-interval">Auto Refresh Interval (స్వయంచాలక అప్‌డేట్)</label>
+              <select id="ph-poll-interval" class="cp-select">
+                <option value="30000" selected>30 Seconds (Default Production)</option>
+                <option value="15000">15 Seconds (Fast Refresh)</option>
+                <option value="60000">60 Seconds (Standard)</option>
+                <option value="0">Manual Only (No Auto Poll)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Manual Direct Headlines Override -->
+          <div class="cp-form-group">
+            <label class="cp-label" for="ph-payload-input">
+              <span>Manual Headlines (ప్రత్యక్ష నమోదు)</span>
+              <span style="font-size:10px; color:var(--cp-text-muted)">లైనుకి ఒకటి (Sheet URL లేనప్పుడు మాత్రమే)</span>
+            </label>
+            <textarea id="ph-payload-input" class="cp-textarea" style="min-height:90px;" placeholder="జగిత్యాల జిల్లాలో విస్తారంగా కురుస్తున్న వర్షాలు&#10;ధర్మపురి గోదావరి ఘాట్ వద్ద నీటిమట్టం పెరుగుదల"></textarea>
+          </div>
+
+          <!-- Primary Headline Action Buttons -->
+          <div class="cp-btn-group">
+            <button id="btn-ph-fetch" class="cp-btn cp-btn-secondary">🔄 Sync Now</button>
+            <button id="btn-ph-pause" class="cp-btn cp-btn-secondary">⏸️ Pause</button>
+            <button id="btn-ph-apply" class="cp-btn cp-btn-apply" style="flex:2;">⚡ Apply &amp; Go Live</button>
+          </div>
+        </div>
+
+        <!-- Telemetry & Runtime Status Card -->
+        <div class="cp-card">
+          <div class="cp-card-title">
+            <span>📡 Telemetry &amp; Runtime Status Monitor</span>
+            <span id="ph-status-pill" class="cp-status-pill" style="color:#10B981; background:rgba(16,185,129,0.15);">
+              ● <span id="ph-telemetry-state">ONLINE</span>
+            </span>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px; color:var(--cp-text-muted);">
+            <div><strong>Last Sync:</strong> <span id="ph-telemetry-lastsync" style="color:var(--cp-text)">Never</span></div>
+            <div><strong>Dataset Version:</strong> <span id="ph-telemetry-version" style="color:var(--cp-gold)">v1</span></div>
+            <div><strong>Active Headlines:</strong> <span id="ph-telemetry-count" style="color:var(--cp-text)">0</span></div>
+            <div><strong>Poll Interval:</strong> <span id="ph-telemetry-interval" style="color:var(--cp-text)">30s</span></div>
+          </div>
+          <div style="font-size:10px; color:var(--cp-text-muted); margin-top:4px;">
+            <strong>Diagnostics / Last Error:</strong> <span id="ph-telemetry-error" style="color:var(--cp-accent-green)">None (Operating Normally)</span>
           </div>
         </div>
       </div>

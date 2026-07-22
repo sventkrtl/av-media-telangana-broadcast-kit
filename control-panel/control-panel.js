@@ -54,12 +54,33 @@ export class ControlPanelApp {
     this.settingsModal = document.getElementById('settings-modal');
     this.btnModalClose = document.getElementById('btn-modal-close');
 
+    // DOM Elements - Primary Headline Tab
+    this.phSheetUrl = document.getElementById('ph-sheet-url');
+    this.phPollInterval = document.getElementById('ph-poll-interval');
+    this.phPayloadInput = document.getElementById('ph-payload-input');
+    this.btnPhApply = document.getElementById('btn-ph-apply');
+    this.btnPhPause = document.getElementById('btn-ph-pause');
+    this.btnPhFetch = document.getElementById('btn-ph-fetch');
+    this.phUnsavedBadge = document.getElementById('ph-unsaved-badge');
+
+    // DOM Elements - Primary Headline Telemetry
+    this.phTelemetryState = document.getElementById('ph-telemetry-state');
+    this.phTelemetryLastSync = document.getElementById('ph-telemetry-lastsync');
+    this.phTelemetryVersion = document.getElementById('ph-telemetry-version');
+    this.phTelemetryCount = document.getElementById('ph-telemetry-count');
+    this.phTelemetryInterval = document.getElementById('ph-telemetry-interval');
+    this.phTelemetryError = document.getElementById('ph-telemetry-error');
+
+    this.isPhPaused = false;
+    this.phDatasetVersion = 1;
+
     this.init();
   }
 
   init() {
     this.loadSavedState();
     this.loadDraft();
+    this.loadSavedPrimaryState();
     this.renderRecentHeadlines();
     this.bindEvents();
     this.bindShortcuts();
@@ -74,7 +95,7 @@ export class ControlPanelApp {
     document.querySelectorAll('.cp-nav-item').forEach(item => {
       item.addEventListener('click', () => {
         const tab = item.dataset.tab;
-        if (tab === 'ticker' || tab === 'secondary-playlist') {
+        if (tab === 'ticker' || tab === 'secondary-playlist' || tab === 'primary-headline') {
           document.querySelectorAll('.cp-nav-item').forEach(i => i.classList.remove('active'));
           item.classList.add('active');
 
@@ -133,6 +154,113 @@ export class ControlPanelApp {
   setSelectedTheme(theme) {
     const radio = document.querySelector(`input[name="theme-radio"][value="${theme}"]`);
     if (radio) radio.checked = true;
+  }
+
+  loadSavedPrimaryState() {
+    const phSaved = localStorage.getItem('av_media_ph_live_state');
+    if (phSaved && this.phSheetUrl) {
+      try {
+        const phData = JSON.parse(phSaved);
+        if (phData.sheetUrl) this.phSheetUrl.value = phData.sheetUrl;
+        if (phData.pollInterval) this.phPollInterval.value = String(phData.pollInterval);
+        if (phData.payloadText) this.phPayloadInput.value = phData.payloadText;
+        if (phData.lastSync && this.phTelemetryLastSync) {
+          this.phTelemetryLastSync.textContent = phData.lastSync;
+        }
+        if (phData.headlineCount !== undefined && this.phTelemetryCount) {
+          this.phTelemetryCount.textContent = String(phData.headlineCount);
+        }
+        if (phData.pollInterval && this.phTelemetryInterval) {
+          this.phTelemetryInterval.textContent = `${phData.pollInterval / 1000}s`;
+        }
+      } catch (e) {}
+    }
+  }
+
+  handlePrimaryHeadlineApply() {
+    const sheetUrl = this.phSheetUrl ? this.phSheetUrl.value.trim() : '';
+    const pollInterval = parseInt(this.phPollInterval ? this.phPollInterval.value : '30000', 10) || 30000;
+    const payloadText = this.phPayloadInput ? this.phPayloadInput.value.trim() : '';
+
+    // Parse manual headlines (one per line) as fallback when no Sheet URL provided
+    const manualHeadlines = payloadText
+      ? payloadText.split('\n').map(l => l.trim()).filter(Boolean)
+      : [];
+
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+    // Build payload — sheet URL takes priority over manual headlines
+    let payload;
+    if (sheetUrl) {
+      payload = { sheetUrl, pollInterval };
+    } else if (manualHeadlines.length > 0) {
+      payload = { headlines: manualHeadlines, pollInterval };
+    } else {
+      // Nothing to send — show error in telemetry
+      if (this.phTelemetryError) {
+        this.phTelemetryError.textContent = 'Sheet URL or Manual Headlines required.';
+        this.phTelemetryError.style.color = '#EF4444';
+      }
+      return;
+    }
+
+    // Emit to OBS overlay via StateEngine
+    this.stateEngine.emit('primary-headline', 'update', payload);
+
+    // Persist to localStorage
+    const persistData = {
+      sheetUrl,
+      pollInterval,
+      payloadText,
+      lastSync: timeStr,
+      headlineCount: manualHeadlines.length || 0
+    };
+    localStorage.setItem('av_media_ph_live_state', JSON.stringify(persistData));
+    this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
+
+    // Update telemetry UI
+    this.phDatasetVersion = (this.phDatasetVersion || 1) + 1;
+    if (this.phTelemetryState) this.phTelemetryState.textContent = 'ONLINE';
+    if (this.phTelemetryLastSync) this.phTelemetryLastSync.textContent = timeStr;
+    if (this.phTelemetryVersion) this.phTelemetryVersion.textContent = `v${this.phDatasetVersion}`;
+    if (this.phTelemetryCount) {
+      this.phTelemetryCount.textContent = manualHeadlines.length > 0 ? String(manualHeadlines.length) : (sheetUrl ? '—' : '0');
+    }
+    if (this.phTelemetryInterval) this.phTelemetryInterval.textContent = `${pollInterval / 1000}s`;
+    if (this.phTelemetryError) {
+      this.phTelemetryError.textContent = 'None (Operating Normally)';
+      this.phTelemetryError.style.color = 'var(--cp-accent-green)';
+    }
+    if (this.phUnsavedBadge) this.phUnsavedBadge.classList.remove('visible');
+
+    // Button feedback
+    if (this.btnPhApply) {
+      const originalText = this.btnPhApply.textContent;
+      this.btnPhApply.textContent = '\u2705 LIVE UPDATED!';
+      this.btnPhApply.style.background = '#059669';
+      setTimeout(() => {
+        this.btnPhApply.textContent = originalText;
+        this.btnPhApply.style.background = '';
+      }, 1500);
+    }
+  }
+
+  handlePrimaryHeadlinePause() {
+    this.isPhPaused = !this.isPhPaused;
+    if (this.isPhPaused) {
+      if (this.btnPhPause) {
+        this.btnPhPause.textContent = '\u25b6\ufe0f Resume';
+        this.btnPhPause.style.background = '#D97706';
+      }
+      this.stateEngine.emit('primary-headline', 'pause', { isPaused: true });
+    } else {
+      if (this.btnPhPause) {
+        this.btnPhPause.textContent = '\u23f8\ufe0f Pause';
+        this.btnPhPause.style.background = '#334155';
+      }
+      this.stateEngine.emit('primary-headline', 'resume', { isPaused: false });
+    }
   }
 
   loadSavedState() {
@@ -448,6 +576,8 @@ export class ControlPanelApp {
         e.preventDefault();
         if (this.activeTab === 'secondary-playlist') {
           this.handleSecondaryApply();
+        } else if (this.activeTab === 'primary-headline') {
+          this.handlePrimaryHeadlineApply();
         } else {
           this.handleApply();
         }
@@ -460,6 +590,8 @@ export class ControlPanelApp {
         e.preventDefault();
         if (this.activeTab === 'secondary-playlist') {
           this.handleSecondaryPause();
+        } else if (this.activeTab === 'primary-headline') {
+          this.handlePrimaryHeadlinePause();
         } else {
           this.handleTogglePause();
         }
@@ -498,6 +630,27 @@ export class ControlPanelApp {
     }
     if (this.btnSplFetch) {
       this.btnSplFetch.addEventListener('click', () => this.handleSecondaryApply());
+    }
+
+    // Primary Headline Buttons
+    if (this.btnPhApply) {
+      this.btnPhApply.addEventListener('click', () => this.handlePrimaryHeadlineApply());
+    }
+    if (this.btnPhPause) {
+      this.btnPhPause.addEventListener('click', () => this.handlePrimaryHeadlinePause());
+    }
+    if (this.btnPhFetch) {
+      this.btnPhFetch.addEventListener('click', () => this.handlePrimaryHeadlineApply());
+    }
+    if (this.phSheetUrl) {
+      this.phSheetUrl.addEventListener('input', () => {
+        if (this.phUnsavedBadge) this.phUnsavedBadge.classList.add('visible');
+      });
+    }
+    if (this.phPayloadInput) {
+      this.phPayloadInput.addEventListener('input', () => {
+        if (this.phUnsavedBadge) this.phUnsavedBadge.classList.add('visible');
+      });
     }
 
     this.headlineInput.addEventListener('input', () => {
