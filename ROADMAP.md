@@ -32,9 +32,9 @@
 - [x] **v1.2.1**: **Ticker Stable Freeze** ❄️ (Bug Fixes Only, CEF Performance Audit & Memory Optimization)
 - [x] **v2.0.0**: **Secondary News Playlist Engine** — Google Sheet Provider, Refresh Service, Telemetry, OBS Runtime, Continuous Crawl Rendering — **FROZEN** ❄️
 - [x] **v2.0.1-ph**: **Primary Headline Engine v1.0.0** — Runtime, Motion, Renderer, Typography, OBS Overlay, Control Panel Integration, GID Auto-detection — **FROZEN** ❄️ (`v1.0.0-primary-headline`)
-- [ ] **v2.1.0**: **Lower Third Engine** (Approach: Design ➔ OBS Prototype ➔ Control Panel Tab ➔ Testing)
-- [ ] **v2.2.0**: **Reporter Card Engine**
-- [ ] **v2.3.0**: **Breaking News Engine**
+- [ ] **v2.1.0**: **Breaking News Engine** (Approach: Profile Reuse of Primary Headline Architecture ➔ Red Bar Config ➔ Manual Operator Trigger 🔴 SHOW NOW / ■ STOP ➔ Preemption & Auto-Resume)
+- [ ] **v2.2.0**: **Lower Third Engine** (Approach: Design ➔ OBS Prototype ➔ Control Panel Tab ➔ Testing)
+- [ ] **v2.3.0**: **Reporter Card Engine**
 
 ---
 
