@@ -35,6 +35,7 @@
 - [ ] **v2.1.0**: **Breaking News Profile v1.0.0** — Primary Architecture Reuse, Red Bar Theme (#DC2626), Manual Operator Trigger (SHOW NOW / STOP), State Preemption & Auto-Resume — **(B1-0 Foundation Complete)**
 - [ ] **v2.2.0**: **Lower Third Engine** (Approach: Design ➔ OBS Prototype ➔ Control Panel Tab ➔ Testing)
 - [ ] **v2.3.0**: **Reporter Card Engine**
+- [ ] **v3.0.0**: **Breaking Queue Management Workflow** (Multi-item breaking queue, priority ordering, queue persistence)
 
 ---
 

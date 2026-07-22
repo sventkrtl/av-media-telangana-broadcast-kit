@@ -125,4 +125,19 @@ When Breaking Profile is active:
 
 ---
 
+## 📜 7. Breaking Profile Feed Scope Rule
+
+To maintain clear architectural boundaries and prevent scope creep:
+
+> **CONSTITUTIONAL RULE**:
+> - Breaking Profile **SHALL NOT** read from Breaking Queue.
+> - Breaking Profile **SHALL** consume only its own dedicated editorial feed.
+> - Breaking Queue is an independent editorial workflow and is strictly **outside the scope** of Breaking Profile v1.x (planned for v3.x).
+
+### Architectural Scope Boundaries:
+- **v1.x Scope**: Single-item / dedicated feed Breaking Profile with manual operator trigger (`🔴 SHOW NOW` / `■ STOP`).
+- **v3.x Scope**: Multi-item Breaking Queue Management workflow.
+
+---
+
 *Document version: v2.1.0 Foundation (B1-0).*
