@@ -57,12 +57,27 @@ export class BreakingNewsProfile {
       loop: false
     });
 
-    // Enforce Red Bar Theme (#DC2626) on static renderer bar element
+    // Enforce Red Bar Theme (#DC2626) on static renderer bar element.
+    // NOTE: We do NOT set transform or opacity here — the CSS idle state
+    // (transform: scaleX(0); opacity: 0) is the ground truth on page load.
+    // PrimaryMotionEngine.BAR_IN / BAR_OUT owns all visibility transitions.
     if (this.runtime.staticRenderer && this.runtime.staticRenderer.barElement) {
       if (!this.runtime.staticRenderer.barElement.style) {
         this.runtime.staticRenderer.barElement.style = {};
       }
       this.runtime.staticRenderer.barElement.style.backgroundColor = '#DC2626';
+      // Ensure IDLE CSS starting position is maintained at initialization
+      this.runtime.staticRenderer.barElement.style.transform = 'scaleX(0)';
+      this.runtime.staticRenderer.barElement.style.opacity = '0';
+    }
+
+    // Ensure viewport is in IDLE state (collapsed) at initialization
+    if (this.runtime.staticRenderer && this.runtime.staticRenderer.viewportElement) {
+      if (!this.runtime.staticRenderer.viewportElement.style) {
+        this.runtime.staticRenderer.viewportElement.style = {};
+      }
+      this.runtime.staticRenderer.viewportElement.style.clipPath = 'inset(0 50% 0 50%)';
+      this.runtime.staticRenderer.viewportElement.style.opacity = '0';
     }
 
     // Wire runtime completion to automatic release handshake if single cycle completes
@@ -117,16 +132,60 @@ export class BreakingNewsProfile {
 
     this.isActive = false;
 
-    // 1. Stop underlying runtime
+    // 1. Stop underlying runtime (clears timers and playback state)
     this.runtime.stop();
 
-    // 2. Emit release handshake via StateEngine to resume Primary Engine
+    // 2. Visually reset overlay to IDLE transparent state immediately.
+    //    This ensures no static Red Bar lingers on screen after STOP.
+    this._resetToIdleState();
+
+    // 3. Emit release handshake via StateEngine to resume Primary Engine
     this.stateEngine.emit('breaking-news', 'release', {
       timestamp: Date.now()
     });
 
-    // 3. Notify callbacks
+    // 4. Notify callbacks
     this._notifyStop();
+  }
+
+  /**
+   * Immediately force all overlay elements back to their CSS IDLE state
+   * (bar: scaleX(0) + opacity 0, viewport: collapsed + opacity 0).
+   * Called by stop() to guarantee no visual residue on-screen.
+   *
+   * Does NOT modify any frozen Primary Engine files or Primary containers.
+   */
+  _resetToIdleState() {
+    try {
+      const renderer = this.runtime && this.runtime.staticRenderer;
+      if (!renderer) return;
+
+      // Reset Red Bar — collapse back to left-origin scaleX(0)
+      const bar = renderer.barElement;
+      if (bar && bar.style) {
+        bar.style.transition = 'none';
+        bar.style.transformOrigin = 'right center';
+        bar.style.transform = 'scaleX(0)';
+        bar.style.opacity = '0';
+      }
+
+      // Reset Viewport — collapse text clip back to center
+      const viewport = renderer.viewportElement;
+      if (viewport && viewport.style) {
+        viewport.style.transition = 'none';
+        viewport.style.clipPath = 'inset(0 50% 0 50%)';
+        viewport.style.opacity = '0';
+      }
+
+      // Clear headline text content
+      if (renderer.textElement) {
+        renderer.textElement.textContent = '';
+      }
+
+      this.currentHeadline = null;
+    } catch (e) {
+      console.error('[BreakingNewsProfile] Error resetting idle state:', e);
+    }
   }
 
   /**

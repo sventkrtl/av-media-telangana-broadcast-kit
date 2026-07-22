@@ -44,7 +44,11 @@ html, body {
   pointer-events: none;
 }
 
-/* Red Background Bar — Urgent Corporate Red #DC2626 */
+/* Red Background Bar — Urgent Corporate Red #DC2626
+ * IDLE STATE: scaleX(0) — fully invisible on page load.
+ * PrimaryMotionEngine.BAR_IN animates to scaleX(1) on SHOW NOW.
+ * PrimaryMotionEngine.BAR_OUT animates back to scaleX(0) on STOP.
+ */
 .bn-red-bar {
   position: absolute;
   top: 0;
@@ -59,13 +63,21 @@ html, body {
   box-sizing: border-box;
   transform-origin: left center;
   will-change: transform;
+  /* IDLE: collapsed and invisible — SHOW NOW triggers BAR_IN to reveal */
+  transform: scaleX(0);
+  opacity: 0;
 }
 
-/* Headline Viewport — Animation / Reveal layer: owns clip-path and opacity ONLY. */
+/* Headline Viewport — Animation / Reveal layer: owns clip-path and opacity ONLY.
+ * IDLE STATE: fully collapsed and invisible.
+ */
 .bn-headline-viewport {
   width: 100%;
   overflow: visible;
   will-change: clip-path, opacity;
+  /* IDLE: hidden until TEXT_IN stage */
+  clip-path: inset(0 50% 0 50%);
+  opacity: 0;
 }
 
 /* Centered Headline Text — Pure glyph rendering layer. No animation properties here. */
