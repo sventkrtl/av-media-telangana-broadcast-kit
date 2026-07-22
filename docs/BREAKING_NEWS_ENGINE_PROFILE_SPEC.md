@@ -70,7 +70,48 @@ Unlike Primary Headline which loops automatically upon payload apply, Breaking N
 
 ---
 
-## 🧩 4. Software Engineering Rationale
+## 🔒 5. Engine Ownership & State Isolation Rule
+
+To guarantee long-term system stability and zero queue corruption, the following constitution rule is strictly enforced:
+
+```
+Primary Headline Engine
+        │
+        │ owns the timeline & queue
+        ▼
+Breaking News Engine
+        │
+        ├── Requests Preemption
+        ├── Never edits Primary state
+        ├── Never changes Primary queue
+        └── Releases control after STOP
+```
+
+### Mandated Architectural Boundaries:
+- **No Direct Mutation**: Breaking Engine is strictly **FORBIDDEN** from mutating `PrimaryHeadlineRuntime` internal state.
+- **No Queue Manipulation**: Breaking Engine **NEVER** alters, clears, inserts into, or reorders the Primary Headline queue.
+- **No Index Reset**: Breaking Engine **NEVER** resets the Primary Headline playback index.
+- **Preemption Contract**: Breaking Engine sends a read-only `preempt` event via `StateEngine`. Primary Headline Engine trap this event, saves its internal progress, executes `BAR_OUT`, and enters a `PREEMPTED_PAUSE` state.
+- **Release Contract**: Upon `STOP` or manual hide, Breaking Engine emits a `release` event. Primary Headline Engine traps this, restores its saved state, and seamlessly resumes execution from where it paused.
+
+---
+
+## 🧊 6. Frozen Dependency Matrix
+
+| Component / Subsystem | Source Engine | Status / Reuse Contract |
+|-----------------------|---------------|-------------------------|
+| **Runtime Engine** | Primary Headline | ❄️ Reused (`PrimaryHeadlineRuntime.js`) |
+| **Motion Engine** | Primary Headline | ❄️ Reused (`PrimaryMotionEngine.js`) |
+| **Static Renderer** | Primary Headline | ❄️ Reused (`PrimaryStaticRenderer.js`) |
+| **Playback Controller** | Primary Headline | ❄️ Reused (`PrimaryTimelinePlaybackController.js`) |
+| **Typography System** | Primary Headline | ❄️ Reused (`59px` Ramabhadra, `translateY(-11px)`) |
+| **Geometry & Viewport** | Primary Headline | ❄️ Reused (Y = 890px, Height = 135px) |
+| **Bar Theme Styling** | Breaking News | 🔴 New Configuration (`#DC2626` Red) |
+| **Trigger Mechanism** | Breaking News | 🔴 New Configuration (Manual `🔴 SHOW NOW` / `■ STOP`) |
+
+---
+
+## 🧩 7. Software Engineering Rationale
 
 1. **Zero Layout / Glyph Regressions**: By using the exact same rendering and motion code, Telugu glyph rendering, zero-clipping guarantee (59px / -11px), and layout boundaries are 100% preserved.
 2. **Maintenance Simplicity**: Bug fixes or performance improvements made to the core rendering/motion engine instantly benefit both Primary and Breaking engines.
