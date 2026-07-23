@@ -1,6 +1,7 @@
 import { StateEngine } from '../shared/js/state-engine.js';
 import { PlaylistModel } from '../modules/secondary-playlist/playlist-engine.js';
 import { BreakingNewsDataAdapter } from '../modules/breaking-news/adapters/BreakingNewsDataAdapter.js';
+import { BreakingFeedModel } from '../modules/breaking-news/models/BreakingFeedModel.js';
 
 export class ControlPanelApp {
   constructor() {
@@ -92,9 +93,13 @@ export class ControlPanelApp {
     this.bnTelemetryError = document.getElementById('bn-telemetry-error');
 
     this.breakingAdapter = new BreakingNewsDataAdapter();
+    this.breakingFeedModel = new BreakingFeedModel();
     this.isBreakingActive = false;
-    this.breakingSource = 'Google Sheet';
-    this.breakingHeadlines = [];
+
+    // Subscribe UI preview projection to SSOT BreakingFeedModel
+    this.breakingFeedModel.subscribe((snapshot) => {
+      this.renderBreakingPreview(snapshot);
+    });
 
     this.isPhPaused = false;
     this.phDatasetVersion = 1;
@@ -652,8 +657,7 @@ export class ControlPanelApp {
     if (this.bnUnsavedBadge) this.bnUnsavedBadge.classList.remove('visible');
 
     if (!url) {
-      this.updateBreakingPreview('(No Breaking Sheet URL configured)');
-      if (this.bnTelemetryStatus) this.bnTelemetryStatus.textContent = 'UNCONFIGURED';
+      this.breakingFeedModel.setSheetFeed([], { status: 'UNCONFIGURED', lastError: 'No Breaking Sheet URL configured' });
       return;
     }
 
@@ -661,24 +665,12 @@ export class ControlPanelApp {
       const headlines = await this.breakingAdapter.fetchBreakingHeadlines(url);
       const statusObj = this.breakingAdapter.getStatus();
 
-      this.breakingHeadlines = [...headlines];
-
-      if (this.bnTelemetryStatus) {
-        this.bnTelemetryStatus.textContent = statusObj.status;
-        this.bnTelemetryStatus.style.color = (statusObj.status === 'ERROR') ? '#EF4444' : (statusObj.status === 'READY' ? '#10B981' : 'var(--cp-gold)');
-      }
-      if (this.bnTelemetryError) {
-        this.bnTelemetryError.textContent = statusObj.lastError ? statusObj.lastError : 'None (Operating Normally)';
-        this.bnTelemetryError.style.color = statusObj.lastError ? '#EF4444' : '#10B981';
-      }
+      // Single Source of Truth update
+      this.breakingFeedModel.setSheetFeed(headlines, statusObj);
 
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
       this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
-
-      // TWO-STEP EDITORIAL WORKFLOW RULE:
-      // Apply Feed / Sync Now ONLY updates preview card without auto-broadcasting on-air!
-      this.updateBreakingPreview();
 
       if (this.btnBnApply) {
         const origText = this.btnBnApply.textContent;
@@ -691,45 +683,45 @@ export class ControlPanelApp {
       }
     } catch (err) {
       console.error('[ControlPanel] Error fetching Breaking feed:', err);
-      if (this.bnTelemetryStatus) {
-        this.bnTelemetryStatus.textContent = 'ERROR';
-        this.bnTelemetryStatus.style.color = '#EF4444';
-      }
-      if (this.bnTelemetryError) {
-        this.bnTelemetryError.textContent = err.message || 'Fetch failed';
-        this.bnTelemetryError.style.color = '#EF4444';
-      }
+      this.breakingFeedModel.setSheetFeed([], { status: 'ERROR', lastError: err.message || 'Fetch failed' });
     }
   }
 
   handleBreakingShowNow(isManual = false) {
+    console.log('[Control Panel] SHOW NOW clicked');
     if (this.isBreakingActive) {
       console.warn('[ControlPanel] Duplicate SHOW NOW rejected. Breaking Profile is already active.');
       return;
     }
 
-    const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
-    let targetHeadline = '';
-
     if (isManual) {
+      const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
       if (!manualText) {
         alert('నోటిఫికేషన్: రాతపూర్వక వార్తను నమోదు చేయండి.');
         return;
       }
-      targetHeadline = manualText;
-      this.breakingSource = 'Manual';
-    } else {
-      if (this.breakingHeadlines.length > 0) {
-        targetHeadline = this.breakingHeadlines[0];
-        this.breakingSource = 'Google Sheet';
-      } else {
-        alert('నోటిఫికేషన్: ప్రసారం చేయడానికి ఎలాంటి వార్త లేదు! దయచేసి Google Sheet ని Sync చేయండి.');
-        return;
-      }
+      // SSOT update
+      this.breakingFeedModel.setManualHeadline(manualText);
+    }
+
+    const snapshot = this.breakingFeedModel.getSnapshot();
+    const targetHeadline = snapshot.currentHeadline;
+
+    if (!targetHeadline) {
+      alert('నోటిఫికేషన్: ప్రసారం చేయడానికి ఎలాంటి వార్త లేదు! దయచేసి Google Sheet ని Sync చేయండి.');
+      return;
     }
 
     this.isBreakingActive = true;
-    this.stateEngine.emit('breaking-news', 'preempt', { headline: targetHeadline });
+    this.breakingFeedModel.transitionTo('ACTIVE');
+
+    console.log(`[SHOW NOW]\n\nUsing BreakingFeedModel.currentHeadline\n\nHeadline:\n${targetHeadline}`);
+    console.log(`[EventBus] Emitting: breaking-news:preempt\nPayload:\n{\n  headline: "${targetHeadline}",\n  source: "${snapshot.feedSource}"\n}`);
+
+    this.stateEngine.emit('breaking-news', 'preempt', {
+      headline: targetHeadline,
+      source: snapshot.feedSource
+    });
 
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
@@ -738,20 +730,11 @@ export class ControlPanelApp {
       this.bnLiveBadge.textContent = 'ON-AIR';
       this.bnLiveBadge.parentElement.style.color = '#DC2626';
     }
-    if (this.bnTelemetryState) {
-      this.bnTelemetryState.textContent = 'ACTIVE';
-      this.bnTelemetryState.style.color = '#DC2626';
-    }
     if (this.bnTelemetryLastTrigger) this.bnTelemetryLastTrigger.textContent = timeStr;
-    if (this.bnTelemetrySource) this.bnTelemetrySource.textContent = this.breakingSource;
-    if (this.bnTelemetryFeedName) {
-      this.bnTelemetryFeedName.textContent = (this.breakingSource === 'Manual') ? 'Manual Entry' : 'Breaking Profile';
-    }
-
-    this.updateBreakingPreview(targetHeadline);
   }
 
   handleBreakingStop() {
+    console.log('[Control Panel] STOP clicked');
     if (!this.isBreakingActive) {
       console.log('[ControlPanel] STOP ignored safely: Breaking Profile is already idle.');
       return;
@@ -764,37 +747,46 @@ export class ControlPanelApp {
       this.bnLiveBadge.textContent = 'OFF-AIR';
       this.bnLiveBadge.parentElement.style.color = '#10B981';
     }
-    if (this.bnTelemetryState) {
-      this.bnTelemetryState.textContent = 'IDLE';
-      this.bnTelemetryState.style.color = 'var(--cp-text)';
-    }
 
-    this.updateBreakingPreview();
+    this.breakingFeedModel.transitionTo('IDLE');
   }
 
   handleBreakingManualClear() {
     if (this.bnManualInput) this.bnManualInput.value = '';
-    this.updateBreakingPreview();
+    this.breakingFeedModel.clearManual();
   }
 
-  updateBreakingPreview(customText = null) {
-    if (!this.bnPreviewHeadline) return;
+  renderBreakingPreview(snapshot) {
+    if (!snapshot) snapshot = this.breakingFeedModel.getSnapshot();
 
-    if (customText) {
-      this.bnPreviewHeadline.textContent = customText;
-      return;
+    // Visual projection on DOM preview element (READ-ONLY PROJECTION)
+    if (this.bnPreviewHeadline) {
+      if (snapshot.currentHeadline) {
+        const prefix = snapshot.feedSource === 'Manual' ? '[MANUAL]' : '[SHEET]';
+        this.bnPreviewHeadline.textContent = `${prefix} ${snapshot.currentHeadline}`;
+      } else {
+        this.bnPreviewHeadline.textContent = '(No breaking headline loaded - Enter text or sync feed)';
+      }
     }
 
-    const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
-    if (manualText) {
-      this.bnPreviewHeadline.textContent = `[MANUAL] ${manualText}`;
-      return;
+    // Telemetry UI Projection
+    if (this.bnTelemetryState) {
+      this.bnTelemetryState.textContent = snapshot.state;
+      this.bnTelemetryState.style.color = snapshot.state === 'ACTIVE' ? '#DC2626' : (snapshot.state === 'READY' ? '#10B981' : 'var(--cp-text)');
     }
-
-    if (this.breakingHeadlines.length > 0) {
-      this.bnPreviewHeadline.textContent = `[SHEET] ${this.breakingHeadlines[0]}`;
-    } else {
-      this.bnPreviewHeadline.textContent = '(No breaking headline loaded - Enter text or sync feed)';
+    if (this.bnTelemetryStatus) {
+      this.bnTelemetryStatus.textContent = snapshot.providerStatus;
+      this.bnTelemetryStatus.style.color = snapshot.providerStatus === 'ERROR' ? '#EF4444' : (snapshot.providerStatus === 'READY' ? '#10B981' : 'var(--cp-gold)');
+    }
+    if (this.bnTelemetrySource) {
+      this.bnTelemetrySource.textContent = snapshot.feedSource;
+    }
+    if (this.bnTelemetryFeedName) {
+      this.bnTelemetryFeedName.textContent = snapshot.feedSource === 'Manual' ? 'Manual Entry' : 'Breaking Profile';
+    }
+    if (this.bnTelemetryError) {
+      this.bnTelemetryError.textContent = snapshot.lastError ? snapshot.lastError : 'None (Operating Normally)';
+      this.bnTelemetryError.style.color = snapshot.lastError ? '#EF4444' : '#10B981';
     }
   }
 

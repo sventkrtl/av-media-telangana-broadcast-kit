@@ -221,6 +221,44 @@ To enforce broadcast safety:
 
 ---
 
-*Document version: v2.1.0 (B1-2 Control Panel Integration).*
+## 🏛️ 10. Single Source of Truth (SSOT) Architecture (Task B1-2C)
+
+To prevent state drift, UI race conditions, and synchronization bugs, Breaking Profile state follows a strict **Single Source of Truth (SSOT)** model owned by `BreakingFeedModel`.
+
+```
+Google Sheet / Manual Entry
+            │
+            ▼
+   BreakingFeedModel      ← Single Source of Truth (SSOT)
+            │
+            ├─────────────────► Preview Card (Visual Projection / Observer)
+            │
+            └─────────────────► SHOW NOW
+                                  │
+                                  ▼
+                         Runtime.showNow()
+                                  │
+                                  ▼
+                         OBS Broadcast Overlay
+```
+
+### Core Architecture Rules:
+
+1. **State Ownership**:
+   - `BreakingFeedModel` (`modules/breaking-news/models/BreakingFeedModel.js`) is the single authoritative owner of all Breaking Profile state (`headlines[]`, `selectedIndex`, `currentHeadline`, `feedSource`, `providerStatus`, `state`, `lastSync`, `lastError`, `revision`).
+   - `BreakingFeedModel` is module-scoped within the Breaking Profile module. It MUST NOT be attached to the global `window` object or imported by un-isolated external engines.
+
+2. **Unidirectional Data Flow**:
+   - Data flows strictly: **Data Source ➔ BreakingFeedModel ➔ UI Projection / Runtime Consumer**.
+   - **DOM Nodes are Presentation Only**: Visual UI elements (`#bn-preview-headline`) subscribe to `BreakingFeedModel` as read-only observers. DOM elements are **NEVER** read as application state or runtime inputs.
+
+3. **State Machine & Auditing**:
+   - Explicit state transitions utilize `transitionTo(targetState)` (`IDLE` | `READY` | `ACTIVE`).
+   - Every model mutation increments a monotonically increasing `revision` counter for complete broadcast trace auditing.
+
+---
+
+*Document version: v2.2.0 (B1-2C Single Source of Truth Integration).*
+
 
 

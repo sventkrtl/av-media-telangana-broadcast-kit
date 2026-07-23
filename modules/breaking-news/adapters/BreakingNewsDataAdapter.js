@@ -84,6 +84,7 @@ export class BreakingNewsDataAdapter {
         if (headlines.length > 0) {
           this.lastValidHeadlines = [...headlines];
           this.status = 'READY';
+          console.log(`[Adapter] Loaded ${headlines.length} headlines`);
           return headlines;
         }
       } catch (err) {

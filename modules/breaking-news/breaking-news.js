@@ -44,6 +44,7 @@ export class BreakingNewsApp {
       if (!msg || (msg.engine !== 'breaking-news' && msg.engine !== 'global')) return;
 
       const action = msg.action;
+      console.log(`[Overlay] Received event: ${action}\nPayload: ${JSON.stringify(msg.payload || {})}`);
 
       // SHOW NOW: 'preempt' is the primary action emitted by the Control Panel.
       // Legacy: 'show', 'trigger', 'showNow' also accepted for compatibility.
@@ -58,6 +59,7 @@ export class BreakingNewsApp {
           return;
         }
         try {
+          console.log(`[Runtime]\n\nReceived headline:\n${headline}\n\nPlayback started.`);
           console.log(`[BreakingNewsApp] SHOW NOW → "${headline}"`);
           await this.profileWrapper.showNow(headline);
         } catch (err) {

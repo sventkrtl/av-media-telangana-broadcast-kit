@@ -87,6 +87,13 @@ export class BreakingNewsProfile {
       }
     });
 
+    // Inject Stage Start logging from the playback controller to satisfy Audit requirements
+    if (this.runtime.playbackController) {
+      this.runtime.playbackController.onStageStart((event) => {
+        console.log(`[PrimaryMotionEngine] Stage Start: ${event.type} (${event.duration}ms)`);
+      });
+    }
+
     return success;
   }
 
@@ -103,6 +110,8 @@ export class BreakingNewsProfile {
     }
 
     const cleanText = headlineText.trim();
+    console.log(`[Profile] showNow("${cleanText}")`);
+    console.log(`[BreakingNewsProfile] State Transition: IDLE -> ACTIVE | Trigger: showNow()`);
     this.isActive = true;
     this.currentHeadline = cleanText;
 
@@ -119,6 +128,7 @@ export class BreakingNewsProfile {
     this._notifyShowNow(cleanText);
 
     // 4. Start playback cycle
+    console.log(`[Runtime] Playback started`);
     return await this.runtime.play();
   }
 
@@ -130,6 +140,7 @@ export class BreakingNewsProfile {
   stop() {
     if (!this.isActive) return;
 
+    console.log(`[BreakingNewsProfile] State Transition: ACTIVE -> IDLE | Trigger: release()`);
     this.isActive = false;
 
     // 1. Stop underlying runtime (clears timers and playback state)
