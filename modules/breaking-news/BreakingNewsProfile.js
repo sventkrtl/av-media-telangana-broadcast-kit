@@ -42,6 +42,7 @@ export class BreakingNewsProfile {
     this.feedModel = options.feedModel || new BreakingFeedModel();
     this.isActive = false;
     this.currentHeadline = null;
+    this.currentTextStage = null;
 
     // Callbacks
     this.showNowCallbacks = [];
@@ -79,27 +80,6 @@ export class BreakingNewsProfile {
       this.runtime.staticRenderer.viewportElement.style.opacity = '0';
     }
 
-    // Wire runtime completion to continuous circular playback until operator STOP
-    // Consumers BreakingFeedModel.next() as Single Source of Truth!
-    this.runtime.onHeadlineComplete(() => {
-      if (!this.isActive) return;
-
-      // Yield event loop so current timeline play() loop completes gracefully
-      setTimeout(async () => {
-        if (!this.isActive) return;
-
-        // Model owns the circular queue state!
-        const nextItem = this.feedModel.next();
-        const nextHeadline = nextItem.headline;
-
-        if (nextHeadline) {
-          this.currentHeadline = nextHeadline;
-          this.runtime.loadHeadlines([nextHeadline]);
-          await this.runtime.play();
-        }
-      }, 0);
-    });
-
     // Inject Stage Start logging from the playback controller to satisfy Audit requirements
     if (this.runtime.playbackController) {
       this.runtime.playbackController.onStageStart((event) => {
@@ -112,12 +92,17 @@ export class BreakingNewsProfile {
 
   /**
    * Trigger Breaking News display immediately (Manual Trigger: 🔴 SHOW NOW).
-   * Emits preemption request to Primary Engine via StateEngine without mutating Primary state.
+   * Executes BAR_IN ONCE, then enters persistent text-only transition loop.
    *
    * @param {string|Object} input - Urgent Breaking Headline text or payload object
-   * @returns {Promise<string>} Playback promise
+   * @returns {Promise<void>}
    */
   async showNow(input) {
+    if (this.isActive) {
+      console.warn('[BreakingNewsProfile] Duplicate showNow ignored while ACTIVE.');
+      return;
+    }
+
     let text = '';
     let queueList = [];
     let startIdx = 0;
@@ -139,7 +124,7 @@ export class BreakingNewsProfile {
     }
 
     console.log(`[Profile] showNow("${text}")`);
-    console.log(`[BreakingNewsProfile] State Transition: IDLE -> ACTIVE | Trigger: showNow()`);
+    console.log(`[BreakingNewsProfile] State Transition: IDLE -> BAR_VISIBLE | Trigger: showNow()`);
 
     this.isActive = true;
     this.currentHeadline = text;
@@ -151,9 +136,9 @@ export class BreakingNewsProfile {
     } else {
       this.feedModel.setManualHeadline(text);
     }
-    this.feedModel.transitionTo('ACTIVE');
+    this.feedModel.transitionTo('BAR_VISIBLE');
 
-    // 1. Send preemption handshake to Primary Headline Engine via StateEngine
+    // 1. Send preemption handshake to Primary Engine
     this.stateEngine.emit('breaking-news', 'preempt', {
       timestamp: Date.now(),
       headline: text,
@@ -161,45 +146,119 @@ export class BreakingNewsProfile {
       selectedIndex: this.feedModel.selectedIndex
     });
 
-    // 2. Load breaking headline into runtime
-    this.runtime.loadHeadlines([text]);
-
-    // 3. Notify callbacks
+    // 2. Notify callbacks
     this._notifyShowNow(text);
 
-    // 4. Start playback cycle
-    console.log(`[Runtime] Playback started`);
-    return await this.runtime.play();
+    // 3. Persistent Red Bar: Execute BAR_IN ONCE
+    console.log(`[Playback]\n\nBAR_IN\n\nPersistent Bar : ON`);
+    const barEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.barElement : null;
+    if (this.runtime.motionEngine) {
+      await this.runtime.motionEngine.play('BAR_IN', barEl);
+    }
+
+    this.feedModel.transitionTo('ACTIVE_TEXT_LOOP');
+
+    // 4. Start text-only continuous transition loop
+    return await this._runContinuousTextLoop();
+  }
+
+  /**
+   * Continuous text-only headline transition loop.
+   * Red Bar remains 100% visible on screen while only headline text animates.
+   * @private
+   */
+  async _runContinuousTextLoop() {
+    while (this.isActive) {
+      const headline = this.feedModel.currentHeadline;
+      if (!headline) break;
+
+      const barEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.barElement : null;
+      const textEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.textElement : null;
+
+      if (this.runtime.staticRenderer && typeof this.runtime.staticRenderer.renderHeadline === 'function') {
+        this.runtime.staticRenderer.renderHeadline(headline);
+      }
+
+      console.log(`[Playback]\n\nHeadline Complete\n\nNext Headline\n\nTEXT_IN only.`);
+
+      try {
+        // Stage 1: TEXT_IN (300ms)
+        if (this.isActive && this.runtime.motionEngine) {
+          this.currentTextStage = 'TEXT_IN';
+          await this.runtime.motionEngine.play('TEXT_IN', barEl, textEl);
+        }
+        // Stage 2: TEXT_HOLD (4000ms)
+        if (this.isActive && this.runtime.motionEngine) {
+          this.currentTextStage = 'TEXT_HOLD';
+          await this.runtime.motionEngine.play('TEXT_HOLD', barEl, textEl);
+        }
+        // Stage 3: TEXT_OUT (300ms)
+        if (this.isActive && this.runtime.motionEngine) {
+          this.currentTextStage = 'TEXT_OUT';
+          await this.runtime.motionEngine.play('TEXT_OUT', barEl, textEl);
+          this.currentTextStage = null;
+        }
+      } catch (err) {
+        // Interrupted by manual STOP
+        break;
+      }
+
+      if (!this.isActive) break;
+
+      // Advance circular queue in model
+      this.feedModel.next();
+    }
   }
 
   /**
    * Stop Breaking News display immediately (Manual Trigger: ■ STOP).
-   * Executes collapse motion, hides Breaking display, and emits release request
-   * to allow Primary Headline Engine to automatically resume playback.
+   * Executes final TEXT_OUT (if required) followed by single BAR_OUT,
+   * resets state to IDLE, and emits release handshake to resume Primary.
    */
-  stop() {
+  async stop() {
     if (!this.isActive) return;
 
-    console.log(`[Playback]\n\nManual STOP received\n\nQueue terminated\n\nPrimary resumed`);
+    console.log(`[Playback]\n\nManual STOP\n\nExecuting final TEXT_OUT\n\nExecuting BAR_OUT\n\nPersistent Bar : OFF\n\nPrimary Resume`);
     console.log(`[BreakingNewsProfile] State Transition: ACTIVE -> IDLE | Trigger: release()`);
+
     this.isActive = false;
+
+    const barEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.barElement : null;
+    const textEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.textElement : null;
+
+    // Stop current motion engine step if running
+    if (this.runtime.motionEngine) {
+      const prevStage = this.currentTextStage;
+      this.runtime.motionEngine.stop();
+
+      // If stopped during TEXT_IN or TEXT_HOLD, run TEXT_OUT once cleanly
+      if (prevStage === 'TEXT_IN' || prevStage === 'TEXT_HOLD') {
+        try {
+          await this.runtime.motionEngine.play('TEXT_OUT', barEl, textEl);
+        } catch (e) {}
+      }
+
+      // Execute BAR_OUT ONCE at end of session
+      try {
+        await this.runtime.motionEngine.play('BAR_OUT', barEl);
+      } catch (e) {}
+    }
+
+    this.currentTextStage = null;
 
     // Reset Model index back to 0 on STOP (SSOT Rule)
     this.feedModel.resetIndex();
     this.feedModel.transitionTo('IDLE');
 
-    // 1. Stop underlying runtime (clears timers and playback state)
-    this.runtime.stop();
-
-    // 2. Visually reset overlay to IDLE transparent state immediately.
+    // Visually reset overlay to IDLE transparent state immediately
     this._resetToIdleState();
 
-    // 3. Emit release handshake via StateEngine to resume Primary Engine
+    // Emit release handshake via StateEngine to resume Primary Engine
     this.stateEngine.emit('breaking-news', 'release', {
       timestamp: Date.now()
     });
 
-    // 4. Notify callbacks
+    // Notify callbacks
     this._notifyStop();
   }
 

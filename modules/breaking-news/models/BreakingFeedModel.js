@@ -166,7 +166,7 @@ export class BreakingFeedModel {
    * @param {string} targetState
    */
   transitionTo(targetState) {
-    const validStates = ['IDLE', 'READY', 'ACTIVE'];
+    const validStates = ['IDLE', 'READY', 'BAR_VISIBLE', 'ACTIVE', 'ACTIVE_TEXT_LOOP'];
     if (!validStates.includes(targetState)) {
       console.warn(`[BreakingFeedModel] Invalid target state: ${targetState}`);
       return;

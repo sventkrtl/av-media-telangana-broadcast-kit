@@ -299,7 +299,50 @@ To match broadcast operations, Breaking Profile executes continuous circular pla
 
 ---
 
-*Document version: v2.3.0 (B1-2D Continuous Playback Behavior).*
+## 📺 12. Persistent Breaking Bar Playback Profile (Task B1-2E)
+
+To match professional newsroom lower-third standards, the Breaking Profile operates with a **Persistent Backing Plate**:
+- `BAR_IN` executes **ONLY ONCE** when the operator triggers `🔴 SHOW NOW`.
+- The urgent Red Bar (`#DC2626`) remains 100% visible on screen during the entire Breaking session.
+- Individual headlines cycle using **text-only transitions** (`TEXT_IN ➔ TEXT_HOLD ➔ TEXT_OUT`).
+- `BAR_OUT` executes **ONLY ONCE** when the operator triggers **■ STOP**.
+
+```
+SHOW NOW
+      │
+      ▼
+BAR_IN (Executed ONCE)
+      │
+──────────────────────────────
+TEXT_IN ➔ TEXT_HOLD ➔ TEXT_OUT (Headline 1)
+──────────────────────────────
+TEXT_IN ➔ TEXT_HOLD ➔ TEXT_OUT (Headline 2)
+──────────────────────────────
+TEXT_IN ➔ TEXT_HOLD ➔ TEXT_OUT (Headline 3)
+──────────────────────────────
+(Continuous Circular Loop)
+──────────────────────────────
+STOP
+      │
+TEXT_OUT (Current Headline if visible)
+      │
+BAR_OUT (Executed ONCE)
+      │
+IDLE ➔ Primary Resume
+```
+
+### Persistent Bar Rules & State Machine:
+1. **State Lifecycle**: `IDLE` ➔ `SHOW NOW` ➔ `BAR_VISIBLE` ➔ `ACTIVE_TEXT_LOOP` ➔ `STOP` ➔ `IDLE`.
+2. **Persistent Bar Output**: `BAR_IN` activates the Red Bar plate (`Persistent Bar : ON`); `BAR_OUT` is NEVER called between headlines while in `ACTIVE_TEXT_LOOP`.
+3. **Clean STOP & Double Animation Safeguard**: If `STOP` is triggered during `TEXT_IN` or `TEXT_HOLD`, `TEXT_OUT` executes once before `BAR_OUT`. If `STOP` is triggered when `TEXT_OUT` has already completed, `BAR_OUT` executes directly without duplicating `TEXT_OUT`.
+4. **Logging Format**:
+   - On `BAR_IN`: `[Playback]\n\nBAR_IN\n\nPersistent Bar : ON`
+   - On Headline Transition: `[Playback]\n\nHeadline Complete\n\nNext Headline\n\nTEXT_IN only.`
+   - On `BAR_OUT`: `[Playback]\n\nManual STOP\n\nExecuting final TEXT_OUT\n\nExecuting BAR_OUT\n\nPersistent Bar : OFF\n\nPrimary Resume`
+
+---
+
+*Document version: v2.4.0 (B1-2E Persistent Breaking Bar Playback Profile).*
 
 
 
