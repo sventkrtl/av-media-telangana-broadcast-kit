@@ -62,14 +62,16 @@ export class BreakingNewsDataAdapter {
       urlsToProbe.push(
         `${normalizedBase}${sep}sheet=Breaking%20Profile`,
         `${normalizedBase}${sep}sheet=Breaking+Profile`,
+        `${normalizedBase}${sep}gid=8`,
         `${normalizedBase}${sep}gid=3`,
         `${normalizedBase}${sep}gid=4`,
         `${normalizedBase}${sep}gid=5`,
         `${normalizedBase}${sep}gid=6`,
         `${normalizedBase}${sep}gid=7`,
-        `${normalizedBase}${sep}gid=1`,
-        `${normalizedBase}${sep}gid=2`,
-        `${normalizedBase}${sep}gid=0`
+        `${normalizedBase}${sep}gid=9`,
+        `${normalizedBase}${sep}gid=10`,
+        `${normalizedBase}${sep}gid=11`,
+        `${normalizedBase}${sep}gid=12`
       );
     }
 
