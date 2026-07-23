@@ -4,11 +4,15 @@
  * Health/Version Endpoints & Clean Broadcast Runtime Logs
  */
 
-const http = require('http');
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
+import http from 'http';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const REPO_ROOT = path.resolve(__dirname, '../../');
 const startTime = Date.now();

@@ -3,4 +3,4 @@
  * Usage: node server.js
  */
 
-require('./shared/js/server.js');
+import './shared/js/server.js';
