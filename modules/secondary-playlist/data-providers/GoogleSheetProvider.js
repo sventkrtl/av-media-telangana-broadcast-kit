@@ -43,8 +43,16 @@ export class GoogleSheetProvider extends BaseDataProvider {
       return trimmed;
     }
 
+    if (trimmed.includes('/pubhtml')) {
+      return trimmed.replace('/pubhtml', '/pub?output=csv');
+    }
+    if (trimmed.endsWith('/pub')) {
+      return trimmed + '?output=csv';
+    }
+
     // Match Google Sheet ID: /spreadsheets/d/([a-zA-Z0-9-_]+)
-    const match = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    // Avoid matching 'e' as the sheetId for published URLs
+    const match = trimmed.match(/\/spreadsheets\/d\/(?!e\/)([a-zA-Z0-9-_]+)/);
     if (match && match[1]) {
       const sheetId = match[1];
 
