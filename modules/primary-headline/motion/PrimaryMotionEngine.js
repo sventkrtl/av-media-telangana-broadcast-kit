@@ -229,7 +229,7 @@ export class PrimaryMotionEngine {
         textEl.style.willChange = 'clip-path, opacity';
         textEl.style.transition = 'none';
         textEl.style.clipPath = 'inset(0 50% 0 50%)';
-        textEl.style.opacity = '0';
+        textEl.style.opacity = '0.95'; // Subtle anti-aliasing helper (Max: 0.95 -> 1.00)
 
         void textEl.offsetWidth;
 
@@ -268,7 +268,7 @@ export class PrimaryMotionEngine {
         textEl.style.willChange = 'clip-path, opacity';
         textEl.style.transition = `clip-path ${durationMs}ms cubic-bezier(0.4, 0, 1, 1), opacity ${durationMs}ms cubic-bezier(0.4, 0, 1, 1)`;
         textEl.style.clipPath = 'inset(0 50% 0 50%)';
-        textEl.style.opacity = '0';
+        textEl.style.opacity = '0.95';
       } else if (textEl && textEl.style) {
         textEl.style.clipPath = 'inset(0 50% 0 50%)';
         textEl.style.opacity = '0';

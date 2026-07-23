@@ -347,14 +347,14 @@ IDLE ➔ Primary Resume
 | **BAR_IN** | Every Headline | Once per Session |
 | **TEXT_IN** | Every Headline | Every Headline |
 | **BAR_OUT** | Every Headline | STOP only |
-| **Stage Separator** | None | 50ms Optical Gap |
+| **Stage Separator** | None | 60ms Optical Separator (Production Freeze Value) |
 | **Trigger** | Automatic Loop | Manual Operator Trigger |
 | **Stop** | Automatic | Manual Operator STOP |
 | **Theme Color** | Slate Blue (`#1E3A8A`) | Red Bar (`#DC2626`) |
 
 ---
 
-*Document version: v2.5.0 (B1-2E Motion Separator & Profile Comparison Matrix).*
+*Document version: v2.6.0 (B1-2G Final 60ms Optical Separator Production Freeze).*
 
 
 

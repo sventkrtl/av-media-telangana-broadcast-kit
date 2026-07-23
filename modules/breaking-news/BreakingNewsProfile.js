@@ -173,7 +173,7 @@ export class BreakingNewsProfile {
       if (!headline) break;
 
       const barEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.barElement : null;
-      const textEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.textElement : null;
+      const textEl = this.runtime.staticRenderer ? (this.runtime.staticRenderer.viewportElement || this.runtime.staticRenderer.textElement) : null;
 
       if (this.runtime.staticRenderer && typeof this.runtime.staticRenderer.renderHeadline === 'function') {
         this.runtime.staticRenderer.renderHeadline(headline);
@@ -199,9 +199,9 @@ export class BreakingNewsProfile {
           this.currentTextStage = null;
         }
 
-        // 50ms stage separator gap for smooth optical clarity between headline text transitions
+        // 60ms stage separator gap for smooth optical clarity between headline text transitions
         if (this.isActive) {
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(resolve => setTimeout(resolve, 60));
         }
       } catch (err) {
         // Interrupted by manual STOP
@@ -229,7 +229,7 @@ export class BreakingNewsProfile {
     this.isActive = false;
 
     const barEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.barElement : null;
-    const textEl = this.runtime.staticRenderer ? this.runtime.staticRenderer.textElement : null;
+    const textEl = this.runtime.staticRenderer ? (this.runtime.staticRenderer.viewportElement || this.runtime.staticRenderer.textElement) : null;
 
     // Stop current motion engine step if running
     if (this.runtime.motionEngine) {
@@ -240,8 +240,8 @@ export class BreakingNewsProfile {
       if (prevStage === 'TEXT_IN' || prevStage === 'TEXT_HOLD') {
         try {
           await this.runtime.motionEngine.play('TEXT_OUT', barEl, textEl);
-          // 50ms stage gap before BAR_OUT so Red Bar does not clip text
-          await new Promise(resolve => setTimeout(resolve, 50));
+          // 60ms stage gap before BAR_OUT so Red Bar does not clip text
+          await new Promise(resolve => setTimeout(resolve, 60));
         } catch (e) {}
       }
 
