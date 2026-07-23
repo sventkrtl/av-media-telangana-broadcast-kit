@@ -76,7 +76,7 @@ stateEngine.subscribe(msg => {
 
 profile.stop();
 assert.strictEqual(profile.isActive, false);
-assert.strictEqual(profile.selectedIndex, 0);
+assert.strictEqual(profile.feedModel.selectedIndex, 0);
 assert.strictEqual(releaseEmitted, true);
 console.log('[PASSED] Continuous playback loops until manual STOP & Primary release');
 

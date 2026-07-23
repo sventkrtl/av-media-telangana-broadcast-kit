@@ -203,7 +203,9 @@ export class BreakingFeedModel {
    * @private
    */
   _logModel() {
-    console.log(`[BreakingFeedModel]\n\nRevision:\n${this.revision}\n\nCurrent Headline:\n${this.currentHeadline}\n\nProvider:\n${this.feedSource}\n\nState:\n${this.state}`);
+    const total = this.headlines.length || 1;
+    const currentIdx = this.manualHeadline ? 'Manual' : `${this.selectedIndex + 1} / ${total}`;
+    console.log(`[BreakingFeedModel]\n\nRevision: ${this.revision}\nSelected Index: ${currentIdx}\nCurrent Headline:\n${this.currentHeadline}\n\nProvider:\n${this.feedSource}\n\nState:\n${this.state}`);
   }
 
   /**

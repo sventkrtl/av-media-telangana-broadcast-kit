@@ -19,12 +19,14 @@
 
 import { PrimaryHeadlineRuntime } from '../primary-headline/runtime/PrimaryHeadlineRuntime.js';
 import { StateEngine } from '../../shared/js/state-engine.js';
+import { BreakingFeedModel } from './models/BreakingFeedModel.js';
 
 export class BreakingNewsProfile {
   /**
    * @param {Object} [options]
    * @param {HTMLElement} [options.containerElement] - DOM container
    * @param {StateEngine} [options.stateEngine] - Shared StateEngine instance
+   * @param {BreakingFeedModel} [options.feedModel] - Single Source of Truth Model
    */
   constructor(options = {}) {
     this.options = options;
@@ -37,6 +39,7 @@ export class BreakingNewsProfile {
     });
 
     this.stateEngine = options.stateEngine || new StateEngine('av_media_broadcast_channel');
+    this.feedModel = options.feedModel || new BreakingFeedModel();
     this.isActive = false;
     this.currentHeadline = null;
 
@@ -58,15 +61,11 @@ export class BreakingNewsProfile {
     });
 
     // Enforce Red Bar Theme (#DC2626) on static renderer bar element.
-    // NOTE: We do NOT set transform or opacity here — the CSS idle state
-    // (transform: scaleX(0); opacity: 0) is the ground truth on page load.
-    // PrimaryMotionEngine.BAR_IN / BAR_OUT owns all visibility transitions.
     if (this.runtime.staticRenderer && this.runtime.staticRenderer.barElement) {
       if (!this.runtime.staticRenderer.barElement.style) {
         this.runtime.staticRenderer.barElement.style = {};
       }
       this.runtime.staticRenderer.barElement.style.backgroundColor = '#DC2626';
-      // Ensure IDLE CSS starting position is maintained at initialization
       this.runtime.staticRenderer.barElement.style.transform = 'scaleX(0)';
       this.runtime.staticRenderer.barElement.style.opacity = '0';
     }
@@ -81,6 +80,7 @@ export class BreakingNewsProfile {
     }
 
     // Wire runtime completion to continuous circular playback until operator STOP
+    // Consumers BreakingFeedModel.next() as Single Source of Truth!
     this.runtime.onHeadlineComplete(() => {
       if (!this.isActive) return;
 
@@ -88,24 +88,13 @@ export class BreakingNewsProfile {
       setTimeout(async () => {
         if (!this.isActive) return;
 
-        if (this.headlines && this.headlines.length > 0) {
-          const total = this.headlines.length;
-          const nextIdx = (this.selectedIndex + 1) % total;
-          const isWrapped = nextIdx === 0;
-          this.selectedIndex = nextIdx;
+        // Model owns the circular queue state!
+        const nextItem = this.feedModel.next();
+        const nextHeadline = nextItem.headline;
 
-          if (isWrapped) {
-            console.log(`[Playback]\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nEnd of Queue\n\nRestarting from index 0`);
-          } else {
-            console.log(`[Playback]\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nHeadline Finished\n\nNext Index:\n${this.selectedIndex}\n\nNext Headline:\n${this.headlines[this.selectedIndex]}`);
-          }
-
-          const nextHeadline = this.headlines[this.selectedIndex];
+        if (nextHeadline) {
           this.currentHeadline = nextHeadline;
           this.runtime.loadHeadlines([nextHeadline]);
-          await this.runtime.play();
-        } else if (this.currentHeadline) {
-          this.runtime.loadHeadlines([this.currentHeadline]);
           await this.runtime.play();
         }
       }, 0);
@@ -125,7 +114,7 @@ export class BreakingNewsProfile {
    * Trigger Breaking News display immediately (Manual Trigger: 🔴 SHOW NOW).
    * Emits preemption request to Primary Engine via StateEngine without mutating Primary state.
    *
-   * @param {string} headlineText - Urgent Breaking Headline text
+   * @param {string|Object} input - Urgent Breaking Headline text or payload object
    * @returns {Promise<string>} Playback promise
    */
   async showNow(input) {
@@ -154,15 +143,22 @@ export class BreakingNewsProfile {
 
     this.isActive = true;
     this.currentHeadline = text;
-    this.headlines = queueList;
-    this.selectedIndex = startIdx;
+
+    // Update Model state (Single Source of Truth)
+    if (queueList.length > 0) {
+      this.feedModel.setSheetFeed(queueList, { status: 'READY' });
+      this.feedModel.selectIndex(startIdx);
+    } else {
+      this.feedModel.setManualHeadline(text);
+    }
+    this.feedModel.transitionTo('ACTIVE');
 
     // 1. Send preemption handshake to Primary Headline Engine via StateEngine
     this.stateEngine.emit('breaking-news', 'preempt', {
       timestamp: Date.now(),
       headline: text,
-      headlines: this.headlines,
-      selectedIndex: this.selectedIndex
+      headlines: this.feedModel.headlines,
+      selectedIndex: this.feedModel.selectedIndex
     });
 
     // 2. Load breaking headline into runtime
@@ -187,13 +183,15 @@ export class BreakingNewsProfile {
     console.log(`[Playback]\n\nManual STOP received\n\nQueue terminated\n\nPrimary resumed`);
     console.log(`[BreakingNewsProfile] State Transition: ACTIVE -> IDLE | Trigger: release()`);
     this.isActive = false;
-    this.selectedIndex = 0;
+
+    // Reset Model index back to 0 on STOP (SSOT Rule)
+    this.feedModel.resetIndex();
+    this.feedModel.transitionTo('IDLE');
 
     // 1. Stop underlying runtime (clears timers and playback state)
     this.runtime.stop();
 
     // 2. Visually reset overlay to IDLE transparent state immediately.
-    //    This ensures no static Red Bar lingers on screen after STOP.
     this._resetToIdleState();
 
     // 3. Emit release handshake via StateEngine to resume Primary Engine
