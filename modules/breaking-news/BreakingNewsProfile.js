@@ -198,6 +198,11 @@ export class BreakingNewsProfile {
           await this.runtime.motionEngine.play('TEXT_OUT', barEl, textEl);
           this.currentTextStage = null;
         }
+
+        // 50ms stage separator gap for smooth optical clarity between headline text transitions
+        if (this.isActive) {
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
       } catch (err) {
         // Interrupted by manual STOP
         break;
@@ -235,6 +240,8 @@ export class BreakingNewsProfile {
       if (prevStage === 'TEXT_IN' || prevStage === 'TEXT_HOLD') {
         try {
           await this.runtime.motionEngine.play('TEXT_OUT', barEl, textEl);
+          // 50ms stage gap before BAR_OUT so Red Bar does not clip text
+          await new Promise(resolve => setTimeout(resolve, 50));
         } catch (e) {}
       }
 

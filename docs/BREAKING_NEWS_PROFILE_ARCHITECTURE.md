@@ -340,9 +340,21 @@ IDLE ➔ Primary Resume
    - On Headline Transition: `[Playback]\n\nHeadline Complete\n\nNext Headline\n\nTEXT_IN only.`
    - On `BAR_OUT`: `[Playback]\n\nManual STOP\n\nExecuting final TEXT_OUT\n\nExecuting BAR_OUT\n\nPersistent Bar : OFF\n\nPrimary Resume`
 
+### Primary vs Breaking Motion Language Comparison Matrix
+
+| Feature | Primary Profile Engine | Breaking News Profile |
+|---|---|---|
+| **BAR_IN** | Every Headline | Once per Session |
+| **TEXT_IN** | Every Headline | Every Headline |
+| **BAR_OUT** | Every Headline | STOP only |
+| **Stage Separator** | None | 50ms Optical Gap |
+| **Trigger** | Automatic Loop | Manual Operator Trigger |
+| **Stop** | Automatic | Manual Operator STOP |
+| **Theme Color** | Slate Blue (`#1E3A8A`) | Red Bar (`#DC2626`) |
+
 ---
 
-*Document version: v2.4.0 (B1-2E Persistent Breaking Bar Playback Profile).*
+*Document version: v2.5.0 (B1-2E Motion Separator & Profile Comparison Matrix).*
 
 
 
