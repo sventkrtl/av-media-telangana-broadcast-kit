@@ -199,7 +199,7 @@ export class BreakingNewsProfile {
           this.currentTextStage = null;
         }
 
-        // 70ms stage separator gap for smooth optical clarity between headline text transitions
+        // 70ms stage separator gap (Production-Calibrated Final Value) for smooth optical clarity between headline text transitions
         if (this.isActive) {
           await new Promise(resolve => setTimeout(resolve, 70));
         }

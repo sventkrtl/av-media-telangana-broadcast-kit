@@ -347,14 +347,34 @@ IDLE ➔ Primary Resume
 | **BAR_IN** | Every Headline | Once per Session |
 | **TEXT_IN** | Every Headline | Every Headline |
 | **BAR_OUT** | Every Headline | STOP only |
-| **Stage Separator** | None | 60ms Optical Separator (Production Freeze Value) |
+| **Stage Separator** | None | **70ms Optical Separator (Production Calibrated)** |
 | **Trigger** | Automatic Loop | Manual Operator Trigger |
 | **Stop** | Automatic | Manual Operator STOP |
 | **Theme Color** | Slate Blue (`#1E3A8A`) | Red Bar (`#DC2626`) |
 
 ---
 
-*Document version: v2.6.0 (B1-2G Final 60ms Optical Separator Production Freeze).*
+## 🔒 13. Production Optical Separator Calibration & Module Freeze (v2.1.0)
+
+### Optical Separator Progression & Validation:
+- **Design Value**: `50ms`
+- **Engineering Recommendation**: `60ms`
+- **Production-Calibrated Final Value**: `70ms`
+- **Rationale**: Validated in live OBS Browser Source at broadcast viewing distance. Provides the best perceptual separation between consecutive Telugu headlines without reducing Breaking News urgency (*Measured Reality > Theoretical Recommendation*).
+
+### Frozen Production Assets (v2.1.0):
+- ✅ Typography (`59px` Ramabhadra, `translateY(-11px)`)
+- ✅ Optical Baseline (`135px` Height, `Y: 890px`)
+- ✅ Persistent Backing Plate (`BAR_IN` once on trigger, `BAR_OUT` once on STOP)
+- ✅ Symmetrical Horizontal Reveal (`clip-path: inset(0 50% 0 50%) ➔ inset(0 0% 0 0%)`)
+- ✅ Single Source of Truth (`BreakingFeedModel` authoritative model)
+- ✅ Continuous Playback (`(selectedIndex + 1) % headlines.length`)
+- ✅ Manual STOP & Preempt/Release Handshake (`StateEngine`)
+- ✅ 70ms Optical Separator (Production Calibrated)
+
+---
+
+*Document version: v2.7.0 (B1-2G Production Freeze & 70ms Optical Calibration).*
 
 
 
