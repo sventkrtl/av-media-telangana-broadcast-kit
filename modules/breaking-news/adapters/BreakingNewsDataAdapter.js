@@ -62,12 +62,7 @@ export class BreakingNewsDataAdapter {
       urlsToProbe.push(
         `${normalizedBase}${sep}sheet=Breaking%20Profile`,
         `${normalizedBase}${sep}sheet=Breaking+Profile`,
-        `${normalizedBase}${sep}gid=3`, // Standard Breaking Profile GID in editorial template
-        `${normalizedBase}${sep}gid=4`, // Additional fallback GIDs
-        `${normalizedBase}${sep}gid=5`,
-        `${normalizedBase}${sep}gid=1`,
-        `${normalizedBase}${sep}gid=2`,
-        `${normalizedBase}${sep}gid=0`
+        `${normalizedBase}${sep}gid=3` // Standard Breaking Profile GID in editorial template
       );
     }
 

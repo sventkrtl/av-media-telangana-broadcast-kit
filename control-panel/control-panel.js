@@ -711,18 +711,22 @@ export class ControlPanelApp {
     const manualText = this.bnManualInput ? this.bnManualInput.value.trim() : '';
     let targetHeadline = '';
 
-    if (isManual || manualText) {
+    if (isManual) {
+      if (!manualText) {
+        alert('నోటిఫికేషన్: రాతపూర్వక వార్తను నమోదు చేయండి.');
+        return;
+      }
       targetHeadline = manualText;
       this.breakingSource = 'Manual';
-    } else if (this.breakingHeadlines.length > 0) {
-      targetHeadline = this.breakingHeadlines[0];
-      this.breakingSource = 'Google Sheet';
     } else {
-      alert('నోటిఫికేషన్: ప్రసారం చేయడానికి ఎలాంటి వార్త లేదు! దయచేసి Google Sheet ని Sync చేయండి లేదా రాతపూర్వక వార్తను నమోదు చేయండి.');
-      return;
+      if (this.breakingHeadlines.length > 0) {
+        targetHeadline = this.breakingHeadlines[0];
+        this.breakingSource = 'Google Sheet';
+      } else {
+        alert('నోటిఫికేషన్: ప్రసారం చేయడానికి ఎలాంటి వార్త లేదు! దయచేసి Google Sheet ని Sync చేయండి.');
+        return;
+      }
     }
-
-    if (!targetHeadline) return;
 
     this.isBreakingActive = true;
     this.stateEngine.emit('breaking-news', 'preempt', { headline: targetHeadline });
