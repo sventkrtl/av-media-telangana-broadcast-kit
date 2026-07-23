@@ -1,7 +1,16 @@
 # 01_PROJECT_CONSTITUTION — Supreme Project Constitution
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Core |
+| **Authority** | Supreme Constitutional |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [00_READ_FIRST.md](00_READ_FIRST.md) |
+| **Related Documents** | [02_PROJECT_STATE.md](02_PROJECT_STATE.md), [03_AI_DEVELOPMENT_RULES.md](03_AI_DEVELOPMENT_RULES.md), [07_GOVERNANCE.md](07_GOVERNANCE.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -68,8 +77,8 @@ Lower tiers must strictly conform to higher tiers. Any conflict between source c
 When resolving technical ambiguity, conflicts, or architectural disputes, authority flows strictly down the following sequence:
 
 1. **`PROJECT_CONSTITUTION`** (Supreme Intent & Governance)
-2. **`ENGINEERING_GOVERNANCE`** (Production Calibration & Frozen Rules)
-3. **Architecture Decision Records (ADRs)** (Historical Design Rationale)
+2. **`ENGINEERING_GOVERNANCE`** ([07_GOVERNANCE.md](07_GOVERNANCE.md))
+3. **Architecture Decision Records ([12_ADR_INDEX.md](12_ADR_INDEX.md))**
 4. **Source Code** (Current Physical Implementation)
 5. **Chat / Discussion Logs** (Transient History)
 
@@ -93,7 +102,7 @@ Design  ➔  Prototype  ➔  OBS Validation  ➔  Production Acceptance  ➔  Fr
 
 ## 7. Production Freeze Definition
 
-A module declared as **FROZEN** is locked against architectural and visual modifications. 
+A module declared as **FROZEN** in [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md) is locked against architectural and visual modifications. 
 
 ### Permitted Modifications on Frozen Modules:
 - ✅ **Bug Fixes**: Resolution of verified runtime crashes, unhandled exceptions, or logic defects.
@@ -132,3 +141,9 @@ The project adheres to Semantic Versioning (`vMAJOR.MINOR.PATCH`) complemented b
 ## 10. Closing Statement
 
 The **`PROJECT_CONSTITUTION`** serves as the permanent, authoritative context layer for both human developers and AI models. It guarantees that as the AV Media Telangana Broadcast Kit scales across multiple graphic engines, the core principles of stability, optical precision, profile reuse, and operational discipline remain absolute and uncompromised.
+
+---
+
+## Read Next
+
+👉 Proceed to **[02_PROJECT_STATE.md](02_PROJECT_STATE.md)** — Dynamic Project State Registry.

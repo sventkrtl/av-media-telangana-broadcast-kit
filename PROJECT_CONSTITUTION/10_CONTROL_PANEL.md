@@ -1,7 +1,16 @@
 # 10_CONTROL_PANEL — Control Panel Architecture Specification
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Operator Interface |
+| **Authority** | Dock Architecture |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [04_ARCHITECTURE.md](04_ARCHITECTURE.md) |
+| **Related Documents** | [05_SDK_REFERENCE.md](05_SDK_REFERENCE.md), [09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md), [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -28,10 +37,10 @@ The Control Panel architecture is governed by five operational design principles
 The Control Panel executes six decoupled operational responsibilities:
 
 - **Operator Input**: Captures manual headline overrides, text edits, tab selections, and action button triggers.
-- **Feed Management**: Manages remote Google Sheet published CSV URLs, handles on-demand synchronization triggers, and updates localized persistent settings.
+- **Feed Management**: Manages remote Google Sheet published CSV URLs ([09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)), handles on-demand synchronization triggers, and updates localized persistent settings.
 - **Preview Projection**: Projects raw feed headlines onto off-air visual preview observers (`#bn-preview-headline`), ensuring broadcast accuracy before triggering on-air events.
 - **Telemetry Monitoring**: Displays active state machine status (`IDLE`/`READY`/`ACTIVE`), provider status (`ONLINE`/`OFFLINE`/`ERROR`), current feed source, monotonically increasing revision counters, and error diagnostics.
-- **Broadcast Command Dispatch**: Formats and dispatches preemption commands (`preempt`) and release signals (`release`) across the inter-module event bus.
+- **Broadcast Command Dispatch**: Formats and dispatches preemption commands (`preempt`) and release signals (`release`) across the inter-module event bus (`StateEngine`).
 - **State Visualization**: Subscribes as a read-only observer to Single Source of Truth (SSOT) data models, reflecting model state changes in real time without mutating runtime state directly.
 
 ---
@@ -56,7 +65,7 @@ Runtime Engine (State Machine Transition & Playback Index)
 Renderer (DOM Graphic Assembly & GPU Motion Stage)
        │
        ▼
-OBS Browser Source (1080p On-Air GPU Render)
+OBS Browser Source (1080p On-Air GPU Render - [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md))
 ```
 
 ---
@@ -102,7 +111,7 @@ To support rapid, error-free operation in live newsrooms, keyboard shortcuts MUS
 
 > **FUTURE MODULES SHALL INTEGRATE INTO THE EXISTING CONTROL PANEL. PARALLEL CONTROL PANELS ARE PROHIBITED.**
 
-1. **New Tabs Preferred**: Adding new broadcast graphic engines (Lower Third, Reporter Card) MUST be accomplished by adding a new navigation tab inside the existing Control Panel.
+1. **New Tabs Preferred**: Adding new broadcast graphic engines (Lower Third, Reporter Card - [13_ROADMAP.md](13_ROADMAP.md)) MUST be accomplished by adding a new navigation tab inside the existing Control Panel.
 2. **No Parallel Applications**: Creating separate control panel applications, standalone control pages, or un-unified HTML interfaces is strictly forbidden.
 3. **Unified Architectural Blueprint**: New module tabs must implement the standardized panel sections (Feed Configuration, Operator Controls, Off-Air Preview, Telemetry Monitor).
 
@@ -113,3 +122,9 @@ To support rapid, error-free operation in live newsrooms, keyboard shortcuts MUS
 > **THE CONTROL PANEL IS THE SINGLE OPERATIONAL INTERFACE FOR THE BROADCAST SDK.**
 
 The AV Media Control Panel represents the single operational interface connecting newsroom staff to the underlying Broadcast Graphics SDK. It enforces operational safety, visual validation, and unified telemetry, ensuring absolute control over all live broadcast graphic overlays.
+
+---
+
+## Read Next
+
+👉 Proceed to **[11_OBS_RUNTIME.md](11_OBS_RUNTIME.md)** — OBS Runtime Architecture Specification.

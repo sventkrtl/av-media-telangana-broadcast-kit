@@ -1,7 +1,16 @@
 # 11_OBS_RUNTIME — OBS Runtime Architecture Specification
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Production Runtime |
+| **Authority** | Execution Environment |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [04_ARCHITECTURE.md](04_ARCHITECTURE.md) |
+| **Related Documents** | [05_SDK_REFERENCE.md](05_SDK_REFERENCE.md), [08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md), [10_CONTROL_PANEL.md](10_CONTROL_PANEL.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -28,7 +37,7 @@ The runtime architecture is built upon five fundamental principles:
 Events and rendering directives traverse a seven-stage execution pipeline:
 
 ```
-Control Panel (Operator Action / Preempt Command)
+Control Panel (Operator Action / Preempt Command - [10_CONTROL_PANEL.md](10_CONTROL_PANEL.md))
        │
        ▼
 State Engine (BroadcastChannel IPC Event Bus)
@@ -37,7 +46,7 @@ State Engine (BroadcastChannel IPC Event Bus)
 Runtime Engine (State Machine Guard Verification & Index Management)
        │
        ▼
-Motion Engine (Stage Timing & Easing Timeline Execution)
+Motion Engine (Stage Timing & Easing Timeline Execution - [08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md))
        │
        ▼
 Renderer (DOM Node Construction & Style Property Application)
@@ -57,7 +66,7 @@ The execution stack divides operational responsibilities into five isolated laye
 
 - **Runtime**: Orchestrates dataset index tracking, item sequencing, autoloop bounds, and finite state machine transitions.
 - **Renderer**: Assembles and updates physical DOM structures, applying typography offsets, color theme tokens, and clipping bounds.
-- **Motion**: Executes precise stage timelines (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), managing animation easing and optical stage separators.
+- **Motion**: Executes precise stage timelines (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), managing animation easing and optical stage separators ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md)).
 - **State**: Provides isolated, immutable Single Source of Truth (SSOT) data models and tracks dataset revision counters.
 - **OBS**: Provides the physical 1920x1080 GPU rendering canvas, composite video blending, and program stream output.
 
@@ -99,7 +108,7 @@ To maintain broadcast-grade reliability, all graphic modules MUST conform to fiv
 
 > **FUTURE MODULES SHALL EXECUTE INSIDE THE SAME RUNTIME ARCHITECTURE. PARALLEL RUNTIMES ARE PROHIBITED.**
 
-1. **Shared Runtime Architecture**: All upcoming graphic engines (Lower Third, Reporter Cards) MUST adopt the established Runtime ➔ Motion ➔ Renderer ➔ OBS architecture.
+1. **Shared Runtime Architecture**: All upcoming graphic engines (Lower Third, Reporter Cards - [13_ROADMAP.md](13_ROADMAP.md)) MUST adopt the established Runtime ➔ Motion ➔ Renderer ➔ OBS architecture.
 2. **No Custom Engines**: Creating standalone rendering frameworks, introducing unvetted graphics libraries, or bypassing the `StateEngine` IPC bus is strictly forbidden.
 
 ---
@@ -109,3 +118,9 @@ To maintain broadcast-grade reliability, all graphic modules MUST conform to fiv
 > **OBS BROWSER SOURCE IS THE AUTHORITATIVE PRODUCTION RUNTIME FOR THE BROADCAST GRAPHICS SDK.**
 
 The OBS Browser Source runtime guarantees that every broadcast graphic overlay delivered by the AV Media Telangana Broadcast Kit executes with absolute optical precision, visual stability, and broadcast-grade reliability on live television.
+
+---
+
+## Read Next
+
+👉 Proceed to **[12_ADR_INDEX.md](12_ADR_INDEX.md)** — Architecture Decision Record Master Registry.

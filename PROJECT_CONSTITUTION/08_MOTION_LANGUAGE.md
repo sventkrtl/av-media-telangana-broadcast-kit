@@ -1,7 +1,16 @@
 # 08_MOTION_LANGUAGE — Broadcast Motion Language Specification
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Motion Specification |
+| **Authority** | Visual Motion Standard |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [04_ARCHITECTURE.md](04_ARCHITECTURE.md) |
+| **Related Documents** | [05_SDK_REFERENCE.md](05_SDK_REFERENCE.md), [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md), [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -55,7 +64,7 @@ The motion specification defines nine foundational motion primitives that compos
 Motion execution flows strictly down a deterministic five-tier lifecycle pipeline:
 
 ```
-Operator Trigger (Control Panel / Automation)
+Operator Trigger (Control Panel / Automation - [10_CONTROL_PANEL.md](10_CONTROL_PANEL.md))
        │
        ▼
 Runtime Engine (State Machine Stage Selection)
@@ -67,14 +76,14 @@ Motion Engine (Easing Drivers & Timeline Execution)
 Renderer (GPU Transform & Clip-Path Property Application)
        │
        ▼
-Viewer (On-Air Optical Perception)
+Viewer (On-Air Optical Perception - [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md))
 ```
 
 ---
 
 ## 6. Motion Calibration
 
-1. **OBS is Authoritative**: All animation curves, easing profiles, and clip-path reveals MUST be inspected and calibrated inside OBS Studio.
+1. **OBS is Authoritative**: All animation curves, easing profiles, and clip-path reveals MUST be inspected and calibrated inside OBS Studio ([11_OBS_RUNTIME.md](11_OBS_RUNTIME.md)).
 2. **Production-Calibrated Values Override Theoretical Values**: Values validated under live broadcast viewing conditions take supreme precedence over initial design mockups or theoretical recommendations.
 3. **Mandatory Live Broadcast Validation**: No motion profile is approved for production without real-time visual verification and optical clarity certification.
 
@@ -84,7 +93,7 @@ Viewer (On-Air Optical Perception)
 
 > **MOTION BECOMES IMMUTABLE AFTER PRODUCTION FREEZE.**
 
-Once a graphic engine enters Production Freeze, its motion identity, easing curves, stage progression, and calibrated optical stage gaps are locked. Only authorized bug fixes (e.g., resolving an animation promise hang) are permitted. Visual tuning or motion changes require initiating a new major version (`v3.0.0+`).
+Once a graphic engine enters Production Freeze ([06_FROZEN_MODULES.md](06_FROZEN_MODULES.md)), its motion identity, easing curves, stage progression, and calibrated optical stage gaps are locked. Only authorized bug fixes (e.g., resolving an animation promise hang) are permitted. Visual tuning or motion changes require initiating a new major version (`v3.0.0+`).
 
 ---
 
@@ -92,7 +101,7 @@ Once a graphic engine enters Production Freeze, its motion identity, easing curv
 
 1. **Reuse Motion Primitives**: Future graphic engines SHALL compose existing motion primitives (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`, Persistent Plate, Optical Separator) before introducing custom animations.
 2. **Configuration-First**: Velocity adjustments or orientation shifts MUST be achieved via configuration parameters passed to existing motion drivers.
-3. **ADR Required for New Primitives**: Introducing a new motion primitive (e.g., a 3D GPU flip or particle sting) requires a formal Architecture Decision Record (ADR) prior to implementation.
+3. **ADR Required for New Primitives**: Introducing a new motion primitive (e.g., a 3D GPU flip or particle sting) requires a formal Architecture Decision Record ([12_ADR_INDEX.md](12_ADR_INDEX.md)) prior to implementation.
 
 ---
 
@@ -101,3 +110,9 @@ Once a graphic engine enters Production Freeze, its motion identity, easing curv
 > **MOTION LANGUAGE IS A PERMANENT BROADCAST IDENTITY, NOT AN ANIMATION LIBRARY.**
 
 The Motion Language Specification ensures that the AV Media Telangana Broadcast Kit maintains visual authority, optical clarity, and professional broadcast polish across all past, present, and future graphic overlays.
+
+---
+
+## Read Next
+
+👉 Proceed to **[09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)** — Google Sheets Integration Specification.

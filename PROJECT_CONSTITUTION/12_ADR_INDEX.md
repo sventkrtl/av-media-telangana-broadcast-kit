@@ -1,7 +1,16 @@
 # 12_ADR_INDEX — Architecture Decision Record Master Registry
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Master Index |
+| **Authority** | ADR Registry |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [07_GOVERNANCE.md](07_GOVERNANCE.md) |
+| **Related Documents** | [04_ARCHITECTURE.md](04_ARCHITECTURE.md), [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md), [13_ROADMAP.md](13_ROADMAP.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -37,7 +46,7 @@ Approval
 Implementation
    │
    ▼
-Freeze (If Applicable)
+Freeze (If Applicable - [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md))
 ```
 
 ---
@@ -64,14 +73,14 @@ Freeze (If Applicable)
 
 The repository categorizes all ADRs into eight architectural domains:
 
-- **Architecture**: System topology, profile reuse, and layer separation.
-- **Runtime**: Playback engines, circular loop models, and state machine contracts.
-- **Motion**: Stage timelines, easing drivers, and clip-path reveal mechanisms.
-- **SDK**: Shared utility engines, animation libraries, and framework abstractions.
-- **Control Panel**: Operator dock workflows, preview observers, and IPC command formatting.
-- **Google Sheets**: Published CSV schema definitions, tab routing, and isolation rules.
+- **Architecture**: System topology, profile reuse, and layer separation ([04_ARCHITECTURE.md](04_ARCHITECTURE.md)).
+- **Runtime**: Playback engines, circular loop models, and state machine contracts ([11_OBS_RUNTIME.md](11_OBS_RUNTIME.md)).
+- **Motion**: Stage timelines, easing drivers, and clip-path reveal mechanisms ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md)).
+- **SDK**: Shared utility engines, animation libraries, and framework abstractions ([05_SDK_REFERENCE.md](05_SDK_REFERENCE.md)).
+- **Control Panel**: Operator dock workflows, preview observers, and IPC command formatting ([10_CONTROL_PANEL.md](10_CONTROL_PANEL.md)).
+- **Google Sheets**: Published CSV schema definitions, tab routing, and isolation rules ([09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)).
 - **Typography**: Telugu script baseline offsets, font sizing, and viewport clip bounds.
-- **Governance**: Production Freeze policies, lock rules, and constitutional sync mandates.
+- **Governance**: Production Freeze policies, lock rules, and constitutional sync mandates ([07_GOVERNANCE.md](07_GOVERNANCE.md)).
 
 ---
 
@@ -94,7 +103,7 @@ New ADR Authored & Approved
 ADR Index Updated (12_ADR_INDEX.md)
             │
             ▼
-Constitution Sync (PROJECT_CONSTITUTION Lockstep Update)
+Constitution Sync (PROJECT_CONSTITUTION Lockstep Update - [18_DOCUMENT_UPDATE_MATRIX.md](18_DOCUMENT_UPDATE_MATRIX.md))
 ```
 
 ---
@@ -104,3 +113,9 @@ Constitution Sync (PROJECT_CONSTITUTION Lockstep Update)
 > **`12_ADR_INDEX.md` IS THE AUTHORITATIVE REGISTRY OF ARCHITECTURAL DECISIONS.**
 
 This document provides the canonical catalog of all architectural decisions governing the AV Media Telangana Broadcast Kit. It ensures that technical context, design rationale, and system boundaries remain permanently accessible and transparent.
+
+---
+
+## Read Next
+
+👉 Proceed to **[13_ROADMAP.md](13_ROADMAP.md)** — Constitutional Roadmap & Module Registry.

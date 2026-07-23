@@ -1,7 +1,16 @@
 # 05_SDK_REFERENCE — Broadcast Graphics SDK Reference Manual
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Reference |
+| **Authority** | Framework Specification |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [04_ARCHITECTURE.md](04_ARCHITECTURE.md) |
+| **Related Documents** | [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md), [08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md), [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md) |
+| **Update Frequency** | Static |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -17,12 +26,12 @@ The SDK exposes twelve core functional components that govern broadcast graphic 
 
 | Component | Responsibility | Lifecycle |
 |---|---|---|
-| **Control Panel** | Provides operator dock interface, manual triggers, and live telemetry projections | Persistent User Session |
+| **Control Panel** | Provides operator dock interface, manual triggers, and live telemetry projections ([10_CONTROL_PANEL.md](10_CONTROL_PANEL.md)) | Persistent User Session |
 | **State Engine** | Manages inter-module event communication, preemption handshakes, and release signals | Persistent Event Loop |
 | **Runtime Engine** | Orchestrates playback sequencing, item index tracking, and state machine transitions | Continuous / On-Demand Loop |
-| **Motion Engine** | Executes stage timing (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), easing, and optical gaps | Stage Execution Duration |
+| **Motion Engine** | Executes stage timing (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), easing, and optical gaps ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md)) | Stage Execution Duration |
 | **Renderer** | Constructs and updates DOM node hierarchies, applying GPU styling and geometry bounds | Active Rendering Session |
-| **Data Adapter** | Ingests, validates, and transforms external datasets into internal Single Source of Truth models | On Initialization / Sync |
+| **Data Adapter** | Ingests, validates, and transforms external datasets into internal Single Source of Truth models ([09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)) | On Initialization / Sync |
 | **Configuration Engine** | Resolves environment settings, theme variables, polling intervals, and canvas presets | Application Startup |
 | **Animation Engine** | Provides GPU-accelerated CSS transform keyframes and hardware animation primitives | Active Transition |
 | **Theme Engine** | Applies visual style profiles, color tokens, background plates, and theme classes | Module Initialization |
@@ -49,8 +58,8 @@ A **Profile Engine** is an additive, lightweight wrapper that configures and reu
 
 The SDK relies on six standardized background support services:
 
-1. **Google Sheets Service**: Fetches published CSV datasets, auto-detects tab names and GID indices, and validates schema constraints.
-2. **OBS Browser Source Service**: Interfaces with Chromium Embedded Framework (CEF), enforcing 1920x1080 resolution bounds and 60fps GPU hardware acceleration.
+1. **Google Sheets Service**: Fetches published CSV datasets, auto-detects tab names and GID indices, and validates schema constraints ([09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)).
+2. **OBS Browser Source Service**: Interfaces with Chromium Embedded Framework (CEF), enforcing 1920x1080 resolution bounds and 60fps GPU hardware acceleration ([11_OBS_RUNTIME.md](11_OBS_RUNTIME.md)).
 3. **WebSocket Service**: Listens for remote broadcast control events, external automation triggers, and multi-room command synchronization.
 4. **BroadcastChannel Service**: Drives local browser inter-tab communication, ensuring instant preemption and release handshakes between control panels and on-air overlays.
 5. **Telemetry Service**: Monitors system health, active feed sources, revision counters, dataset versions, and error diagnostics in real time.
@@ -87,7 +96,7 @@ OBS Browser Source (1080p On-Air GPU Render)
 
 1. **Reuse First**: Future graphic modules MUST attempt to reuse existing SDK components before introducing new code abstractions.
 2. **Configuration First**: Visual themes, color schemes, timing offsets, and typography scaling MUST be achieved by passing parameters to existing SDK drivers rather than rewriting engine logic.
-3. **ADR Required for Primitives**: Introducing a new Core SDK Component (e.g., a new rendering engine paradigm or database provider) requires a formal Architecture Decision Record (ADR) prior to implementation.
+3. **ADR Required for Primitives**: Introducing a new Core SDK Component (e.g., a new rendering engine paradigm or database provider) requires a formal Architecture Decision Record ([12_ADR_INDEX.md](12_ADR_INDEX.md)) prior to implementation.
 
 ---
 
@@ -96,3 +105,9 @@ OBS Browser Source (1080p On-Air GPU Render)
 > **SDK COMPONENTS ARE LONG-LIVED; PROFILE ENGINES EVOLVE; THE SDK REMAINS STABLE.**
 
 Core SDK Components represent immutable broadcast infrastructure. While new Profile Engines and visual graphic themes may be added to expand broadcast capabilities, Core SDK interfaces remain backward-compatible, stable, and protected against architectural drift.
+
+---
+
+## Read Next
+
+👉 Proceed to **[06_FROZEN_MODULES.md](06_FROZEN_MODULES.md)** — Frozen Module Registry.

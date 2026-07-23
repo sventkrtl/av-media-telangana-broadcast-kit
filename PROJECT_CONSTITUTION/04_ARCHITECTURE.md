@@ -1,7 +1,16 @@
 # 04_ARCHITECTURE — Permanent System Architecture Reference
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Architecture Reference |
+| **Authority** | System Topology |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md) |
+| **Related Documents** | [05_SDK_REFERENCE.md](05_SDK_REFERENCE.md), [08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md), [11_OBS_RUNTIME.md](11_OBS_RUNTIME.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -36,7 +45,7 @@ Layer 6: OBS Browser Source   (1080p GPU Display Canvas)
 
 ### Layer Responsibilities:
 
-- **Layer 1: Control Panel**  
+- **Layer 1: Control Panel** ([10_CONTROL_PANEL.md](10_CONTROL_PANEL.md))  
   Provides editorial operators with interactive controls (Show Now, Stop, Sync Feed, Manual Overrides) and telemetry monitoring. Emits broadcast command events without mutating runtime engine state directly.
 
 - **Layer 2: State Engine**  
@@ -45,13 +54,13 @@ Layer 6: OBS Browser Source   (1080p GPU Display Canvas)
 - **Layer 3: Runtime Engine**  
   Manages item sequencing, circular playback indices, autoloop bounds, and finite state machine transitions (`IDLE ➔ READY ➔ ACTIVE ➔ STOP ➔ IDLE`).
 
-- **Layer 4: Motion Engine**  
+- **Layer 4: Motion Engine** ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md))  
   Executes precise animation stages (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), managing hardware-accelerated CSS transforms, clip-paths, and optical stage gap separators.
 
 - **Layer 5: Renderer**  
   Constructs and updates physical DOM structures, applying GPU-accelerated styling, typography alignment tokens, and viewport clipping bounds.
 
-- **Layer 6: OBS Browser Source**  
+- **Layer 6: OBS Browser Source** ([11_OBS_RUNTIME.md](11_OBS_RUNTIME.md))  
   The ultimate rendering canvas inside OBS Studio's Chromium Embedded Framework (CEF), executing 60fps hardware-accelerated composition at 1920x1080 resolution.
 
 ---
@@ -95,7 +104,7 @@ Primary graphics engines (`modules/primary-headline/`, `modules/secondary-playli
 Additive profile wrappers (`modules/breaking-news/`) that import and wrap core engines to apply specialized visual themes (e.g., Red Bar), operator preemption controls, and specific editorial loop behaviors without code duplication.
 
 ### 3. Support Services
-Shared system infrastructure (`shared/js/`, `shared/css/`, `shared/engines/`) providing cross-cutting capabilities such as Google Sheet data fetching, published CSV parsing, telemetry status tracking, design token variables, and `StateEngine` event buses.
+Shared system infrastructure (`shared/js/`, `shared/css/`, `shared/engines/`) providing cross-cutting capabilities such as Google Sheet data fetching ([09_GOOGLE_SHEETS.md](09_GOOGLE_SHEETS.md)), published CSV parsing, telemetry status tracking, design token variables, and `StateEngine` event buses.
 
 ---
 
@@ -145,11 +154,11 @@ The rendering pipeline strictly separates five core concerns:
 
 The operational roles across the broadcast stack are strictly segregated:
 
-- **The Control Panel controls.** (Handles operator intent and triggers command events)
+- **The Control Panel controls.** ([10_CONTROL_PANEL.md](10_CONTROL_PANEL.md))
 - **The Runtime executes.** (Orchestrates playback sequence and handles ring buffer loops)
-- **The Motion Engine animates.** (Drives stage timing, clip-path reveals, and optical gaps)
+- **The Motion Engine animates.** ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md))
 - **The Renderer draws.** (Applies GPU styling and layout placement to DOM nodes)
-- **OBS validates.** (Certifies live 60fps render performance and visual clarity)
+- **OBS validates.** ([11_OBS_RUNTIME.md](11_OBS_RUNTIME.md))
 
 Each architectural layer has exactly one responsibility and executes it with total isolation.
 
@@ -159,7 +168,7 @@ Each architectural layer has exactly one responsibility and executes it with tot
 
 1. **Architecture Reuse First**: New broadcast features MUST attempt to reuse existing core engines and profile wrappers before introducing new modules.
 2. **Configuration First**: Visual variations (colors, timing presets, font sizing) MUST be expressed through configuration profiles before modifying module code.
-3. **New Architecture Only by ADR**: Introducing a new architectural layer, engine category, or data provider requires a formal Architecture Decision Record (ADR) prior to implementation.
+3. **New Architecture Only by ADR**: Introducing a new architectural layer, engine category, or data provider requires a formal Architecture Decision Record ([12_ADR_INDEX.md](12_ADR_INDEX.md)) prior to implementation.
 
 ---
 
@@ -168,3 +177,9 @@ Each architectural layer has exactly one responsibility and executes it with tot
 > **THIS DOCUMENT CHANGES ONLY WHEN SYSTEM ARCHITECTURE CHANGES.**
 
 Feature additions, bug fixes, theme variations, and optical tuning SHALL NOT modify `04_ARCHITECTURE.md`. This reference remains permanent and stable across minor and patch SDK releases.
+
+---
+
+## Read Next
+
+👉 Proceed to **[05_SDK_REFERENCE.md](05_SDK_REFERENCE.md)** — Broadcast Graphics SDK Reference Manual.

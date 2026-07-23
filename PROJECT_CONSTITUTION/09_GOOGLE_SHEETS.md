@@ -1,7 +1,16 @@
 # 09_GOOGLE_SHEETS — Google Sheets Integration Specification
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Integration Specification |
+| **Authority** | Data Provider Standard |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [04_ARCHITECTURE.md](04_ARCHITECTURE.md) |
+| **Related Documents** | [05_SDK_REFERENCE.md](05_SDK_REFERENCE.md), [10_CONTROL_PANEL.md](10_CONTROL_PANEL.md), [12_ADR_INDEX.md](12_ADR_INDEX.md) |
+| **Update Frequency** | Architecture Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -17,7 +26,7 @@ The Google Sheets provider architecture is built upon five operational pillars:
 
 1. **Human Editable**: Spreadsheets MUST remain simple, intuitive, and clear for non-technical newsroom journalists to edit under breaking news pressure.
 2. **AI Friendly**: Column structures and text schemas MUST be structured cleanly to facilitate automated content generation, translation, and verification by AI agents.
-3. **Operator Friendly**: Control panel interfaces MUST provide clear feed status indicators, single-click sync triggers, and instant visual feedback without requiring complex spreadsheet knowledge.
+3. **Operator Friendly**: Control panel interfaces ([10_CONTROL_PANEL.md](10_CONTROL_PANEL.md)) MUST provide clear feed status indicators, single-click sync triggers, and instant visual feedback without requiring complex spreadsheet knowledge.
 4. **Live Synchronization**: Supporting both periodic background polling and on-demand manual triggers to ingest editorial updates without interrupting active broadcast graphics loops.
 5. **Schema Driven**: All spreadsheet tabs MUST conform to strict, pre-defined column schemas. Unvalidated or malformed spreadsheets MUST be rejected safely before reaching on-air runtimes.
 
@@ -58,7 +67,7 @@ Each broadcast graphics module relies on a dedicated spreadsheet tab scope with 
 - **Primary Headline Feed**: Manages multi-item headline queues for continuous lower third rotation, supplying primary news text, sub-labels, and theme tags.
 - **Breaking News Feed**: Supplies urgent, high-priority breaking news headlines consumed exclusively by the breaking preemption overlay wrapper.
 - **Secondary Playlist Feed**: Supplies multi-category regional news, sports scores, and ticker items arranged in sequential editorial playlists.
-- **Future Module Feeds**: Upcoming graphic modules (Lower Third, Reporter Cards) SHALL define dedicated spreadsheet tabs tailored to their specific graphic requirements.
+- **Future Module Feeds**: Upcoming graphic modules (Lower Third, Reporter Cards - [13_ROADMAP.md](13_ROADMAP.md)) SHALL define dedicated spreadsheet tabs tailored to their specific graphic requirements.
 
 ---
 
@@ -94,7 +103,7 @@ Each broadcast graphics module relies on a dedicated spreadsheet tab scope with 
 ## 8. Extension Rules
 
 1. **Dedicated Schemas for Future Engines**: Every new broadcast engine (Lower Third, Reporter Card) MUST define a dedicated spreadsheet schema document prior to integration.
-2. **Documentation-First Updates**: Modifying an existing column schema requires updating the corresponding data provider documentation and ADR before committing code changes.
+2. **Documentation-First Updates**: Modifying an existing column schema requires updating the corresponding data provider documentation and ADR ([12_ADR_INDEX.md](12_ADR_INDEX.md)) before committing code changes.
 
 ---
 
@@ -103,3 +112,9 @@ Each broadcast graphics module relies on a dedicated spreadsheet tab scope with 
 > **GOOGLE SHEETS ARE BROADCAST DATA SOURCES, NOT APPLICATION LOGIC.**
 
 Spreadsheets supply raw editorial content, labels, and metadata. They SHALL NOT contain executable application code, UI styling commands, or state machine logic. Application behavior belongs strictly to the SDK core and constitutional runtime models.
+
+---
+
+## Read Next
+
+👉 Proceed to **[10_CONTROL_PANEL.md](10_CONTROL_PANEL.md)** — Control Panel Architecture Specification.

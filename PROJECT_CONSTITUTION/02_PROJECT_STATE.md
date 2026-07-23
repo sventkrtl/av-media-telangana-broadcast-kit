@@ -1,8 +1,16 @@
 # 02_PROJECT_STATE — Dynamic Project State Registry
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
-**Last Updated**: July 23, 2026  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Dynamic Registry |
+| **Authority** | Operational State |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md) |
+| **Related Documents** | [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md), [13_ROADMAP.md](13_ROADMAP.md), [14_PROJECT_HISTORY.md](14_PROJECT_HISTORY.md) |
+| **Update Frequency** | Dynamic (Every Engineering Task) |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -30,7 +38,7 @@
 
 - **Current Sprint**: Sprint `v2.2.0`
 - **Current Target Module**: Lower Third Engine (`modules/lower-third/`)
-- **Current Milestone**: Constitutional Foundation & Lower Third Architecture Planning
+- **Current Milestone**: Constitutional Navigation & Knowledge Framework (PCC-17)
 - **Current Engineering Status**: PCC Setup Active / Broadcast-grade Ready
 
 ---
@@ -48,10 +56,10 @@
 
 ## 5. Repository Metrics
 
-- **Total Frozen Modules**: 3
+- **Total Frozen Modules**: 3 ([06_FROZEN_MODULES.md](06_FROZEN_MODULES.md))
 - **Active Modules**: 1 (Lower Third Engine - Next Sprint)
-- **ADR Count**: 11 (`ADR-0001` through `ADR-0011`)
-- **Constitution Files**: 17 Files (`PROJECT_CONSTITUTION/`)
+- **ADR Count**: 11 (`ADR-0001` through `ADR-0011` in [12_ADR_INDEX.md](12_ADR_INDEX.md))
+- **Constitution Files**: 19 Files (`PROJECT_CONSTITUTION/`)
 - **Test Status**: 100% PASSING (Zero Regressions)
 
 ---
@@ -60,7 +68,7 @@
 
 - **Name**: Lower Third Engine
 - **Version Target**: `v2.2.0`
-- **Status**: Planned / Next Sprint
+- **Status**: Planned / Next Sprint ([13_ROADMAP.md](13_ROADMAP.md))
 
 ---
 
@@ -79,3 +87,9 @@
 > **THIS DOCUMENT SHALL BE UPDATED AFTER EVERY COMPLETED ENGINEERING TASK.**
 
 This document provides the authoritative dynamic operational snapshot of the repository state. It MUST be updated in lockstep whenever a module changes status, a production freeze occurs, a test suite is updated, or a new sprint begins.
+
+---
+
+## Read Next
+
+👉 Proceed to **[03_AI_DEVELOPMENT_RULES.md](03_AI_DEVELOPMENT_RULES.md)** — Permanent AI Engineering Rulebook.

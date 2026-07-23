@@ -1,8 +1,16 @@
 # 06_FROZEN_MODULES — Frozen Module Registry
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
-**Last Updated**: July 23, 2026  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Registry |
+| **Authority** | Immutability Ledger |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [02_PROJECT_STATE.md](02_PROJECT_STATE.md) |
+| **Related Documents** | [07_GOVERNANCE.md](07_GOVERNANCE.md), [13_ROADMAP.md](13_ROADMAP.md), [14_PROJECT_HISTORY.md](14_PROJECT_HISTORY.md) |
+| **Update Frequency** | Freeze Event |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -54,7 +62,7 @@ When a module enters Production Freeze, the following engineering characteristic
 - **Architecture**: Core class dependencies, wrapper abstractions, and directory structures.
 - **Runtime**: Execution loops, event listeners, and lifecycle hooks.
 - **Behavior**: Auto-loop behavior, trigger handshakes (`SHOW NOW`/`STOP`), and preemption logic.
-- **Motion**: Stage timelines (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), easing curves, and reveal vectors.
+- **Motion**: Stage timelines (`BAR_IN`, `TEXT_IN`, `TEXT_HOLD`, `TEXT_OUT`, `BAR_OUT`), easing curves, and reveal vectors ([08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md)).
 - **Typography**: Font family (Ramabhadra), font size (`59px`), line-height, and vertical offset (`translateY(-11px)`).
 - **Geometry**: Container placement (Y: `890px`), height (`135px`), width (`1920px`), and clip-path bounds.
 - **Visual Identity**: Color tokens (`#1E3A8A` blue, `#DC2626` red), background plates, and theme classes.
@@ -103,7 +111,7 @@ When an authorized patch is applied to a Frozen Module, the following rules appl
 
 ## 8. Future Frozen Modules
 
-Placeholder registry for upcoming broadcast graphic modules scheduled for Production Freeze in future sprints:
+Placeholder registry for upcoming broadcast graphic modules scheduled for Production Freeze in future sprints ([13_ROADMAP.md](13_ROADMAP.md)):
 
 | Module | Target Version | Status | Target Freeze Tag | Planned Horizon |
 |---|---|---|---|---|
@@ -117,3 +125,9 @@ Placeholder registry for upcoming broadcast graphic modules scheduled for Produc
 > **THIS DOCUMENT IS THE SINGLE AUTHORITATIVE REGISTRY FOR EVERY PRODUCTION-FROZEN MODULE.**
 
 No module may claim Production Freeze status unless officially registered in Section 3 of this document with a verified version, status badge, git tag, and production commit hash.
+
+---
+
+## Read Next
+
+👉 Proceed to **[07_GOVERNANCE.md](07_GOVERNANCE.md)** — Engineering Governance Framework.

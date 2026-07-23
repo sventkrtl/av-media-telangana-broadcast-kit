@@ -1,7 +1,16 @@
 # 00_READ_FIRST — Constitutional Entry Point
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Entry Point |
+| **Authority** | Mandatory Startup |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | None |
+| **Related Documents** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md), [15_AI_QUICK_CONTEXT.md](15_AI_QUICK_CONTEXT.md) |
+| **Update Frequency** | Static |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
@@ -17,11 +26,11 @@ Every human contributor, AI model, Codex session, Gemini session, Claude session
 
 All contributors and AI models MUST read the constitutional documents in the following strict order:
 
-1. **`01_PROJECT_CONSTITUTION.md`** — Supreme governing principles and immutable laws.
-2. **`02_PROJECT_STATE.md`** — Current active state and operational milestone status.
-3. **`03_AI_DEVELOPMENT_RULES.md`** — Mandatory AI agent behavioral rules and coding constraints.
-4. **`04_ARCHITECTURE.md`** — High-level system architecture, profiles, and data flow topologies.
-5. **Remaining Constitutional Files (`05_SDK_REFERENCE.md` through `15_AI_QUICK_CONTEXT.md`)** — Read as required by specific engineering tasks.
+1. **[01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md)** — Supreme governing principles and immutable laws.
+2. **[02_PROJECT_STATE.md](02_PROJECT_STATE.md)** — Current active state and operational milestone status.
+3. **[03_AI_DEVELOPMENT_RULES.md](03_AI_DEVELOPMENT_RULES.md)** — Mandatory AI agent behavioral rules and coding constraints.
+4. **[04_ARCHITECTURE.md](04_ARCHITECTURE.md)** — High-level system architecture, profiles, and data flow topologies.
+5. **Remaining Constitutional Files ([05_SDK_REFERENCE.md](05_SDK_REFERENCE.md) through [18_DOCUMENT_UPDATE_MATRIX.md](18_DOCUMENT_UPDATE_MATRIX.md))** — Read as required by specific engineering tasks.
 
 ---
 
@@ -60,3 +69,9 @@ Any AI coding agent (Gemini, Claude, GPT/Codex) MUST read and parse the `PROJECT
 ## 7. Human Startup Rule
 
 All human developers, open-source contributors, and broadcast engineers working on this repository must follow the exact same reading order and constitutional rules as AI agents.
+
+---
+
+## Read Next
+
+👉 Proceed to **[01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md)** — Supreme Project Constitution.

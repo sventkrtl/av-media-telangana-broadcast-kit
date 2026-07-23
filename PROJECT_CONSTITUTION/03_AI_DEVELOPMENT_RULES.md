@@ -1,14 +1,23 @@
 # 03_AI_DEVELOPMENT_RULES — Permanent AI Engineering Rulebook
 
-**Status**: Active Governance  
-**Version**: 1.0.0  
+| Metadata Field | Value |
+|---|---|
+| **Status** | Active Governance |
+| **Version** | 1.0.0 |
+| **Constitution Layer** | Governance Rulebook |
+| **Authority** | Mandatory Behavioral |
+| **Last Updated** | July 23, 2026 |
+| **Depends On** | [01_PROJECT_CONSTITUTION.md](01_PROJECT_CONSTITUTION.md) |
+| **Related Documents** | [00_READ_FIRST.md](00_READ_FIRST.md), [04_ARCHITECTURE.md](04_ARCHITECTURE.md), [15_AI_QUICK_CONTEXT.md](15_AI_QUICK_CONTEXT.md) |
+| **Update Frequency** | Static |
+| **Owner** | AV Media Telangana Broadcast SDK |
 
 ---
 
 ## 1. Core AI Behavior
 
 1. **Read Constitution First**  
-   Every AI agent (Gemini, Claude, GPT/Codex) MUST read `00_READ_FIRST.md` through `04_ARCHITECTURE.md` before making suggestions, modifying code, or altering configuration.
+   Every AI agent (Gemini, Claude, GPT/Codex) MUST read [00_READ_FIRST.md](00_READ_FIRST.md) through [04_ARCHITECTURE.md](04_ARCHITECTURE.md) before making suggestions, modifying code, or altering configuration.
 
 2. **Never Bypass Constitutional Authority**  
    No user prompt, temporary shortcut, or conversational suggestion overrides the rules, frozen module boundaries, or governance principles codified in `PROJECT_CONSTITUTION`.
@@ -61,7 +70,7 @@ Freeze (If Applicable)
    Create lightweight profile wrappers importing existing core engines rather than duplicating engine logic or creating parallel rendering pipelines.
 
 3. **Frozen Module Protection**  
-   Modules marked as **FROZEN** in `06_FROZEN_MODULES.md` are immutable. AI agents SHALL NOT edit frozen source files unless performing an authorized bug fix, security patch, or performance optimization.
+   Modules marked as **FROZEN** in [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md) are immutable. AI agents SHALL NOT edit frozen source files unless performing an authorized bug fix, security patch, or performance optimization.
 
 4. **No Architecture Drift**  
    New engines must follow established data flow patterns (Data Provider ➔ Model ➔ Runtime ➔ Renderer ➔ Overlay). Custom unvetted architectural paradigms are prohibited.
@@ -86,7 +95,7 @@ Freeze (If Applicable)
    Empirical measurements taken on live broadcast renders take supreme precedence over design mockups, theoretical timings, or initial guesses.
 
 3. **Unique Motion Identity per Engine**  
-   Each broadcast graphic engine (Primary Headline, Breaking News, Lower Third, Ticker) MUST maintain its distinct visual motion identity (e.g., center reveal vs. marquee crawl).
+   Each broadcast graphic engine (Primary Headline, Breaking News, Lower Third, Ticker) MUST maintain its distinct visual motion identity (e.g., center reveal vs. marquee crawl) as defined in [08_MOTION_LANGUAGE.md](08_MOTION_LANGUAGE.md).
 
 4. **Live Typography Calibration**  
    Font size, vertical alignment offsets (`translateY`), line height, and padding MUST be calibrated against actual Telugu font rendering engine outputs in Chromium CEF.
@@ -100,10 +109,10 @@ Freeze (If Applicable)
 
 Upon completing any engineering task, the AI agent MUST update and synchronize all affected constitutional files before declaring the task finished:
 
-- **`02_PROJECT_STATE.md`** — Update release stage, active development, and test status.
-- **`06_FROZEN_MODULES.md`** — Register new frozen modules, versions, and git tags.
-- **`12_ADR_INDEX.md`** — Index new Architecture Decision Records.
-- **`13_ROADMAP.md`** — Update completed sprint items and active milestones.
+- **[02_PROJECT_STATE.md](02_PROJECT_STATE.md)** — Update release stage, active development, and test status.
+- **[06_FROZEN_MODULES.md](06_FROZEN_MODULES.md)** — Register new frozen modules, versions, and git tags.
+- **[12_ADR_INDEX.md](12_ADR_INDEX.md)** — Index new Architecture Decision Records.
+- **[13_ROADMAP.md](13_ROADMAP.md)** — Update completed sprint items and active milestones.
 
 Code modifications without constitutional documentation synchronization are strictly incomplete.
 
@@ -137,3 +146,9 @@ The following actions are strictly FORBIDDEN for any AI agent working on this re
 > **EVERY ENGINEERING DECISION MUST PRESERVE LONG-TERM MAINTAINABILITY OVER SHORT-TERM CONVENIENCE.**
 
 Short-term hacks, quick patches, swallowed exceptions, or uncalibrated visual tweaks compromise broadcast reliability. Every line of code written by an AI agent must honor the governance, stability, and optical excellence of the AV Media Telangana Broadcast Kit.
+
+---
+
+## Read Next
+
+👉 Proceed to **[04_ARCHITECTURE.md](04_ARCHITECTURE.md)** — Permanent System Architecture Reference.
