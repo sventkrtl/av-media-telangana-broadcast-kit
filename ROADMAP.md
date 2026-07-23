@@ -32,7 +32,7 @@
 - [x] **v1.2.1**: **Ticker Stable Freeze** ❄️ (Bug Fixes Only, CEF Performance Audit & Memory Optimization)
 - [x] **v2.0.0**: **Secondary News Playlist Engine** — Google Sheet Provider, Refresh Service, Telemetry, OBS Runtime, Continuous Crawl Rendering — **FROZEN** ❄️
 - [x] **v2.0.1-ph**: **Primary Headline Engine v1.0.0** — Runtime, Motion, Renderer, Typography, OBS Overlay, Control Panel Integration, GID Auto-detection — **FROZEN** ❄️ (`v1.0.0-primary-headline`)
-- [ ] **v2.1.0**: **Breaking News Profile v1.0.0** — Primary Architecture Reuse, Red Bar Theme (#DC2626), Manual Operator Trigger (SHOW NOW / STOP), State Preemption & Auto-Resume — **(B1-0 Foundation Complete)**
+- [x] **v2.1.0**: **Breaking News Profile v2.1.0** — Primary Architecture Reuse, Red Bar Theme (#DC2626), Manual Operator Trigger (SHOW NOW / STOP), State Preemption & Auto-Resume, SSOT Model, Persistent Red Bar, Symmetrical Reveal, Continuous Playback, 70ms Optical Separator — **FROZEN** ❄️ (`v2.1.0-breaking-news`)
 - [ ] **v2.2.0**: **Lower Third Engine** (Approach: Design ➔ OBS Prototype ➔ Control Panel Tab ➔ Testing)
 - [ ] **v2.3.0**: **Reporter Card Engine**
 - [ ] **v3.0.0**: **Breaking Queue Management Workflow** (Multi-item breaking queue, priority ordering, queue persistence)
@@ -52,10 +52,11 @@
 ### 📺 Phase 2 – Graphics (In Progress)
 - [x] **Ticker Engine**: Continuous marquee & news ticker system (`modules/ticker/`) — **FROZEN** ❄️
 - [x] **Secondary News Playlist Engine**: Google Sheet live feed, Refresh Service, Telemetry, OBS Runtime Integration, Continuous Crawl Rendering — **FROZEN** ❄️ `v2.0.0`
+- [x] **Primary Headline Engine**: Full 1080p Lower Third Headline Broadcast Overlay — **FROZEN** ❄️ `v1.0.0`
+- [x] **Breaking News Profile**: Urgent Red Bar Preemption Overlay with Persistent Plate & Center Reveal — **FROZEN** ❄️ `v2.1.0`
 - [x] **AV Media Control Panel**: Central OBS Browser Dock (`control-panel/`)
 - [ ] **Lower Third Engine**: Dynamic name, title & lower graphic banners (`modules/lower-third/`) — **NEXT SPRINT**
 - [ ] **Reporter Card Engine**: On-air reporter tag & station identification (`modules/reporter/`)
-- [ ] **Breaking News Engine**: Alert popups & flash banners (`modules/breaking-news/`)
 - [ ] **Live Bug**: On-screen channel branding badge & live indicator
 - [ ] **Clock**: Real-time broadcast clock (`modules/clock/`)
 - [ ] **Date**: Dynamic date & calendar widget
@@ -63,7 +64,7 @@
 
 ---
 
-## 🎨 Lower Third Development Approach (Sprint v2.1.0)
+## 🎨 Lower Third Development Approach (Sprint v2.2.0)
 1. **Design**: Layout, typography, & broadcast color tokens
 2. **OBS Prototype**: Standalone 1080p Browser Source Canvas
 3. **Control**: Lower Third Tab inside `control-panel/`
@@ -73,7 +74,7 @@
 
 ## ❄️ Frozen Module Policy
 
-The following modules are **constitutionally frozen** as of `v2.0.0`.
+The following modules are **constitutionally frozen**.
 Only **Bug Fix**, **Security Fix**, or **Performance Fix** commits are permitted.
 All new features, architecture changes, and behaviour changes are **LOCKED**.
 
@@ -81,9 +82,6 @@ All new features, architecture changes, and behaviour changes are **LOCKED**.
 |---|---|---|
 | `PRIMARY_HEADLINE_ENGINE_SPEC.md` | 📜 CONSTITUTION APPROVED | P1-0 (v1.0) |
 | `modules/ticker/` | ❄️ FROZEN | v1.2.1 |
-| `modules/secondary-playlist/SecondaryPlaylistRuntime.js` | ❄️ FROZEN | v2.0.0 |
-| `modules/secondary-playlist/interpreter/` | ❄️ FROZEN | v2.0.0 |
-| `modules/secondary-playlist/motion/` | ❄️ FROZEN | v2.0.0 |
-| `modules/secondary-playlist/renderer/` | ❄️ FROZEN | v2.0.0 |
-| `modules/secondary-playlist/playback/` | ❄️ FROZEN | v2.0.0 |
-| `modules/secondary-playlist/data-providers/` | ❄️ FROZEN | v2.0.0 |
+| `modules/secondary-playlist/` | ❄️ FROZEN | v2.0.0 |
+| `modules/primary-headline/` | ❄️ FROZEN | v1.0.0 (`v2.0.1-ph`) |
+| `modules/breaking-news/` | ❄️ FROZEN | v2.1.0 (`v2.1.0-breaking-news`) |
