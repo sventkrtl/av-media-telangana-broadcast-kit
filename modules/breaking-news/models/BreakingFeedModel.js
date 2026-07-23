@@ -96,7 +96,7 @@ export class BreakingFeedModel {
    * @param {number} index
    */
   selectIndex(index) {
-    if (typeof index === 'number' && index >= 0 && index < this.headlines.length) {
+    if (typeof index === 'number' && index >= 0 && index < (this.headlines.length || 1)) {
       this.selectedIndex = index;
       this.manualHeadline = null;
       this.feedSource = 'Google Sheet';
@@ -104,6 +104,46 @@ export class BreakingFeedModel {
       this._logModel();
       this.notify();
     }
+  }
+
+  /**
+   * Advance to the next headline in the circular queue (ring buffer).
+   * Automatically wraps from last index to index 0.
+   * @returns {Object} Snapshot of next item metadata { headline, nextIndex, isWrapped }
+   */
+  next() {
+    const total = this.headlines.length || 1;
+    const nextIdx = (this.selectedIndex + 1) % total;
+    const isWrapped = nextIdx === 0;
+
+    this.selectedIndex = nextIdx;
+    this.manualHeadline = null;
+    this.revision++;
+
+    if (isWrapped) {
+      console.log(`[Playback]\n\nRevision:\n${this.revision}\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nEnd of Queue\n\nRestarting from index 0`);
+    } else {
+      console.log(`[Playback]\n\nRevision:\n${this.revision}\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nHeadline Finished\n\nNext Index:\n${this.selectedIndex}\n\nNext Headline:\n${this.currentHeadline}`);
+    }
+
+    this.notify();
+    return {
+      headline: this.currentHeadline,
+      selectedIndex: this.selectedIndex,
+      totalHeadlines: total,
+      isWrapped
+    };
+  }
+
+  /**
+   * Reset selected index back to 0 (called upon STOP).
+   */
+  resetIndex() {
+    this.selectedIndex = 0;
+    this.manualHeadline = null;
+    this.revision++;
+    this._logModel();
+    this.notify();
   }
 
   /**

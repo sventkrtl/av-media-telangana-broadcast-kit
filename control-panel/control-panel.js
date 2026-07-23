@@ -720,6 +720,8 @@ export class ControlPanelApp {
 
     this.stateEngine.emit('breaking-news', 'preempt', {
       headline: targetHeadline,
+      headlines: snapshot.headlines.length > 0 ? snapshot.headlines : [targetHeadline],
+      selectedIndex: snapshot.selectedIndex,
       source: snapshot.feedSource
     });
 
@@ -741,14 +743,14 @@ export class ControlPanelApp {
     }
 
     this.isBreakingActive = false;
+    this.breakingFeedModel.resetIndex();
+    this.breakingFeedModel.transitionTo('IDLE');
     this.stateEngine.emit('breaking-news', 'release', {});
 
     if (this.bnLiveBadge) {
       this.bnLiveBadge.textContent = 'OFF-AIR';
       this.bnLiveBadge.parentElement.style.color = '#10B981';
     }
-
-    this.breakingFeedModel.transitionTo('IDLE');
   }
 
   handleBreakingManualClear() {

@@ -80,11 +80,35 @@ export class BreakingNewsProfile {
       this.runtime.staticRenderer.viewportElement.style.opacity = '0';
     }
 
-    // Wire runtime completion to automatic release handshake if single cycle completes
+    // Wire runtime completion to continuous circular playback until operator STOP
     this.runtime.onHeadlineComplete(() => {
-      if (this.isActive) {
-        this.stop();
-      }
+      if (!this.isActive) return;
+
+      // Yield event loop so current timeline play() loop completes gracefully
+      setTimeout(async () => {
+        if (!this.isActive) return;
+
+        if (this.headlines && this.headlines.length > 0) {
+          const total = this.headlines.length;
+          const nextIdx = (this.selectedIndex + 1) % total;
+          const isWrapped = nextIdx === 0;
+          this.selectedIndex = nextIdx;
+
+          if (isWrapped) {
+            console.log(`[Playback]\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nEnd of Queue\n\nRestarting from index 0`);
+          } else {
+            console.log(`[Playback]\n\nSelected Index:\n${this.selectedIndex + 1} / ${total}\n\nHeadline Finished\n\nNext Index:\n${this.selectedIndex}\n\nNext Headline:\n${this.headlines[this.selectedIndex]}`);
+          }
+
+          const nextHeadline = this.headlines[this.selectedIndex];
+          this.currentHeadline = nextHeadline;
+          this.runtime.loadHeadlines([nextHeadline]);
+          await this.runtime.play();
+        } else if (this.currentHeadline) {
+          this.runtime.loadHeadlines([this.currentHeadline]);
+          await this.runtime.play();
+        }
+      }, 0);
     });
 
     // Inject Stage Start logging from the playback controller to satisfy Audit requirements
@@ -104,28 +128,48 @@ export class BreakingNewsProfile {
    * @param {string} headlineText - Urgent Breaking Headline text
    * @returns {Promise<string>} Playback promise
    */
-  async showNow(headlineText) {
-    if (!headlineText || typeof headlineText !== 'string' || !headlineText.trim()) {
+  async showNow(input) {
+    let text = '';
+    let queueList = [];
+    let startIdx = 0;
+
+    if (typeof input === 'string') {
+      text = input.trim();
+      queueList = [text];
+      startIdx = 0;
+    } else if (input && typeof input === 'object') {
+      queueList = Array.isArray(input.headlines) ? input.headlines : [];
+      startIdx = typeof input.selectedIndex === 'number' ? input.selectedIndex : 0;
+      text = queueList[startIdx] || input.headline || '';
+      if (!text && queueList.length > 0) text = queueList[0];
+      if (queueList.length === 0 && text) queueList = [text];
+    }
+
+    if (!text) {
       throw new Error('[BreakingNewsProfile] Headline text must be a non-empty string.');
     }
 
-    const cleanText = headlineText.trim();
-    console.log(`[Profile] showNow("${cleanText}")`);
+    console.log(`[Profile] showNow("${text}")`);
     console.log(`[BreakingNewsProfile] State Transition: IDLE -> ACTIVE | Trigger: showNow()`);
+
     this.isActive = true;
-    this.currentHeadline = cleanText;
+    this.currentHeadline = text;
+    this.headlines = queueList;
+    this.selectedIndex = startIdx;
 
     // 1. Send preemption handshake to Primary Headline Engine via StateEngine
     this.stateEngine.emit('breaking-news', 'preempt', {
       timestamp: Date.now(),
-      headline: cleanText
+      headline: text,
+      headlines: this.headlines,
+      selectedIndex: this.selectedIndex
     });
 
     // 2. Load breaking headline into runtime
-    this.runtime.loadHeadlines([cleanText]);
+    this.runtime.loadHeadlines([text]);
 
     // 3. Notify callbacks
-    this._notifyShowNow(cleanText);
+    this._notifyShowNow(text);
 
     // 4. Start playback cycle
     console.log(`[Runtime] Playback started`);
@@ -140,8 +184,10 @@ export class BreakingNewsProfile {
   stop() {
     if (!this.isActive) return;
 
+    console.log(`[Playback]\n\nManual STOP received\n\nQueue terminated\n\nPrimary resumed`);
     console.log(`[BreakingNewsProfile] State Transition: ACTIVE -> IDLE | Trigger: release()`);
     this.isActive = false;
+    this.selectedIndex = 0;
 
     // 1. Stop underlying runtime (clears timers and playback state)
     this.runtime.stop();

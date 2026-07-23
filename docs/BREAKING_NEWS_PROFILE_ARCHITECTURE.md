@@ -258,7 +258,49 @@ Google Sheet / Manual Entry
 
 ---
 
-*Document version: v2.2.0 (B1-2C Single Source of Truth Integration).*
+## 🔄 11. Continuous Circular Playback Behavior (Task B1-2D)
+
+To match broadcast operations, Breaking Profile executes continuous circular playback (ring buffer) until manually stopped by the operator.
+
+```
+[ Operator Click: 🔴 SHOW NOW ]
+               │
+               ▼
+       Headline 1 (4 sec)
+               │
+               ▼
+       Headline 2 (4 sec)
+               │
+               ▼
+       ... Last Headline
+               │
+               ▼ (Wrap to Index 0)
+       Headline 1 (Loop Forever)
+               │
+   [ Operator Click: ■ STOP ]
+               │
+               ▼
+      selectedIndex = 0
+               │
+               ▼
+      Hide Overlay & Resume Primary
+```
+
+### Mandated Continuous Playback Rules:
+
+1. **Circular Queue Rotation**:
+   - Every `HEADLINE_END` automatically advances `selectedIndex` to `(selectedIndex + 1) % headlines.length`.
+   - Wrapping to index 0 logs `[Playback] End of Queue` and continues playback seamlessly.
+2. **Manual STOP Authority**:
+   - The operator is the ONLY authority that can stop playback.
+   - Clicking **■ STOP** terminates playback, resets `selectedIndex = 0` on `BreakingFeedModel`, and releases Primary.
+3. **Duplicate Protection**:
+   - Clicking `SHOW NOW` while `ACTIVE` is ignored to prevent queue resets or motion glitches.
+
+---
+
+*Document version: v2.3.0 (B1-2D Continuous Playback Behavior).*
+
 
 
 

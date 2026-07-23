@@ -50,7 +50,12 @@ export class BreakingNewsApp {
       // Legacy: 'show', 'trigger', 'showNow' also accepted for compatibility.
       if (action === 'preempt' || action === 'show' || action === 'trigger' || action === 'showNow') {
         const headline = (msg.payload && msg.payload.headline) ? msg.payload.headline : '';
-        if (!headline) {
+        const headlines = (msg.payload && Array.isArray(msg.payload.headlines) && msg.payload.headlines.length > 0)
+          ? msg.payload.headlines
+          : (headline ? [headline] : []);
+        const selectedIndex = (msg.payload && typeof msg.payload.selectedIndex === 'number') ? msg.payload.selectedIndex : 0;
+
+        if (!headline && headlines.length === 0) {
           console.warn('[BreakingNewsApp] SHOW NOW received with empty headline — ignoring.');
           return;
         }
@@ -61,7 +66,7 @@ export class BreakingNewsApp {
         try {
           console.log(`[Runtime]\n\nReceived headline:\n${headline}\n\nPlayback started.`);
           console.log(`[BreakingNewsApp] SHOW NOW → "${headline}"`);
-          await this.profileWrapper.showNow(headline);
+          await this.profileWrapper.showNow({ headlines, selectedIndex, headline });
         } catch (err) {
           console.error('[BreakingNewsApp] Error triggering Breaking News display:', err);
         }
