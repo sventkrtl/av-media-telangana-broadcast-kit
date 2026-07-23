@@ -62,7 +62,14 @@ export class BreakingNewsDataAdapter {
       urlsToProbe.push(
         `${normalizedBase}${sep}sheet=Breaking%20Profile`,
         `${normalizedBase}${sep}sheet=Breaking+Profile`,
-        `${normalizedBase}${sep}gid=3` // Standard Breaking Profile GID in editorial template
+        `${normalizedBase}${sep}gid=3`,
+        `${normalizedBase}${sep}gid=4`,
+        `${normalizedBase}${sep}gid=5`,
+        `${normalizedBase}${sep}gid=6`,
+        `${normalizedBase}${sep}gid=7`,
+        `${normalizedBase}${sep}gid=1`,
+        `${normalizedBase}${sep}gid=2`,
+        `${normalizedBase}${sep}gid=0`
       );
     }
 
@@ -107,6 +114,16 @@ export class BreakingNewsDataAdapter {
     if (lines.length < 2) return [];
 
     const headers = this._parseCsvRow(lines[0]).map(h => h.trim().toLowerCase());
+
+    // STRICT ARCHITECTURE ISOLATION:
+    // Ensure we do not parse Primary or Secondary tabs by mistake when probing GIDs.
+    // If we see 'label', 'theme', 'వర్గం', or 'థీమ్', it is definitely NOT the Breaking tab.
+    const isPrimaryOrSecondary = headers.some(h => 
+      h.includes('label') || h.includes('theme') || h.includes('వర్గం') || h.includes('థీమ్')
+    );
+    if (isPrimaryOrSecondary) {
+      return [];
+    }
 
     const headlineIdx = headers.findIndex(h =>
       h.includes('headline') || h.includes('breaking') || h.includes('news') || h.includes('text') || h.includes('వార్త') || h.includes('వివరాలు') || h.includes('అత్యవసరం')
