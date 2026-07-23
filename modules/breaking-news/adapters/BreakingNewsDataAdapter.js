@@ -62,7 +62,12 @@ export class BreakingNewsDataAdapter {
       urlsToProbe.push(
         `${normalizedBase}${sep}sheet=Breaking%20Profile`,
         `${normalizedBase}${sep}sheet=Breaking+Profile`,
-        `${normalizedBase}${sep}gid=3` // Standard Breaking Profile GID in editorial template
+        `${normalizedBase}${sep}gid=3`, // Standard Breaking Profile GID in editorial template
+        `${normalizedBase}${sep}gid=4`, // Additional fallback GIDs
+        `${normalizedBase}${sep}gid=5`,
+        `${normalizedBase}${sep}gid=1`,
+        `${normalizedBase}${sep}gid=2`,
+        `${normalizedBase}${sep}gid=0`
       );
     }
 
@@ -109,14 +114,14 @@ export class BreakingNewsDataAdapter {
     const headers = this._parseCsvRow(lines[0]).map(h => h.trim().toLowerCase());
 
     const headlineIdx = headers.findIndex(h =>
-      h.includes('headline') || h.includes('breaking') || h.includes('news') || h.includes('text')
+      h.includes('headline') || h.includes('breaking') || h.includes('news') || h.includes('text') || h.includes('వార్త') || h.includes('వివరాలు') || h.includes('అత్యవసరం')
     );
     if (headlineIdx === -1) return [];
 
-    const activeIdx = headers.findIndex(h => h.includes('active') || h.includes('status') || h.includes('enable'));
-    const orderIdx = headers.findIndex(h => h === 'order' || h.includes('sequence'));
-    const priorityIdx = headers.findIndex(h => h.includes('priority'));
-    const repeatIdx = headers.findIndex(h => h.includes('repeat'));
+    const activeIdx = headers.findIndex(h => h.includes('active') || h.includes('status') || h.includes('enable') || h.includes('స్టేటస్'));
+    const orderIdx = headers.findIndex(h => h === 'order' || h.includes('sequence') || h.includes('క్రమం'));
+    const priorityIdx = headers.findIndex(h => h.includes('priority') || h.includes('ప్రాధాన్యత'));
+    const repeatIdx = headers.findIndex(h => h.includes('repeat') || h.includes('పునరావృతం'));
 
     const items = [];
     for (let i = 1; i < lines.length; i++) {
