@@ -1,0 +1,8 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "fps": 60,
+  "transparent": true,
+  "overlayUrl": "/overlay/",
+  "wsPort": 8080
+}

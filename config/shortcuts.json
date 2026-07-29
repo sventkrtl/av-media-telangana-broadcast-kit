@@ -1,0 +1,6 @@
+{
+  "shortcuts": [
+    { "key": "F1", "action": "toggle-diagnostics" },
+    { "key": "F2", "action": "toggle-overlay-debug" }
+  ]
+}

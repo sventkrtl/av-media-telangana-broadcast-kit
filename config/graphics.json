@@ -1,0 +1,7 @@
+{
+  "canvasWidth": 1920,
+  "canvasHeight": 1080,
+  "renderEngine": "2d",
+  "enableHardwareAcceleration": true,
+  "maxLayerDepth": 10
+}

@@ -1,0 +1,7 @@
+{
+  "modules": [
+    { "id": "platform-kernel", "enabled": true, "priority": 0 },
+    { "id": "obs-adapter", "enabled": true, "priority": 10 },
+    { "id": "overlay-runtime", "enabled": true, "priority": 20 }
+  ]
+}
