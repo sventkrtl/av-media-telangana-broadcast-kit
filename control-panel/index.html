@@ -242,7 +242,7 @@
         <div class="cp-card">
           <div class="cp-card-title">
             <span>📰 Primary Headline Control Panel</span>
-            <span id="ph-unsaved-badge" class="cp-unsaved-badge">● Unsaved Changes</span>
+            <span id="ph-unsaved-badge" class="cp-unsaved-badge">● Pending Changes (అన్-అప్లైడ్ మార్పులు)</span>
           </div>
 
           <!-- Google Sheet Published CSV URL Input -->
@@ -254,9 +254,9 @@
             <input id="ph-sheet-url" type="url" class="cp-input" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
           </div>
 
-          <!-- Refresh Interval Row -->
-          <div class="cp-row">
-            <div class="cp-form-group">
+          <!-- Refresh Interval Row & Quick Preset Buttons -->
+          <div class="cp-row" style="align-items:flex-end;">
+            <div class="cp-form-group" style="flex:1;">
               <label class="cp-label" for="ph-poll-interval">Auto Refresh Interval (స్వయంచాలక అప్‌డేట్)</label>
               <select id="ph-poll-interval" class="cp-select">
                 <option value="30000" selected>30 Seconds (Default Production)</option>
@@ -264,6 +264,15 @@
                 <option value="60000">60 Seconds (Standard)</option>
                 <option value="0">Manual Only (No Auto Poll)</option>
               </select>
+            </div>
+            <div class="cp-form-group" style="gap:6px;">
+              <label class="cp-label">Quick Presets</label>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="cp-btn cp-btn-secondary btn-ph-preset" data-val="15000" style="padding:6px 12px; font-size:12px;">15s</button>
+                <button type="button" class="cp-btn cp-btn-secondary btn-ph-preset" data-val="30000" style="padding:6px 12px; font-size:12px;">30s</button>
+                <button type="button" class="cp-btn cp-btn-secondary btn-ph-preset" data-val="60000" style="padding:6px 12px; font-size:12px;">60s</button>
+                <button type="button" class="cp-btn cp-btn-secondary btn-ph-preset" data-val="0" style="padding:6px 12px; font-size:12px;">Manual</button>
+              </div>
             </div>
           </div>
 

@@ -2,6 +2,7 @@ import { StateEngine } from '../shared/js/state-engine.js';
 import { PlaylistModel } from '../modules/secondary-playlist/playlist-engine.js';
 import { BreakingNewsDataAdapter } from '../modules/breaking-news/adapters/BreakingNewsDataAdapter.js';
 import { BreakingFeedModel } from '../modules/breaking-news/models/BreakingFeedModel.js';
+import { GoogleSheetProvider } from '../modules/secondary-playlist/data-providers/GoogleSheetProvider.js';
 
 export class ControlPanelApp {
   constructor() {
@@ -114,12 +115,43 @@ export class ControlPanelApp {
     this.loadSavedBreakingState();
     this.renderRecentHeadlines();
     this.bindEvents();
+    this.bindPrimaryEvents();
     this.bindShortcuts();
     this.setupTabSwitching();
     this.setupAutoSaveDraft();
     this.setupStatusListener();
     this.updatePreview();
     this.updateCharCounter();
+  }
+
+  bindPrimaryEvents() {
+    if (this.btnPhApply) {
+      this.btnPhApply.addEventListener('click', () => this.handlePrimaryHeadlineApply());
+    }
+    if (this.btnPhPause) {
+      this.btnPhPause.addEventListener('click', () => this.handlePrimaryHeadlinePause());
+    }
+    if (this.btnPhFetch) {
+      this.btnPhFetch.addEventListener('click', () => this.handlePrimaryHeadlineApply());
+    }
+
+    const markPhDirty = () => {
+      if (this.phUnsavedBadge) this.phUnsavedBadge.classList.add('visible');
+    };
+
+    if (this.phSheetUrl) this.phSheetUrl.addEventListener('input', markPhDirty);
+    if (this.phPayloadInput) this.phPayloadInput.addEventListener('input', markPhDirty);
+    if (this.phPollInterval) this.phPollInterval.addEventListener('change', markPhDirty);
+
+    document.querySelectorAll('.btn-ph-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.val;
+        if (this.phPollInterval) {
+          this.phPollInterval.value = val;
+          markPhDirty();
+        }
+      });
+    });
   }
 
   setupTabSwitching() {
@@ -208,7 +240,7 @@ export class ControlPanelApp {
     }
   }
 
-  handlePrimaryHeadlineApply() {
+  async handlePrimaryHeadlineApply() {
     const sheetUrl = this.phSheetUrl ? this.phSheetUrl.value.trim() : '';
     const pollInterval = parseInt(this.phPollInterval ? this.phPollInterval.value : '30000', 10) || 30000;
     const payloadText = this.phPayloadInput ? this.phPayloadInput.value.trim() : '';
@@ -221,20 +253,54 @@ export class ControlPanelApp {
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-    // Build payload — sheet URL takes priority over manual headlines
-    let payload;
+    let headlineText = '';
+    let categoryName = 'BREAKING';
+    let headlinesList = [];
+
     if (sheetUrl) {
-      payload = { sheetUrl, pollInterval };
-    } else if (manualHeadlines.length > 0) {
-      payload = { headlines: manualHeadlines, pollInterval };
-    } else {
-      // Nothing to send — show error in telemetry
+      try {
+        if (this.phTelemetryState) this.phTelemetryState.textContent = 'SYNCING...';
+        const provider = new GoogleSheetProvider({ url: sheetUrl });
+        const loadRes = await provider.load();
+        if (loadRes.playlists && loadRes.playlists.length > 0) {
+          loadRes.playlists.forEach(pl => {
+            if (pl.items && pl.items.length > 0) {
+              headlinesList.push(...pl.items);
+              if (pl.label && pl.label !== 'Item') categoryName = pl.label.toUpperCase();
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('[ControlPanel] Google Sheet fetch error:', e);
+      }
+
+      if (headlinesList.length > 0) {
+        headlineText = headlinesList[0];
+      }
+    }
+
+    if (!headlineText && manualHeadlines.length > 0) {
+      headlineText = manualHeadlines[0];
+      headlinesList = manualHeadlines;
+    }
+
+    if (!headlineText) {
+      // Show warning in telemetry if no headlines found
       if (this.phTelemetryError) {
         this.phTelemetryError.textContent = 'Sheet URL or Manual Headlines required.';
         this.phTelemetryError.style.color = '#EF4444';
       }
+      if (this.phTelemetryState) this.phTelemetryState.textContent = 'ERROR';
       return;
     }
+
+    const payload = {
+      headline: headlineText,
+      category: categoryName,
+      headlines: headlinesList,
+      sheetUrl,
+      pollInterval
+    };
 
     // Emit to OBS overlay via StateEngine
     this.stateEngine.emit('primary-headline', 'update', payload);
@@ -245,7 +311,7 @@ export class ControlPanelApp {
       pollInterval,
       payloadText,
       lastSync: timeStr,
-      headlineCount: manualHeadlines.length || 0
+      headlineCount: headlinesList.length || manualHeadlines.length || 0
     };
     localStorage.setItem('av_media_ph_live_state', JSON.stringify(persistData));
     this.statusLastUpdated.textContent = `✓ Last Updated: ${timeStr}`;
@@ -256,7 +322,7 @@ export class ControlPanelApp {
     if (this.phTelemetryLastSync) this.phTelemetryLastSync.textContent = timeStr;
     if (this.phTelemetryVersion) this.phTelemetryVersion.textContent = `v${this.phDatasetVersion}`;
     if (this.phTelemetryCount) {
-      this.phTelemetryCount.textContent = manualHeadlines.length > 0 ? String(manualHeadlines.length) : (sheetUrl ? '—' : '0');
+      this.phTelemetryCount.textContent = String(headlinesList.length || manualHeadlines.length || 1);
     }
     if (this.phTelemetryInterval) this.phTelemetryInterval.textContent = `${pollInterval / 1000}s`;
     if (this.phTelemetryError) {

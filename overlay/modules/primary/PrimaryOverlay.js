@@ -65,7 +65,7 @@ export class PrimaryOverlay {
     this.badgeElement.className = 'primary-badge';
     this.badgeElement.style.width = `${l.badgeWidth}px`;
     this.badgeElement.style.fontSize = `${l.fontSizeBadge}px`;
-    this.badgeElement.textContent = 'HEADLINE';
+    this.badgeElement.textContent = 'BREAKING';
 
     // Create Content Container & Headline Element
     const contentBox = documentObj.createElement('div');
@@ -136,7 +136,10 @@ export class PrimaryOverlay {
   update(data = {}) {
     this.currentData = data;
     const text = data.headline || data.text || (Array.isArray(data.headlines) ? data.headlines[0] : '');
-    const category = data.category || data.label || 'HEADLINE';
+    let category = data.category || data.label || 'BREAKING';
+    if (String(category).toUpperCase() === 'HEADLINE') {
+      category = 'BREAKING';
+    }
 
     if (this.badgeElement) {
       this.badgeElement.textContent = String(category).toUpperCase();

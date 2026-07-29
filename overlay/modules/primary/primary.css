@@ -1,5 +1,5 @@
 :root {
-  --primary-bg: linear-gradient(135deg, rgba(12, 16, 26, 0.96) 0%, rgba(20, 28, 45, 0.96) 100%);
+  --primary-bg: linear-gradient(135deg, rgba(8, 20, 42, 0.96) 0%, rgba(15, 32, 67, 0.96) 100%);
   --category-color: #d62828;
   --category-accent: #ffd600;
   --headline-color: #ffffff;
@@ -14,7 +14,7 @@
   --cat-sports: #38b000;
   --cat-weather: #00b4d8;
   --cat-business: #7209b7;
-  --cat-general: #e63946;
+  --cat-general: #d62828;
 }
 
 .primary-overlay-container {
@@ -28,7 +28,7 @@
   background: var(--primary-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
   border-left: 8px solid var(--category-color);
   opacity: 0;
   transform: translate3d(0, 45px, 0);
@@ -45,7 +45,7 @@
 .primary-badge {
   width: 270px;
   height: 100%;
-  background: linear-gradient(135deg, var(--category-color) 0%, rgba(180, 20, 20, 0.95) 100%);
+  background: linear-gradient(135deg, var(--category-color) 0%, rgba(170, 15, 15, 0.96) 100%);
   color: #ffffff;
   font-family: var(--category-font);
   font-size: 25px;
@@ -57,8 +57,8 @@
   letter-spacing: 1.5px;
   padding: 0 20px;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
   border-right: 3px solid var(--category-accent);
   flex-shrink: 0;
 }
@@ -82,7 +82,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
@@ -98,7 +98,7 @@
   font-family: var(--category-font);
   font-size: 13px;
   font-weight: 700;
-  color: rgba(255, 214, 0, 0.9);
+  color: rgba(255, 214, 0, 0.95);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
