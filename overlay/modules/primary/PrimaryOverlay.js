@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { ResourceManager } from '../../platform/runtime/ResourceManager.js';
 
 export class PrimaryOverlay {
@@ -12,10 +10,10 @@ export class PrimaryOverlay {
     this.badgeElement = null;
     this.headlineElement = null;
     this.resources = new ResourceManager();
-    this.layoutConfig = this.loadLayoutConfig(options.layoutConfigPath);
+    this.layoutConfig = this.loadLayoutConfig(options);
   }
 
-  loadLayoutConfig(customPath) {
+  loadLayoutConfig(options = {}) {
     const defaultLayout = {
       bottom: 80,
       left: 60,
@@ -28,18 +26,10 @@ export class PrimaryOverlay {
       padding: 20
     };
 
-    try {
-      const configPath = customPath || path.resolve('config/layout.json');
-      if (fs.existsSync(configPath)) {
-        const raw = fs.readFileSync(configPath, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (parsed && parsed.primary) {
-          return { ...defaultLayout, ...parsed.primary };
-        }
-      }
-    } catch (err) {
-      // Fallback to defaultLayout
+    if (options.layout) {
+      return { ...defaultLayout, ...options.layout };
     }
+
     return defaultLayout;
   }
 
