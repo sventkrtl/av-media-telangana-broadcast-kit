@@ -1,0 +1,17 @@
+{
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "primary": {
+    "bottom": 80,
+    "left": 60,
+    "width": 1800,
+    "height": 110,
+    "badgeWidth": 240,
+    "fontSizeHeadline": 36,
+    "fontSizeBadge": 24,
+    "borderRadius": 12,
+    "padding": 20
+  }
+}

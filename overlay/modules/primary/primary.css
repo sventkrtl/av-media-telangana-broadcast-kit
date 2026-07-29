@@ -1,0 +1,83 @@
+:root {
+  --primary-bg: rgba(20, 24, 33, 0.95);
+  --category-color: #e63946;
+  --headline-color: #ffffff;
+  --accent-color: #ffd166;
+  --category-font: 'Ramabhadra', 'Noto Sans Telugu', sans-serif;
+  --headline-font: 'Noto Sans Telugu', 'Outfit', sans-serif;
+
+  /* Category color presets */
+  --cat-breaking: #d62828;
+  --cat-politics: #0077b6;
+  --cat-crime: #9d0208;
+  --cat-sports: #38b000;
+  --cat-weather: #00b4d8;
+  --cat-business: #7209b7;
+  --cat-general: #e63946;
+}
+
+.primary-overlay-container {
+  position: absolute;
+  bottom: 80px;
+  left: 60px;
+  width: 1800px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  background: var(--primary-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-left: 8px solid var(--category-color);
+  opacity: 0;
+  transform: translate3d(0, 40px, 0);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.primary-overlay-container.visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.primary-badge {
+  width: 240px;
+  height: 100%;
+  background: var(--category-color);
+  color: #ffffff;
+  font-family: var(--category-font);
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 15px;
+  text-align: center;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.primary-content {
+  flex: 1;
+  padding: 0 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.primary-headline-text {
+  color: var(--headline-color);
+  font-family: var(--headline-font);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+.primary-headline-text.updating {
+  opacity: 0;
+}
