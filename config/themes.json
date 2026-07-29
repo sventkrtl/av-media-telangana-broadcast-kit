@@ -1,0 +1,6 @@
+{
+  "activeTheme": "dark-broadcast",
+  "themes": {
+    "dark-broadcast": { "primaryColor": "#1e1e2e", "accentColor": "#89b4fa", "textColor": "#cdd6f4" }
+  }
+}

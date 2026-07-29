@@ -1,0 +1,10 @@
+{
+  "env": "development",
+  "timezone": "Asia/Kolkata",
+  "logLevel": "info",
+  "features": {
+    "coldBootFallback": true,
+    "eventTracing": true,
+    "diagnosticsRingBuffer": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "AV Media Telangana Broadcast Kit",
+  "id": "av-media-telangana-broadcast-kit",
+  "version": "0.1.0-m1",
+  "milestone": "M1",
+  "environment": "development",
+  "port": 3000,
+  "debug": true
+}
