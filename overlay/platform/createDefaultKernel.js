@@ -16,6 +16,10 @@ export function createDefaultKernel(options) {
           const doc = surface.ownerDocument || (typeof document !== 'undefined' ? document : null);
           if (doc) {
             primaryInstance.init({ parentNode: surface, document: doc });
+            primaryInstance.show({
+              headline: 'ఏవీ మీడియా తెలంగాణ ప్రత్యక్ష ప్రసారం (AV Media Telangana Live)',
+              category: 'BREAKING'
+            });
           }
         },
         show: ({ event }) => {

@@ -1,16 +1,13 @@
-import fs from 'fs';
-import path from 'path';
-
 export class PlatformConfig {
   constructor(configDir) {
-    this.configDir = configDir || path.resolve('config');
+    this.configDir = configDir || 'config';
     this.configs = {};
     this.fallbacks = {
       app: {
         name: "AV Media Telangana Broadcast Kit",
         id: "av-media-telangana-broadcast-kit",
-        version: "0.1.0-m1",
-        milestone: "M1",
+        version: "0.3.0-m3",
+        milestone: "M3",
         environment: "development",
         port: 3000,
         debug: true
@@ -60,20 +57,25 @@ export class PlatformConfig {
   }
 
   loadCategory(category) {
-    const filePath = path.join(this.configDir, `${category}.json`);
-    try {
-      if (fs.existsSync(filePath)) {
-        const raw = fs.readFileSync(filePath, 'utf8').trim();
-        if (raw.length > 0) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
-            this.configs[category] = parsed;
-            return;
+    const isNode = typeof process !== 'undefined' && process.versions && process.versions.node && typeof require !== 'undefined';
+    if (isNode) {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const filePath = path.join(path.resolve(this.configDir), `${category}.json`);
+        if (fs.existsSync(filePath)) {
+          const raw = fs.readFileSync(filePath, 'utf8').trim();
+          if (raw.length > 0) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+              this.configs[category] = parsed;
+              return;
+            }
           }
         }
+      } catch (err) {
+        // Fallback
       }
-    } catch (err) {
-      // Fallback
     }
     this.configs[category] = JSON.parse(JSON.stringify(this.fallbacks[category] || {}));
   }

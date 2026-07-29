@@ -7,10 +7,10 @@ export const KERNEL_STATES = Object.freeze({
 
 export const PLATFORM_VERSION = Object.freeze({
   name: 'AV Media Telangana Single Overlay Platform',
-  version: '0.0.1',
-  milestone: 'M0',
-  release: 'v0.0.1-m0-walking-skeleton',
-  status: 'walking-skeleton-freeze',
+  version: '0.3.0',
+  milestone: 'M3',
+  release: 'v0.3.0-m3-primary-overlay',
+  status: 'm3-primary-overlay-development',
   date: '2026-07-29'
 });
 
@@ -20,7 +20,7 @@ export const DEFAULT_LAYER_DEFINITIONS = Object.freeze([
   { id: 'clock', priority: 30, visibility: 'always' },
   { id: 'ticker', priority: 100, visibility: 'manual' },
   { id: 'secondary', priority: 200, visibility: 'manual' },
-  { id: 'primary', priority: 300, visibility: 'manual' },
+  { id: 'primary', priority: 300, visibility: 'always' },
   { id: 'breaking', priority: 900, visibility: 'preemptive' }
 ]);
 

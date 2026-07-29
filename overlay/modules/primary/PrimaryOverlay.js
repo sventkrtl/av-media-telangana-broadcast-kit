@@ -50,7 +50,7 @@ export class PrimaryOverlay {
 
     // Apply Layout Config
     const l = this.layoutConfig;
-    this.container.style.bottom = `${l.bottom}px`;
+    this.container.style.top = `${l.top || 850}px`;
     this.container.style.left = `${l.left}px`;
     this.container.style.width = `${l.width}px`;
     this.container.style.height = `${l.height}px`;
