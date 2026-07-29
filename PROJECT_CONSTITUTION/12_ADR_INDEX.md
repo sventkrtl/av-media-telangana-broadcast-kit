@@ -66,6 +66,7 @@ Freeze (If Applicable - [06_FROZEN_MODULES.md](06_FROZEN_MODULES.md))
 | **ADR-0009** | Breaking Profile Single Source of Truth (SSOT) Architecture | Accepted | State Model (`BreakingFeedModel`) |
 | **ADR-0010** | Breaking Profile Continuous Circular Playback Architecture | Accepted | Runtime Engine & Loop State Machine |
 | **ADR-0011** | Persistent Breaking Bar Playback Profile Architecture | Accepted | Motion Engine & Persistent Red Plate |
+| **ADR-0012** | Single Overlay Platform Kernel | Accepted | Overlay Runtime & OBS Integration |
 
 ---
 

@@ -1,0 +1,16 @@
+{
+  "name": "AV Media Telangana Single Overlay Platform",
+  "version": "0.0.1",
+  "milestone": "M0",
+  "release": "v0.0.1-m0-walking-skeleton",
+  "status": "walking-skeleton-freeze",
+  "date": "2026-07-29",
+  "runtimeUrl": "http://127.0.0.1:8085/overlay/",
+  "components": [
+    "PlatformKernel",
+    "OverlayRegistry",
+    "OverlayRuntime",
+    "OBSAdapter",
+    "StateEngineBridge"
+  ]
+}

@@ -1,0 +1,100 @@
+:root {
+  --overlay-width: 1920px;
+  --overlay-height: 1080px;
+  --overlay-safe-bottom: 54px;
+  --overlay-primary-y: 890px;
+  --overlay-primary-height: 135px;
+  --overlay-secondary-y: 1025px;
+  --overlay-secondary-height: 55px;
+}
+
+html,
+body {
+  width: var(--overlay-width);
+  height: var(--overlay-height);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+body {
+  font-family: "Noto Sans Telugu", "Ramabhadra", "Outfit", Arial, sans-serif;
+}
+
+.overlay-root,
+.overlay-canvas {
+  position: fixed;
+  inset: 0;
+  width: var(--overlay-width);
+  height: var(--overlay-height);
+  overflow: hidden;
+  background: transparent;
+}
+
+.overlay-layer {
+  position: absolute;
+  inset: 0;
+  width: var(--overlay-width);
+  height: var(--overlay-height);
+  pointer-events: none;
+  contain: layout paint style;
+}
+
+.overlay-layer[hidden] {
+  display: none;
+}
+
+.overlay-layer-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay-diagnostics {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  display: none;
+  min-width: 360px;
+  max-width: 620px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 214, 0, 0.45);
+  border-radius: 6px;
+  background: rgba(6, 11, 25, 0.88);
+  color: #f8fafc;
+  font: 600 13px/1.45 Consolas, "Courier New", monospace;
+  z-index: 10000;
+}
+
+.overlay-diagnostics.visible {
+  display: block;
+}
+
+.overlay-diagnostics strong {
+  color: #ffd600;
+}
+
+.overlay-test-card {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  width: 420px;
+  padding: 16px 18px;
+  border-left: 6px solid #ffd600;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.25;
+  transform: translate3d(0, 0, 0);
+}
+
+.overlay-test-card small {
+  display: block;
+  margin-top: 8px;
+  color: #93c5fd;
+  font-size: 14px;
+  font-weight: 700;
+}

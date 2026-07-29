@@ -1,48 +1,60 @@
 # System Architecture
 
-The **AV Media Telangana Broadcast Kit** is built using a modular, decoupled web-graphics architecture designed specifically for OBS Studio browser sources and live broadcast controllers.
+The **AV Media Telangana Broadcast Kit** now separates the legacy modular overlay reference system from the new Single Overlay Platform runtime.
 
 ---
 
-## 🏗️ High-Level Component Diagram
+## Single Overlay Platform Diagram
 
-```
-+-----------------------------------------------------------------------+
-|                         OBS Studio Workspace                          |
-|                                                                       |
-|   +-------------------+  +-------------------+  +-----------------+   |
-|   | Lower-Third       |  | Ticker Overlay    |  | Breaking Banner |   |
-|   | Browser Source    |  | Browser Source    |  | Browser Source  |   |
-|   +---------+---------+  +---------+---------+  +--------+--------+   |
-|             ^                      ^                     ^            |
-+-------------|----------------------|---------------------|------------+
-              |                      |                     |
-              +----------------------+---------------------+
-                                     |
-                       HTTP / Local File / WebSocket
-                                     |
-                    +----------------+----------------+
-                    | Central Broadcast State Engine   |
-                    | (shared/js/state-engine.js)      |
-                    +----------------+----------------+
-                                     ^
-                                     | WebSocket / REST API
-                    +----------------+----------------+
-                    | Live Operator Control Panel UI   |
-                    +---------------------------------+
+```mermaid
+flowchart TD
+  CP["Unified Control Panel"] --> WS["StateEngine WebSocket / BroadcastChannel"]
+  WS --> K["Platform Kernel"]
+  K --> R["Overlay Registry"]
+  K --> RT["Overlay Runtime"]
+  K --> OA["OBS Adapter"]
+  R --> PL["Primary Layer"]
+  R --> BL["Breaking Layer"]
+  R --> SL["Secondary Layer"]
+  R --> TL["Ticker Layer"]
+  R --> CL["Clock Layer"]
+  R --> LL["Logo Layer"]
+  R --> FL["Future Layer"]
+  RT --> OA
+  OA --> OBS["Single OBS Browser Source: /overlay/"]
 ```
 
 ---
 
-## 🔄 Dataflow & State Synchronization
+## Platform Responsibilities
 
-1. **State Persistence**: State updates (e.g., changing headline text, switching themes, triggering lower-third popups) are dispatched via the **Broadcast State Engine**.
-2. **WebSocket Controller**: The overlay instances register event listeners for live state updates, executing smooth CSS/JS transitions without page reloads.
-3. **Stand-Alone Fallback**: Each module (`modules/ticker`, `modules/lower-third`, etc.) can run independently via query parameters or local configuration files (`shared/config/`).
+1. **Platform Kernel**: boots the overlay platform, owns lifecycle state, routes events, and exposes health snapshots.
+2. **Overlay Registry**: registers layers dynamically and orders them by priority instead of hardcoded DOM assumptions.
+3. **Overlay Runtime**: mounts layers, applies state updates, runs the frame loop, and calls adapter lifecycle methods.
+4. **OBS Adapter**: owns OBS Browser Source assumptions such as 1920x1080 sizing, transparent canvas, diagnostics, and error reporting.
+5. **StateEngine Bridge**: keeps the existing control-panel WebSocket/BroadcastChannel message shape and routes it into the platform.
 
 ---
 
-## 🎨 Theme & Layout Isolation
+## Dataflow & State Synchronization
 
-- **Tokens & Utilities**: Master CSS variable tokens reside in `shared/css/variables.css`.
-- **Theme Overrides**: Specific theme variations (`themes/default`, `themes/dark`, `themes/light`, `themes/breaking`) extend base variables to adjust visual branding instantaneously.
+1. Operator actions originate in the unified control panel.
+2. `StateEngine` emits the existing protocol frame over WebSocket, BroadcastChannel, and localStorage fallback.
+3. `PlatformKernel` normalizes the frame and maps the engine name to a registered layer.
+4. `OverlayRuntime` updates the target layer state and visibility.
+5. `OBSAdapter` reports runtime diagnostics and keeps Browser Source assumptions isolated.
+
+---
+
+## Legacy Reference Architecture
+
+The previous multi-source model remains in the repository as reference material:
+
+```text
+modules/ticker/
+modules/primary-headline/
+modules/secondary-playlist/
+modules/breaking-news/
+```
+
+New platform work must not import legacy overlay engine classes. Legacy modules may be inspected for visual behavior, timing, typography, and acceptance criteria.
