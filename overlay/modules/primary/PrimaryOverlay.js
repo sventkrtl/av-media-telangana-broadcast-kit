@@ -76,7 +76,12 @@ export class PrimaryOverlay {
     this.headlineElement.style.fontSize = `${l.fontSizeHeadline}px`;
     this.headlineElement.textContent = '';
 
+    this.sourceTagElement = documentObj.createElement('div');
+    this.sourceTagElement.className = 'primary-source-tag';
+    this.sourceTagElement.textContent = 'AV MEDIA TELANGANA';
+
     contentBox.appendChild(this.headlineElement);
+    contentBox.appendChild(this.sourceTagElement);
     this.container.appendChild(this.badgeElement);
     this.container.appendChild(contentBox);
 

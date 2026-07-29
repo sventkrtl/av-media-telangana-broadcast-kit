@@ -6,7 +6,7 @@ const canvasElement = document.getElementById('overlay-canvas');
 const diagnosticsElement = document.getElementById('overlay-diagnostics');
 
 const urlParams = new URLSearchParams(window.location.search);
-const devMode = urlParams.get('dev') !== '0';
+const devMode = urlParams.get('dev') === '1' || urlParams.get('debug') === 'true';
 
 const kernel = createDefaultKernel({
   rootElement,
